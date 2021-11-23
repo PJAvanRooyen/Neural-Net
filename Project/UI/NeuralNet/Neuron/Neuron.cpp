@@ -7,11 +7,11 @@
 namespace UI {
 namespace Neuron {
 
-Neuron::Neuron(QObject *parent) : AbstractWidget(parent) {}
+Neuron::Neuron(QObject *parent) : AbstractGraphicsItemController(parent) {}
 
 Neuron::~Neuron(){};
 
-QWidget *Neuron::createView(QWidget *parentView) {
+QGraphicsItem *Neuron::createView(QGraphicsItem *parentView) {
   return new NeuronView(parentView);
 }
 

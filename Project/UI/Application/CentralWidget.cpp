@@ -1,32 +1,22 @@
 #include "CentralWidget.h"
 #include "CentralWidgetView.h"
 
-#include <QComboBox>
-#include <QVBoxLayout>
-
-// test
-#include "UI/NeuralNet/Neuron/Neuron.h"
-// test
+#include "NeuralNet/Neuron/Neuron.h"
 
 namespace UI {
 namespace Application {
 
-CentralWidget::CentralWidget(QObject *parent) : AbstractWidget(parent) {
-  auto *view = static_cast<CentralWidgetView *>(this->view());
+CentralWidget::CentralWidget(QObject *parent)
+    : mScene(new QGraphicsScene(parent)), mView(new CentralWidgetView(mScene)) {
 
-  UI::Neuron::Neuron *neuron = new UI::Neuron::Neuron(this);
-  view->addNeuron(neuron);
-
-  view->addNeuron(neuron);
-
-  auto *combobox = new QComboBox(this->view());
-  view->addComboBox(combobox);
+  addNeuron();
 }
 
-CentralWidget::~CentralWidget(){};
+CentralWidgetView *CentralWidget::view() const { return mView; }
 
-QWidget *CentralWidget::createView(QWidget *parentView) {
-  return new UI::Application::CentralWidgetView(parentView);
+void CentralWidget::addNeuron() {
+  auto *neuron = new UI::Neuron::Neuron();
+  mScene->addItem(neuron->view());
 }
 
 } // namespace Application

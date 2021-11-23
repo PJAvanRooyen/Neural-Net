@@ -1,22 +1,26 @@
 #ifndef CentralWidget_H
 #define CentralWidget_H
 
-#include "UI/Widget/AbstractWidget.h"
+#include "CentralWidgetView.h"
+
+#include <QGraphicsScene>
 
 namespace UI {
 namespace Application {
 
-class CentralWidget : public AbstractWidget {
+class CentralWidget : public QObject {
   Q_OBJECT
 
 public:
   CentralWidget(QObject *parent = nullptr);
-  ~CentralWidget();
 
-protected:
-  QWidget *createView(QWidget *parentView) override;
+  CentralWidgetView *view() const;
+
+  void addNeuron();
 
 private:
+  QGraphicsScene *mScene;
+  CentralWidgetView *mView;
 };
 
 } // namespace Application

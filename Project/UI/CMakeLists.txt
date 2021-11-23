@@ -1,12 +1,14 @@
 set( TARGET_NAME UI )
 
 add_subdirectory( Widget )
+add_subdirectory( GraphicsItem )
 add_subdirectory( Application )
 add_subdirectory( WidgetManager )
 add_subdirectory( NeuralNet )
 
 set( OBJ_FILES
     $<TARGET_OBJECTS:Widget>
+    $<TARGET_OBJECTS:GraphicsItem>
     $<TARGET_OBJECTS:Application>
     $<TARGET_OBJECTS:WidgetManager>
     )

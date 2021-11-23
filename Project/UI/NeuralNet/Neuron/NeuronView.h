@@ -1,20 +1,26 @@
 #ifndef NeuronView_H
 #define NeuronView_H
 
-#include <QWidget>
+#include <QGraphicsEllipseItem>
 
 namespace UI {
 namespace Neuron {
 
-class NeuronView : public QWidget {
-  Q_OBJECT
-
+class NeuronView : public QGraphicsItem {
 public:
-  NeuronView(QWidget *parent = nullptr);
+  NeuronView(QGraphicsItem *parent = Q_NULLPTR);
 
-  void paintEvent(QPaintEvent *event);
+  QRectF boundingRect() const override;
+  QPainterPath shape() const override;
+  void paint(QPainter *painter, const QStyleOptionGraphicsItem *option,
+             QWidget *widget) override;
 
-private:
+protected:
+  QVariant itemChange(GraphicsItemChange change,
+                      const QVariant &value) override;
+
+  void mousePressEvent(QGraphicsSceneMouseEvent *event) override;
+  void mouseReleaseEvent(QGraphicsSceneMouseEvent *event) override;
 };
 
 } // namespace Neuron

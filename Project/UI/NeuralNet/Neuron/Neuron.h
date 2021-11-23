@@ -1,21 +1,24 @@
 #ifndef Neuron_H
 #define Neuron_H
 
-#include "UI/Widget/AbstractWidget.h"
+#include "UI/GraphicsItem/AbstractGraphicsItemController.h"
+
+#include <QGraphicsItem>
 
 namespace UI {
+
 namespace Neuron {
 
-class Neuron : public AbstractWidget {
+class Neuron : public AbstractGraphicsItemController {
   Q_OBJECT
 
 public:
-  Neuron(QObject *parent);
+  Neuron(QObject *parent = Q_NULLPTR);
 
   ~Neuron();
 
 protected:
-  QWidget *createView(QWidget *parentView) override;
+  QGraphicsItem *createView(QGraphicsItem *parentView) override;
 };
 
 } // namespace Neuron

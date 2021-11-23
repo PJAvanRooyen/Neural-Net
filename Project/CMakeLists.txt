@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.5)
 
-project(QtBaseProject LANGUAGES CXX)
+project(Neural-Net LANGUAGES CXX)
 
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
 
@@ -29,11 +29,11 @@ find_package(Qt${QT_VERSION_MAJOR} COMPONENTS Widgets REQUIRED)
 find_package(Qt5 COMPONENTS Core REQUIRED)
 
 if(ANDROID)
-  add_library(QtBaseProject SHARED
+  add_library(Neural-Net SHARED
     main.cpp
   )
 else()
-  add_executable(QtBaseProject
+  add_executable(Neural-Net
     main.cpp
   )
 endif()
@@ -43,4 +43,4 @@ add_subdirectory( Core )
 add_subdirectory( UI )
 add_subdirectory( Examples )
 
-target_link_libraries(QtBaseProject PRIVATE Qt${QT_VERSION_MAJOR}::Widgets Qt5::Core Core UI Examples)
+target_link_libraries(Neural-Net PRIVATE Qt${QT_VERSION_MAJOR}::Widgets Qt5::Core Core UI Examples)

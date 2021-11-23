@@ -1,30 +1,16 @@
 #ifndef CentralWidgetView_H
 #define CentralWidgetView_H
 
-#include <QWidget>
-
-// test
-#include <QComboBox>
-// test
+#include <QGraphicsView>
 
 namespace UI {
-namespace Neuron {
-class Neuron;
-}
-
 namespace Application {
 
-class CentralWidgetView : public QWidget {
+class CentralWidgetView : public QGraphicsView {
   Q_OBJECT
 
 public:
-  CentralWidgetView(QWidget *parent = nullptr);
-
-  void addNeuron(Neuron::Neuron *neuronView);
-
-  void addComboBox(QComboBox *comboBox);
-
-private:
+  CentralWidgetView(QGraphicsScene *scene = nullptr, QWidget *parent = nullptr);
 };
 
 } // namespace Application

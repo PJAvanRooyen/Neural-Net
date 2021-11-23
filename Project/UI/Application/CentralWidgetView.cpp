@@ -1,8 +1,5 @@
 #include "CentralWidgetView.h"
 
-#include <QComboBox>
-#include <QVBoxLayout>
-
 // test
 #include "UI/NeuralNet/Neuron/Neuron.h"
 // test
@@ -10,18 +7,13 @@
 namespace UI {
 namespace Application {
 
-CentralWidgetView::CentralWidgetView(QWidget *parent) : QWidget(parent) {
-
-  QHBoxLayout *horizontalLayout = new QHBoxLayout(parent);
-  setLayout(horizontalLayout);
-}
-
-void CentralWidgetView::addNeuron(Neuron::Neuron *neuron) {
-  layout()->addWidget(neuron->view());
-}
-
-void CentralWidgetView::addComboBox(QComboBox *comboBox) {
-  layout()->addWidget(comboBox);
+CentralWidgetView::CentralWidgetView(QGraphicsScene *scene, QWidget *parent)
+    : QGraphicsView(scene, parent) {
+  setRenderHint(QPainter::Antialiasing);
+  setViewportUpdateMode(QGraphicsView::BoundingRectViewportUpdate);
+  setBackgroundBrush(QColor(230, 200, 167));
+  setWindowTitle("Drag and Drop Robot");
+  show();
 }
 
 } // namespace Application
