@@ -1,15 +1,12 @@
 #ifndef Neuron_H
 #define Neuron_H
 
-#include "UI/GraphicsItem/AbstractGraphicsItemController.h"
-
-#include <QGraphicsItem>
+#include "UI/NodeNetwork/Node/Node.h"
 
 namespace UI {
+namespace Node {
 
-namespace Neuron {
-
-class Neuron : public AbstractGraphicsItemController {
+class Neuron : public Node {
   Q_OBJECT
 
 public:
@@ -21,6 +18,6 @@ protected:
   QGraphicsItem *createView(QGraphicsItem *parentView) override;
 };
 
-} // namespace Neuron
+} // namespace Node
 } // namespace UI
 #endif // NeuronView_H

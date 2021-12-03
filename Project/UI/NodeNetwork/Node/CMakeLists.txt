@@ -1,12 +1,16 @@
-set( TARGET_NAME Neuron )
+set( TARGET_NAME NodeUI )
 
 set( HEADERS
+    Node.h
     Neuron.h
+    NodeView.h
     NeuronView.h
 )
 
 set( SOURCES
+    Node.cpp
     Neuron.cpp
+    NodeView.cpp
     NeuronView.cpp
 )
 

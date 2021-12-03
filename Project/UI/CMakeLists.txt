@@ -4,7 +4,7 @@ add_subdirectory( Widget )
 add_subdirectory( GraphicsItem )
 add_subdirectory( Application )
 add_subdirectory( WidgetManager )
-add_subdirectory( NeuralNet )
+add_subdirectory( NodeNetwork )
 
 set( OBJ_FILES
     $<TARGET_OBJECTS:Widget>
@@ -14,4 +14,4 @@ set( OBJ_FILES
     )
 
 add_library( ${TARGET_NAME} STATIC ${OBJ_FILES})
-target_link_libraries( ${TARGET_NAME} Qt5::Core Qt5::Widgets NeuralNet Neuron)
+target_link_libraries( ${TARGET_NAME} Qt5::Core Qt5::Widgets NodeNetworkUI NodeUI)

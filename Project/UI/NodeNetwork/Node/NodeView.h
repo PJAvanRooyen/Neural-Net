@@ -1,14 +1,14 @@
-#ifndef NeuronView_H
-#define NeuronView_H
+#ifndef NodeView_H
+#define NodeView_H
 
 #include <QGraphicsEllipseItem>
 
 namespace UI {
-namespace Neuron {
+namespace Node {
 
-class NeuronView : public QGraphicsItem {
+class NodeView : public QGraphicsItem {
 public:
-  NeuronView(QGraphicsItem *parent = Q_NULLPTR);
+  NodeView(QGraphicsItem *parent = Q_NULLPTR);
 
   QRectF boundingRect() const override;
   QPainterPath shape() const override;
@@ -23,6 +23,6 @@ protected:
   void mouseReleaseEvent(QGraphicsSceneMouseEvent *event) override;
 };
 
-} // namespace Neuron
+} // namespace Node
 } // namespace UI
-#endif // NeuronView_H
+#endif // NodeView_H

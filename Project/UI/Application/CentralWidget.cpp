@@ -1,7 +1,7 @@
 #include "CentralWidget.h"
 #include "CentralWidgetView.h"
 
-#include "NeuralNet/Neuron/Neuron.h"
+#include "NodeNetwork/Node/Neuron.h"
 
 namespace UI {
 namespace Application {
@@ -15,7 +15,7 @@ CentralWidget::CentralWidget(QObject *parent)
 CentralWidgetView *CentralWidget::view() const { return mView; }
 
 void CentralWidget::addNeuron() {
-  auto *neuron = new UI::Neuron::Neuron();
+  auto *neuron = new UI::Node::Neuron();
   mScene->addItem(neuron->view());
 }
 

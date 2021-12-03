@@ -1,13 +1,10 @@
 #include "Neuron.h"
 #include "NeuronView.h"
 
-#include <QPainter>
-#include <QRectF>
-
 namespace UI {
-namespace Neuron {
+namespace Node {
 
-Neuron::Neuron(QObject *parent) : AbstractGraphicsItemController(parent) {}
+Neuron::Neuron(QObject *parent) : Node(parent) {}
 
 Neuron::~Neuron(){};
 
@@ -15,5 +12,5 @@ QGraphicsItem *Neuron::createView(QGraphicsItem *parentView) {
   return new NeuronView(parentView);
 }
 
-} // namespace Neuron
+} // namespace Node
 } // namespace UI

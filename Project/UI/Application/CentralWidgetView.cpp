@@ -1,9 +1,5 @@
 #include "CentralWidgetView.h"
 
-// test
-#include "UI/NeuralNet/Neuron/Neuron.h"
-// test
-
 namespace UI {
 namespace Application {
 

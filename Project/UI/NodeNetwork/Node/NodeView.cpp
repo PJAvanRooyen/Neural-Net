@@ -1,32 +1,32 @@
-#include "NeuronView.h"
+#include "NodeView.h"
 
 #include <QGraphicsSceneMouseEvent>
 #include <QPainter>
 #include <QStyleOption>
 
 namespace UI {
-namespace Neuron {
+namespace Node {
 
-NeuronView::NeuronView(QGraphicsItem *parent) : QGraphicsItem(parent) {
+NodeView::NodeView(QGraphicsItem *parent) : QGraphicsItem(parent) {
   setFlag(ItemIsMovable);
   setFlag(ItemSendsGeometryChanges);
   setCacheMode(DeviceCoordinateCache);
   setZValue(-1);
 }
 
-QRectF NeuronView::boundingRect() const {
+QRectF NodeView::boundingRect() const {
   qreal adjust = 2;
   return QRectF(-10 - adjust, -10 - adjust, 23 + adjust, 23 + adjust);
 }
 
-QPainterPath NeuronView::shape() const {
+QPainterPath NodeView::shape() const {
   QPainterPath path;
   path.addEllipse(-10, -10, 20, 20);
   return path;
 }
 
-void NeuronView::paint(QPainter *painter,
-                       const QStyleOptionGraphicsItem *option, QWidget *) {
+void NodeView::paint(QPainter *painter, const QStyleOptionGraphicsItem *option,
+                     QWidget *) {
   painter->setPen(Qt::NoPen);
   painter->setBrush(Qt::darkGray);
   painter->drawEllipse(-7, -7, 20, 20);
@@ -47,8 +47,8 @@ void NeuronView::paint(QPainter *painter,
   painter->drawEllipse(-10, -10, 20, 20);
 }
 
-QVariant NeuronView::itemChange(GraphicsItemChange change,
-                                const QVariant &value) {
+QVariant NodeView::itemChange(GraphicsItemChange change,
+                              const QVariant &value) {
   //  switch (change) {
   //  case ItemPositionHasChanged:
   //    for (Edge *edge : qAsConst(edgeList))
@@ -62,14 +62,14 @@ QVariant NeuronView::itemChange(GraphicsItemChange change,
   return QGraphicsItem::itemChange(change, value);
 }
 
-void NeuronView::mousePressEvent(QGraphicsSceneMouseEvent *event) {
+void NodeView::mousePressEvent(QGraphicsSceneMouseEvent *event) {
   update();
   QGraphicsItem::mousePressEvent(event);
 }
 
-void NeuronView::mouseReleaseEvent(QGraphicsSceneMouseEvent *event) {
+void NodeView::mouseReleaseEvent(QGraphicsSceneMouseEvent *event) {
   update();
   QGraphicsItem::mouseReleaseEvent(event);
 }
-} // namespace Neuron
+} // namespace Node
 } // namespace UI
