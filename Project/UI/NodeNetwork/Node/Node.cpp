@@ -12,7 +12,7 @@ Node::Node(QObject *parent) : AbstractGraphicsItemController(parent) {}
 Node::~Node(){};
 
 QGraphicsItem *Node::createView(QGraphicsItem *parentView) {
-  return new NeuronView(parentView);
+  return new NodeView(parentView);
 }
 
 } // namespace Node

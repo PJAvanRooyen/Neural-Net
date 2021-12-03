@@ -1,5 +1,5 @@
-#ifndef Node_H
-#define Node_H
+#ifndef NodeUI_H
+#define NodeUI_H
 
 #include "UI/GraphicsItem/AbstractGraphicsItemController.h"
 
@@ -23,4 +23,4 @@ protected:
 
 } // namespace Node
 } // namespace UI
-#endif // Node_H
+#endif // NodeUI_H

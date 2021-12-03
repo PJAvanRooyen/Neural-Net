@@ -1,5 +1,5 @@
-#ifndef Neuron_H
-#define Neuron_H
+#ifndef NeuronUI_H
+#define NeuronUI_H
 
 #include "UI/NodeNetwork/Node/Node.h"
 
@@ -20,4 +20,4 @@ protected:
 
 } // namespace Node
 } // namespace UI
-#endif // NeuronView_H
+#endif // NeuronUI_H

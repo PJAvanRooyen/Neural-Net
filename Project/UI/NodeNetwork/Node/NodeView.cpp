@@ -1,4 +1,5 @@
 #include "NodeView.h"
+#include "NodeConnectionView.h"
 
 #include <QGraphicsSceneMouseEvent>
 #include <QPainter>
@@ -47,17 +48,25 @@ void NodeView::paint(QPainter *painter, const QStyleOptionGraphicsItem *option,
   painter->drawEllipse(-10, -10, 20, 20);
 }
 
+void NodeView::addNodeConnection(NodeConnectionView *nodeConnection) {
+  mNodeConnections << nodeConnection;
+  nodeConnection->adjust();
+}
+
+QVector<NodeConnectionView *> NodeView::nodeConnections() const {
+  return mNodeConnections;
+}
+
 QVariant NodeView::itemChange(GraphicsItemChange change,
                               const QVariant &value) {
-  //  switch (change) {
-  //  case ItemPositionHasChanged:
-  //    for (Edge *edge : qAsConst(edgeList))
-  //      edge->adjust();
-  //    graph->itemMoved();
-  //    break;
-  //  default:
-  //    break;
-  //  };
+  switch (change) {
+  case ItemPositionHasChanged:
+    for (NodeConnectionView *nodeConnection : qAsConst(mNodeConnections))
+      nodeConnection->adjust();
+    break;
+  default:
+    break;
+  };
 
   return QGraphicsItem::itemChange(change, value);
 }

@@ -2,15 +2,19 @@ set( TARGET_NAME NodeUI )
 
 set( HEADERS
     Node.h
-    Neuron.h
     NodeView.h
+    NodeConnection.h
+    NodeConnectionView.h
+    Neuron.h
     NeuronView.h
 )
 
 set( SOURCES
     Node.cpp
-    Neuron.cpp
     NodeView.cpp
+    NodeConnection.cpp
+    NodeConnectionView.cpp
+    Neuron.cpp
     NeuronView.cpp
 )
 
