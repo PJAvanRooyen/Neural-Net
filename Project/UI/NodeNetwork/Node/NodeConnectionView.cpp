@@ -1,4 +1,5 @@
 #include "NodeConnectionView.h"
+#include "NodeView.h"
 
 #include <QPainter>
 #include <QtMath>
@@ -6,24 +7,26 @@
 namespace UI {
 namespace Node {
 
+const qreal NodeConnectionView::kArrowSize = 10;
+
 NodeConnectionView::NodeConnectionView(NodeView *sourceNode, NodeView *destNode,
                                        QGraphicsItem *parent)
-    : QGraphicsItem(parent), source(sourceNode), dest(destNode) {
+    : QGraphicsItem(parent), mSource(sourceNode), mDestination(destNode) {
   setAcceptedMouseButtons(Qt::NoButton);
-  source->addNodeConnection(this);
-  dest->addNodeConnection(this);
+  mSource->addNodeConnection(this);
+  mDestination->addNodeConnection(this);
   adjust();
 }
 
-NodeView *NodeConnectionView::sourceNode() const { return source; }
+NodeView *NodeConnectionView::sourceNode() const { return mSource; }
 
-NodeView *NodeConnectionView::destNode() const { return dest; }
+NodeView *NodeConnectionView::destNode() const { return mDestination; }
 
 void NodeConnectionView::adjust() {
-  if (!source || !dest)
+  if (!mSource || !mDestination)
     return;
 
-  QLineF line(mapFromItem(source, 0, 0), mapFromItem(dest, 0, 0));
+  QLineF line(mapFromItem(mSource, 0, 0), mapFromItem(mDestination, 0, 0));
   qreal length = line.length();
 
   prepareGeometryChange();
@@ -38,11 +41,11 @@ void NodeConnectionView::adjust() {
 }
 
 QRectF NodeConnectionView::boundingRect() const {
-  if (!source || !dest)
+  if (!mSource || !mDestination)
     return QRectF();
 
   qreal penWidth = 1;
-  qreal extra = (penWidth + arrowSize) / 2.0;
+  qreal extra = (penWidth + kArrowSize) / 2.0;
 
   return QRectF(sourcePoint, QSizeF(destPoint.x() - sourcePoint.x(),
                                     destPoint.y() - sourcePoint.y()))
@@ -52,7 +55,7 @@ QRectF NodeConnectionView::boundingRect() const {
 
 void NodeConnectionView::paint(QPainter *painter,
                                const QStyleOptionGraphicsItem *, QWidget *) {
-  if (!source || !dest)
+  if (!mSource || !mDestination)
     return;
 
   QLineF line(sourcePoint, destPoint);
@@ -68,16 +71,16 @@ void NodeConnectionView::paint(QPainter *painter,
   double angle = std::atan2(-line.dy(), line.dx());
 
   QPointF sourceArrowP1 =
-      sourcePoint + QPointF(sin(angle + M_PI / 3) * arrowSize,
-                            cos(angle + M_PI / 3) * arrowSize);
+      sourcePoint + QPointF(sin(angle + M_PI / 3) * kArrowSize,
+                            cos(angle + M_PI / 3) * kArrowSize);
   QPointF sourceArrowP2 =
-      sourcePoint + QPointF(sin(angle + M_PI - M_PI / 3) * arrowSize,
-                            cos(angle + M_PI - M_PI / 3) * arrowSize);
-  QPointF destArrowP1 = destPoint + QPointF(sin(angle - M_PI / 3) * arrowSize,
-                                            cos(angle - M_PI / 3) * arrowSize);
+      sourcePoint + QPointF(sin(angle + M_PI - M_PI / 3) * kArrowSize,
+                            cos(angle + M_PI - M_PI / 3) * kArrowSize);
+  QPointF destArrowP1 = destPoint + QPointF(sin(angle - M_PI / 3) * kArrowSize,
+                                            cos(angle - M_PI / 3) * kArrowSize);
   QPointF destArrowP2 =
-      destPoint + QPointF(sin(angle - M_PI + M_PI / 3) * arrowSize,
-                          cos(angle - M_PI + M_PI / 3) * arrowSize);
+      destPoint + QPointF(sin(angle - M_PI + M_PI / 3) * kArrowSize,
+                          cos(angle - M_PI + M_PI / 3) * kArrowSize);
 
   painter->setBrush(Qt::black);
   painter->drawPolygon(QPolygonF()

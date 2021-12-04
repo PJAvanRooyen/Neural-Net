@@ -1,5 +1,7 @@
 #include "NodeConnection.h"
+#include "Node.h"
 #include "NodeConnectionView.h"
+#include "NodeView.h"
 
 #include <QPainter>
 #include <QRectF>

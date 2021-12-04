@@ -2,13 +2,13 @@
 #define NodeConnectionUI_H
 
 #include "UI/GraphicsItem/AbstractGraphicsItemController.h"
-#include "UI/NodeNetwork/Node/Node.h"
 
 #include <QGraphicsItem>
 
 namespace UI {
-
 namespace Node {
+
+class Node;
 
 class NodeConnection : public AbstractGraphicsItemController {
   Q_OBJECT

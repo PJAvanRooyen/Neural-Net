@@ -1,13 +1,16 @@
 #ifndef NodeConnectionView_H
 #define NodeConnectionView_H
-#include "NodeView.h"
 
 #include <QGraphicsItem>
 
 namespace UI {
 namespace Node {
 
+class NodeView;
+
 class NodeConnectionView : public QGraphicsItem {
+  static const qreal kArrowSize;
+
 public:
   NodeConnectionView(NodeView *sourceNode, NodeView *destNode,
                      QGraphicsItem *parent = Q_NULLPTR);
@@ -26,11 +29,10 @@ protected:
              QWidget *widget) override;
 
 private:
-  NodeView *source, *dest;
+  NodeView *mSource, *mDestination;
 
   QPointF sourcePoint;
   QPointF destPoint;
-  qreal arrowSize = 10;
 };
 
 } // namespace Node
