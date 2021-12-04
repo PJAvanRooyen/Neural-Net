@@ -17,7 +17,7 @@ public:
   void addNodeConnection(NodeConnection *nodeConnection);
   std::vector<NodeConnection *> nodeConnections() const;
 
-private:
+protected:
   std::vector<NodeConnection *> mNodeConnections;
 };
 

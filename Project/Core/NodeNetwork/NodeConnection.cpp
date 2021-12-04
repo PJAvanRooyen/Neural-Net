@@ -7,7 +7,7 @@ namespace NodeNetwork {
 NodeConnection::NodeConnection(Node *sourceNode, Node *destNode)
     : mSource(sourceNode), mDestination(destNode) {
   mSource->addNodeConnection(this);
-  mDestination->addNodeConnection(this);
+  mSource->addNodeConnection(this);
 }
 
 NodeConnection::~NodeConnection() {}
