@@ -4,7 +4,7 @@
 #include <QGraphicsItem>
 
 namespace UI {
-namespace Node {
+namespace NodeNetwork {
 
 class NodeView;
 
@@ -35,7 +35,7 @@ private:
   QPointF destPoint;
 };
 
-} // namespace Node
+} // namespace NodeNetwork
 } // namespace UI
 
 #endif // NodeConnectionView_H

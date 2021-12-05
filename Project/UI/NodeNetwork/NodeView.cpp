@@ -6,7 +6,7 @@
 #include <QStyleOption>
 
 namespace UI {
-namespace Node {
+namespace NodeNetwork {
 
 NodeView::NodeView(QGraphicsItem *parent) : QGraphicsItem(parent) {
   setFlag(ItemIsMovable);
@@ -80,5 +80,5 @@ void NodeView::mouseReleaseEvent(QGraphicsSceneMouseEvent *event) {
   update();
   QGraphicsItem::mouseReleaseEvent(event);
 }
-} // namespace Node
+} // namespace NodeNetwork
 } // namespace UI

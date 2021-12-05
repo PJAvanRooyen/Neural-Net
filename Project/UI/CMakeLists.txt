@@ -14,4 +14,4 @@ set( OBJ_FILES
     )
 
 add_library( ${TARGET_NAME} STATIC ${OBJ_FILES})
-target_link_libraries( ${TARGET_NAME} Qt5::Core Qt5::Widgets NodeNetworkUI NodeUI)
+target_link_libraries( ${TARGET_NAME} Qt5::Core Qt5::Widgets NodeNetworkUI)

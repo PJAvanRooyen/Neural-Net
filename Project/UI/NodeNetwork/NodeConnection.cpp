@@ -7,18 +7,22 @@
 #include <QRectF>
 
 namespace UI {
-namespace Node {
+namespace NodeNetwork {
 
 NodeConnection::NodeConnection(Node *sourceNode, Node *destNode,
                                QObject *parent)
     : AbstractGraphicsItemController(parent), mSource(sourceNode),
-      mDestination(destNode){};
+      mDestination(destNode) {
+  // note: connections are only done in a forward direction.
+  mSource->addOutputNodeConnection(this);
+  mDestination->addInputNodeConnection(this);
+};
 
 NodeConnection::~NodeConnection(){};
 
 Node *NodeConnection::sourceNode() const { return mSource; }
 
-Node *NodeConnection::destNode() const { return mDestination; }
+Node *NodeConnection::destinationNode() const { return mDestination; }
 
 QGraphicsItem *NodeConnection::createView(QGraphicsItem *parentView) {
   return new NodeConnectionView(static_cast<NodeView *>(mSource->view()),
@@ -26,5 +30,5 @@ QGraphicsItem *NodeConnection::createView(QGraphicsItem *parentView) {
                                 parentView);
 }
 
-} // namespace Node
+} // namespace NodeNetwork
 } // namespace UI

@@ -2,7 +2,7 @@
 #include "NeuronView.h"
 
 namespace UI {
-namespace Node {
+namespace NodeNetwork {
 
 Neuron::Neuron(QObject *parent) : Node(parent) {}
 
@@ -12,5 +12,5 @@ QGraphicsItem *Neuron::createView(QGraphicsItem *parentView) {
   return new NeuronView(parentView);
 }
 
-} // namespace Node
+} // namespace NodeNetwork
 } // namespace UI

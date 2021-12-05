@@ -1,10 +1,10 @@
 #ifndef NeuronUI_H
 #define NeuronUI_H
 
-#include "UI/NodeNetwork/Node/Node.h"
+#include "UI/NodeNetwork/Node.h"
 
 namespace UI {
-namespace Node {
+namespace NodeNetwork {
 
 class Neuron : public Node {
   Q_OBJECT
@@ -18,6 +18,6 @@ protected:
   QGraphicsItem *createView(QGraphicsItem *parentView) override;
 };
 
-} // namespace Node
+} // namespace NodeNetwork
 } // namespace UI
 #endif // NeuronUI_H

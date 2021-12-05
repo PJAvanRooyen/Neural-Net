@@ -1,9 +1,28 @@
 set( TARGET_NAME NodeNetworkUI )
 
-add_subdirectory( Node )
+set( HEADERS
+    Node.h
+    NodeView.h
+    NodeConnection.h
+    NodeConnectionView.h
+    NodeNetworkLayer.h
+    NodeNetwork.h
+    Neuron.h
+    NeuronView.h
+)
 
-set( OBJ_FILES
-    $<TARGET_OBJECTS:NodeUI>
-    )
+set( SOURCES
+    Node.cpp
+    NodeView.cpp
+    NodeConnection.cpp
+    NodeConnectionView.cpp
+    NodeNetworkLayer.cpp
+    NodeNetwork.cpp
+    Neuron.cpp
+    NeuronView.cpp
+)
 
-add_library( ${TARGET_NAME} STATIC ${OBJ_FILES})
+include_directories( ../.. )
+
+add_library( ${TARGET_NAME} OBJECT ${SOURCES} ${HEADERS})
+target_link_libraries( ${TARGET_NAME} Qt5::Core Qt5::Widgets )

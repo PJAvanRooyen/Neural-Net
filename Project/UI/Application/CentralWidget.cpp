@@ -1,8 +1,8 @@
 #include "CentralWidget.h"
 #include "CentralWidgetView.h"
 
-#include "NodeNetwork/Node/Neuron.h"
-#include "NodeNetwork/Node/NodeConnection.h"
+#include "NodeNetwork/Neuron.h"
+#include "NodeNetwork/NodeConnection.h"
 
 namespace UI {
 namespace Application {
@@ -12,16 +12,19 @@ CentralWidget::CentralWidget(QObject *parent)
 
   // addNeuron();
 
+  using Neuron = UI::NodeNetwork::Neuron;
+  using NodeConnection = UI::NodeNetwork::NodeConnection;
+
   // TODO: fix parent relation here
-  UI::Node::Neuron *node1 = new UI::Node::Neuron();
-  UI::Node::Neuron *node2 = new UI::Node::Neuron();
-  UI::Node::Neuron *node3 = new UI::Node::Neuron();
-  UI::Node::Neuron *node4 = new UI::Node::Neuron();
-  UI::Node::Neuron *centerNode = new UI::Node::Neuron();
-  UI::Node::Neuron *node6 = new UI::Node::Neuron();
-  UI::Node::Neuron *node7 = new UI::Node::Neuron();
-  UI::Node::Neuron *node8 = new UI::Node::Neuron();
-  UI::Node::Neuron *node9 = new UI::Node::Neuron();
+  Neuron *node1 = new Neuron();
+  Neuron *node2 = new Neuron();
+  Neuron *node3 = new Neuron();
+  Neuron *node4 = new Neuron();
+  Neuron *centerNode = new Neuron();
+  Neuron *node6 = new Neuron();
+  Neuron *node7 = new Neuron();
+  Neuron *node8 = new Neuron();
+  Neuron *node9 = new Neuron();
   mScene->addItem(node1->view());
   mScene->addItem(node2->view());
   mScene->addItem(node3->view());
@@ -43,30 +46,18 @@ CentralWidget::CentralWidget(QObject *parent)
   node9->view()->setPos(50, 50);
 
   // TODO: fix parent relation here
-  UI::Node::NodeConnection *nodeConnection1 =
-      new UI::Node::NodeConnection(node1, node2);
-  UI::Node::NodeConnection *nodeConnection2 =
-      new UI::Node::NodeConnection(node2, node3);
-  UI::Node::NodeConnection *nodeConnection3 =
-      new UI::Node::NodeConnection(node2, centerNode);
-  UI::Node::NodeConnection *nodeConnection4 =
-      new UI::Node::NodeConnection(node3, node6);
-  UI::Node::NodeConnection *nodeConnection5 =
-      new UI::Node::NodeConnection(node4, node1);
-  UI::Node::NodeConnection *nodeConnection6 =
-      new UI::Node::NodeConnection(node4, centerNode);
-  UI::Node::NodeConnection *nodeConnection7 =
-      new UI::Node::NodeConnection(centerNode, node6);
-  UI::Node::NodeConnection *nodeConnection8 =
-      new UI::Node::NodeConnection(centerNode, node8);
-  UI::Node::NodeConnection *nodeConnection9 =
-      new UI::Node::NodeConnection(node6, node9);
-  UI::Node::NodeConnection *nodeConnection10 =
-      new UI::Node::NodeConnection(node7, node4);
-  UI::Node::NodeConnection *nodeConnection11 =
-      new UI::Node::NodeConnection(node8, node7);
-  UI::Node::NodeConnection *nodeConnection12 =
-      new UI::Node::NodeConnection(node9, node8);
+  NodeConnection *nodeConnection1 = new NodeConnection(node1, node2);
+  NodeConnection *nodeConnection2 = new NodeConnection(node2, node3);
+  NodeConnection *nodeConnection3 = new NodeConnection(node2, centerNode);
+  NodeConnection *nodeConnection4 = new NodeConnection(node3, node6);
+  NodeConnection *nodeConnection5 = new NodeConnection(node4, node1);
+  NodeConnection *nodeConnection6 = new NodeConnection(node4, centerNode);
+  NodeConnection *nodeConnection7 = new NodeConnection(centerNode, node6);
+  NodeConnection *nodeConnection8 = new NodeConnection(centerNode, node8);
+  NodeConnection *nodeConnection9 = new NodeConnection(node6, node9);
+  NodeConnection *nodeConnection10 = new NodeConnection(node7, node4);
+  NodeConnection *nodeConnection11 = new NodeConnection(node8, node7);
+  NodeConnection *nodeConnection12 = new NodeConnection(node9, node8);
 
   mScene->addItem(nodeConnection1->view());
   mScene->addItem(nodeConnection2->view());
@@ -85,7 +76,8 @@ CentralWidget::CentralWidget(QObject *parent)
 CentralWidgetView *CentralWidget::view() const { return mView; }
 
 void CentralWidget::addNeuron() {
-  auto *neuron = new UI::Node::Neuron;
+  using Neuron = UI::NodeNetwork::Neuron;
+  auto *neuron = new Neuron();
   mScene->addItem(neuron->view());
 }
 

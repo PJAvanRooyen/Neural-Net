@@ -4,7 +4,7 @@
 #include <QGraphicsEllipseItem>
 
 namespace UI {
-namespace Node {
+namespace NodeNetwork {
 
 class NodeConnectionView;
 
@@ -31,6 +31,6 @@ private:
   QVector<NodeConnectionView *> mNodeConnections;
 };
 
-} // namespace Node
+} // namespace NodeNetwork
 } // namespace UI
 #endif // NodeView_H

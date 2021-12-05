@@ -5,7 +5,7 @@
 #include <QtMath>
 
 namespace UI {
-namespace Node {
+namespace NodeNetwork {
 
 const qreal NodeConnectionView::kArrowSize = 10;
 
@@ -99,5 +99,5 @@ void NodeConnectionView::paint(QPainter *painter,
   }
 }
 
-} // namespace Node
+} // namespace NodeNetwork
 } // namespace UI

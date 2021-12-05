@@ -6,7 +6,7 @@
 #include <QGraphicsItem>
 
 namespace UI {
-namespace Node {
+namespace NodeNetwork {
 
 class Node;
 
@@ -19,7 +19,7 @@ public:
   ~NodeConnection();
 
   Node *sourceNode() const;
-  Node *destNode() const;
+  Node *destinationNode() const;
 
 protected:
   QGraphicsItem *createView(QGraphicsItem *parentView) override;
@@ -28,6 +28,6 @@ private:
   Node *mSource, *mDestination;
 };
 
-} // namespace Node
+} // namespace NodeNetwork
 } // namespace UI
 #endif // NodeConnectionUI_H

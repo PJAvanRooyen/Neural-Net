@@ -1,9 +1,9 @@
 #include "NeuronView.h"
 
 namespace UI {
-namespace Node {
+namespace NodeNetwork {
 
 NeuronView::NeuronView(QGraphicsItem *parent) : NodeView(parent) {}
 
-} // namespace Node
+} // namespace NodeNetwork
 } // namespace UI

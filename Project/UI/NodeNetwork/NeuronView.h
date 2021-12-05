@@ -1,16 +1,16 @@
 #ifndef NeuronView_H
 #define NeuronView_H
 
-#include "UI/NodeNetwork/Node/NodeView.h"
+#include "UI/NodeNetwork/NodeView.h"
 
 namespace UI {
-namespace Node {
+namespace NodeNetwork {
 
 class NeuronView : public NodeView {
 public:
   NeuronView(QGraphicsItem *parent = Q_NULLPTR);
 };
 
-} // namespace Node
+} // namespace NodeNetwork
 } // namespace UI
 #endif // NeuronView_H
