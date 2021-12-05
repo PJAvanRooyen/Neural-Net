@@ -4,6 +4,7 @@
 #include "Core/NodeNetwork/Node.h"
 #include "Core/NodeNetwork/NodeConnection.h"
 
+#include <algorithm>
 #include <numeric>
 #include <optional>
 
@@ -36,7 +37,6 @@ namespace NodeNetwork {
    output.
 */
 template <typename DataType> class Neuron : public Node {
-  // using NeuronConnection = NeuronConnection<DataType>;
 
   typedef DataType (*WeightFunction)(DataType);
 
@@ -46,7 +46,7 @@ public:
 
   ~Neuron();
 
-  DataType activate();
+  void activate();
 
 private:
   /*
@@ -58,7 +58,6 @@ private:
 }; // namespace NodeNetwork
 
 template <typename DataType> class NeuronConnection : public NodeConnection {
-  // using Neuron = Neuron<DataType>;
 
   typedef DataType (*BiasFunction)(DataType);
 
@@ -79,7 +78,7 @@ public:
     if (!mInputValue.hasValue()) {
       return 0;
     }
-    mBiasFunction(mInputValue.value(), mBias);
+    return mBiasFunction(mInputValue.value(), mBias);
   }
 
 private:
@@ -98,16 +97,29 @@ DataType biasFunctionConstant(const DataType input, const DataType bias) {
   return input + bias;
 }
 
-template <typename DataType> inline DataType Neuron<DataType>::activate() {
+template <typename DataType> inline void Neuron<DataType>::activate() {
+
+  // sum the output values of all input connections.
   auto connectionOutput =
       [](const NeuronConnection<DataType> *neuronConnection) {
         return neuronConnection->output();
       };
 
-  const DataType connectionOutputSum = std::accumulate(
-      mNodeConnections.cbegin(), mNodeConnections.cend(), 0, connectionOutput);
+  const DataType connectionOutputSum =
+      std::accumulate(mInputNodeConnections.cbegin(),
+                      mInputNodeConnections.cend(), 0, connectionOutput);
 
-  return mWeightFunction(connectionOutput, mGradient);
+  // pass the sum through this neuron's weight function.
+  const DataType activationValue = mWeightFunction(connectionOutput, mGradient);
+
+  // set the input value of all output connections.
+  auto setConnectionInput =
+      [activationValue](const NeuronConnection<DataType> *neuronConnection) {
+        neuronConnection->setInputValue(activationValue);
+      };
+
+  std::for_each(mOutputNodeConnections.begin(), mOutputNodeConnections.end(),
+                &setConnectionInput);
 }
 
 template <typename DataType>

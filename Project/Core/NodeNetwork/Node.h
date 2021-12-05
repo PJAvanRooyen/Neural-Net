@@ -14,11 +14,17 @@ public:
 
   ~Node();
 
-  void addNodeConnection(NodeConnection *nodeConnection);
+  void addInputNodeConnection(NodeConnection *nodeConnection);
+  std::vector<NodeConnection *> inputNodeConnections() const;
+
+  void addOutputNodeConnection(NodeConnection *nodeConnection);
+  std::vector<NodeConnection *> outputNodeConnections() const;
+
   std::vector<NodeConnection *> nodeConnections() const;
 
 protected:
-  std::vector<NodeConnection *> mNodeConnections;
+  std::vector<NodeConnection *> mInputNodeConnections;
+  std::vector<NodeConnection *> mOutputNodeConnections;
 };
 
 } // namespace NodeNetwork

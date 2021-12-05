@@ -6,8 +6,10 @@ namespace NodeNetwork {
 
 NodeConnection::NodeConnection(Node *sourceNode, Node *destNode)
     : mSource(sourceNode), mDestination(destNode) {
-  mSource->addNodeConnection(this);
-  mSource->addNodeConnection(this);
+
+  // note: connections are only done in a forward direction.
+  mSource->addOutputNodeConnection(this);
+  mDestination->addInputNodeConnection(this);
 }
 
 NodeConnection::~NodeConnection() {}
