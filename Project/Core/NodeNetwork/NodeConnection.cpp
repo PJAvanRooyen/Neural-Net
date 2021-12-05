@@ -16,7 +16,7 @@ NodeConnection::~NodeConnection() {}
 
 Node *NodeConnection::sourceNode() const { return mSource; }
 
-Node *NodeConnection::destNode() const { return mDestination; }
+Node *NodeConnection::destinationNode() const { return mDestination; }
 
 } // namespace NodeNetwork
 } // namespace Core

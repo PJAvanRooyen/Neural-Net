@@ -13,7 +13,7 @@ public:
   ~NodeConnection();
 
   Node *sourceNode() const;
-  Node *destNode() const;
+  Node *destinationNode() const;
 
 private:
   Node *mSource, *mDestination;

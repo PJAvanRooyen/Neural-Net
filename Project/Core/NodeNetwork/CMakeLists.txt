@@ -3,7 +3,7 @@ set( TARGET_NAME NodeNetwork )
 set( HEADERS
   NodeNetworkFactory.h
   NodeNetwork.h
-  NodeGroup.h
+  NodeNetworkLayer.h
   Node.h
   NodeConnection.h
 )
@@ -11,7 +11,7 @@ set( HEADERS
 set( SOURCES
   NodeNetworkFactory.cpp
   NodeNetwork.cpp
-  NodeGroup.cpp
+  NodeNetworkLayer.cpp
   Node.cpp
   NodeConnection.cpp
 )
