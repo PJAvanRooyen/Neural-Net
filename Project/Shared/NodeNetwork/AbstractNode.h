@@ -14,16 +14,16 @@ public:
 
   ~AbstractNode();
 
-  void addInputNodeConnection(AbstractNodeConnection *nodeConnection);
+  virtual void addInputNodeConnection(AbstractNodeConnection *nodeConnection);
 
-  void addInputNodeConnections(
+  virtual void addInputNodeConnections(
       std::vector<AbstractNodeConnection *> &nodeConnections);
 
   const std::vector<AbstractNodeConnection *> &inputNodeConnections() const;
 
-  void addOutputNodeConnection(AbstractNodeConnection *nodeConnection);
+  virtual void addOutputNodeConnection(AbstractNodeConnection *nodeConnection);
 
-  void addOutputNodeConnections(
+  virtual void addOutputNodeConnections(
       std::vector<AbstractNodeConnection *> &nodeConnections);
 
   const std::vector<AbstractNodeConnection *> &outputNodeConnections() const;

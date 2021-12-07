@@ -16,9 +16,9 @@ public:
 
   const std::vector<AbstractNode *> &nodes() const;
 
-  void addNode(AbstractNode *node);
+  virtual void addNode(AbstractNode *node);
 
-  void addNodes(std::vector<AbstractNode *> &nodes);
+  virtual void addNodes(std::vector<AbstractNode *> &nodes);
 
 private:
   std::vector<AbstractNode *> mNodes;

@@ -27,9 +27,9 @@ public:
   std::vector<AbstractNodeConnection *>
   layerOutputConnections(const unsigned long layerIndex) const;
 
-  void addLayer(AbstractNodeNetworkLayer *layer);
+  virtual void addLayer(AbstractNodeNetworkLayer *layer);
 
-  void addLayers(std::vector<AbstractNodeNetworkLayer *> &layers);
+  virtual void addLayers(std::vector<AbstractNodeNetworkLayer *> &layers);
 
 private:
   std::vector<AbstractNodeNetworkLayer *> mLayers;

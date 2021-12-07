@@ -17,6 +17,11 @@ class NodeNetwork : public AbstractGraphicsItemController,
 public:
   NodeNetwork(QObject *parent = Q_NULLPTR);
 
+  void addLayer(Shared::NodeNetwork::AbstractNodeNetworkLayer *layer) override;
+
+  void addLayers(std::vector<Shared::NodeNetwork::AbstractNodeNetworkLayer *>
+                     &layers) override;
+
 protected:
   QGraphicsItem *createView(QGraphicsItem *parentView) override;
 };

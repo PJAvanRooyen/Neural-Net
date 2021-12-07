@@ -18,6 +18,22 @@ public:
 
 protected:
   QGraphicsItem *createView(QGraphicsItem *parentView) override;
+
+  // AbstractNode interface
+public:
+  void addInputNodeConnection(
+      Shared::NodeNetwork::AbstractNodeConnection *nodeConnection) override;
+
+  void addInputNodeConnections(
+      std::vector<Shared::NodeNetwork::AbstractNodeConnection *>
+          &nodeConnections) override;
+
+  void addOutputNodeConnection(
+      Shared::NodeNetwork::AbstractNodeConnection *nodeConnection) override;
+
+  void addOutputNodeConnections(
+      std::vector<Shared::NodeNetwork::AbstractNodeConnection *>
+          &nodeConnections) override;
 };
 
 } // namespace NodeNetwork
