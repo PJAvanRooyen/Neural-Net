@@ -6,7 +6,9 @@ set( HEADERS
     NodeConnection.h
     NodeConnectionView.h
     NodeNetworkLayer.h
+    NodeNetworkLayerView.h
     NodeNetwork.h
+    NodeNetworkView.h
     Neuron.h
     NeuronView.h
 )
@@ -17,7 +19,9 @@ set( SOURCES
     NodeConnection.cpp
     NodeConnectionView.cpp
     NodeNetworkLayer.cpp
+    NodeNetworkLayerView.cpp
     NodeNetwork.cpp
+    NodeNetworkView.cpp
     Neuron.cpp
     NeuronView.cpp
 )

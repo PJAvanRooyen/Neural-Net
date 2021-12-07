@@ -40,7 +40,8 @@ endif()
 
 
 add_subdirectory( Core )
+add_subdirectory( Shared )
 add_subdirectory( UI )
 add_subdirectory( Examples )
 
-target_link_libraries(Neural-Net PRIVATE Qt${QT_VERSION_MAJOR}::Widgets Qt5::Core Core UI Examples)
+target_link_libraries(Neural-Net PRIVATE Qt${QT_VERSION_MAJOR}::Widgets Qt5::Core Core Shared UI Examples)

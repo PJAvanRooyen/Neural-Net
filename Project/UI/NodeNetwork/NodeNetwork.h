@@ -1,9 +1,8 @@
-#ifndef NodeNetworkUI_H
-#define NodeNetworkUI_H
+#ifndef NodeNetworkController_H
+#define NodeNetworkController_H
 
-#include "Node.h"
-#include "NodeConnection.h"
-#include "NodeNetworkLayer.h"
+#include "Shared/NodeNetwork/AbstractNodeNetwork.h"
+#include "UI/GraphicsItem/AbstractGraphicsItemController.h"
 
 namespace UI {
 namespace NodeNetwork {
@@ -13,32 +12,16 @@ namespace NodeNetwork {
  * A node network has input and output connections, which are the start and end
  * of the network. It further has node network layers between those connections.
  */
-class NodeNetwork : public Node {
+class NodeNetwork : public AbstractGraphicsItemController,
+                    public Shared::NodeNetwork::AbstractNodeNetwork {
 public:
-  NodeNetwork();
+  NodeNetwork(QObject *parent = Q_NULLPTR);
 
-  ~NodeNetwork();
-
-  QVector<NodeNetworkLayer *> layers() const;
-
-  QVector<NodeConnection *>
-  layerInputConnections(const unsigned long layerIndex) const;
-
-  QVector<NodeConnection *> layerOutputConnections(const int layerIndex) const;
-
-  void addLayer(NodeNetworkLayer *layer,
-                QVector<NodeConnection *> connectionsToPreviousLayer);
-
-  void
-  addOutputLayerConnections(QVector<NodeConnection *> outputLayerConnections);
-
-private:
-  QVector<NodeNetworkLayer *> mLayers;
-
-  QVector<QVector<NodeConnection *>> mLayerConnections;
+protected:
+  QGraphicsItem *createView(QGraphicsItem *parentView) override;
 };
 
 } // namespace NodeNetwork
 } // namespace UI
 
-#endif // NodeNetworkUI_H
+#endif // NodeNetworkController_H

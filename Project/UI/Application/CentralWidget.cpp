@@ -4,6 +4,9 @@
 #include "NodeNetwork/Neuron.h"
 #include "NodeNetwork/NodeConnection.h"
 
+#include "NodeNetwork/NodeNetwork.h"
+#include "NodeNetwork/NodeNetworkLayer.h"
+
 namespace UI {
 namespace Application {
 
@@ -11,66 +14,82 @@ CentralWidget::CentralWidget(QObject *parent)
     : mScene(new QGraphicsScene(parent)), mView(new CentralWidgetView(mScene)) {
 
   // addNeuron();
-
+  using AbstractNode = Shared::NodeNetwork::AbstractNode;
   using Neuron = UI::NodeNetwork::Neuron;
   using NodeConnection = UI::NodeNetwork::NodeConnection;
 
   // TODO: fix parent relation here
-  Neuron *node1 = new Neuron();
-  Neuron *node2 = new Neuron();
-  Neuron *node3 = new Neuron();
-  Neuron *node4 = new Neuron();
-  Neuron *centerNode = new Neuron();
-  Neuron *node6 = new Neuron();
-  Neuron *node7 = new Neuron();
-  Neuron *node8 = new Neuron();
-  Neuron *node9 = new Neuron();
-  mScene->addItem(node1->view());
-  mScene->addItem(node2->view());
-  mScene->addItem(node3->view());
-  mScene->addItem(node4->view());
-  mScene->addItem(centerNode->view());
-  mScene->addItem(node6->view());
-  mScene->addItem(node7->view());
-  mScene->addItem(node8->view());
-  mScene->addItem(node9->view());
+  using NodeNetwork = UI::NodeNetwork::NodeNetwork;
+  using AbstractNodeNetworkLayer =
+      Shared::NodeNetwork::AbstractNodeNetworkLayer;
+  using NodeNetworkLayer = UI::NodeNetwork::NodeNetworkLayer;
 
-  node1->view()->setPos(-50, -50);
-  node2->view()->setPos(0, -50);
-  node3->view()->setPos(50, -50);
-  node4->view()->setPos(-50, 0);
-  centerNode->view()->setPos(0, 0);
-  node6->view()->setPos(50, 0);
-  node7->view()->setPos(-50, 50);
-  node8->view()->setPos(0, 50);
-  node9->view()->setPos(50, 50);
+  NodeNetwork *nodeNetwork = new NodeNetwork();
 
-  // TODO: fix parent relation here
-  NodeConnection *nodeConnection1 = new NodeConnection(node1, node2);
-  NodeConnection *nodeConnection2 = new NodeConnection(node2, node3);
-  NodeConnection *nodeConnection3 = new NodeConnection(node2, centerNode);
-  NodeConnection *nodeConnection4 = new NodeConnection(node3, node6);
-  NodeConnection *nodeConnection5 = new NodeConnection(node4, node1);
-  NodeConnection *nodeConnection6 = new NodeConnection(node4, centerNode);
-  NodeConnection *nodeConnection7 = new NodeConnection(centerNode, node6);
-  NodeConnection *nodeConnection8 = new NodeConnection(centerNode, node8);
-  NodeConnection *nodeConnection9 = new NodeConnection(node6, node9);
-  NodeConnection *nodeConnection10 = new NodeConnection(node7, node4);
-  NodeConnection *nodeConnection11 = new NodeConnection(node8, node7);
-  NodeConnection *nodeConnection12 = new NodeConnection(node9, node8);
+  NodeNetworkLayer *layerA = new NodeNetworkLayer(nodeNetwork);
+  NodeNetworkLayer *layerB = new NodeNetworkLayer(nodeNetwork);
+  NodeNetworkLayer *layerC = new NodeNetworkLayer(nodeNetwork);
 
-  mScene->addItem(nodeConnection1->view());
-  mScene->addItem(nodeConnection2->view());
-  mScene->addItem(nodeConnection3->view());
-  mScene->addItem(nodeConnection4->view());
-  mScene->addItem(nodeConnection5->view());
-  mScene->addItem(nodeConnection6->view());
-  mScene->addItem(nodeConnection7->view());
-  mScene->addItem(nodeConnection8->view());
-  mScene->addItem(nodeConnection9->view());
-  mScene->addItem(nodeConnection10->view());
-  mScene->addItem(nodeConnection11->view());
-  mScene->addItem(nodeConnection12->view());
+  Neuron *nodeA1 = new Neuron(layerA);
+  Neuron *nodeA2 = new Neuron(layerA);
+  Neuron *nodeA3 = new Neuron(layerA);
+  Neuron *nodeB1 = new Neuron(layerB);
+  Neuron *nodeB2 = new Neuron(layerB);
+  Neuron *nodeB3 = new Neuron(layerB);
+  Neuron *nodeC1 = new Neuron(layerC);
+  Neuron *nodeC2 = new Neuron(layerC);
+  Neuron *nodeC3 = new Neuron(layerC);
+
+  NodeConnection *nodeConnectionA1B1 =
+      new NodeConnection(nodeA1, nodeB1, nodeNetwork);
+  NodeConnection *nodeConnectionA1B2 =
+      new NodeConnection(nodeA1, nodeB2, nodeNetwork);
+  NodeConnection *nodeConnectionA1B3 =
+      new NodeConnection(nodeA1, nodeB3, nodeNetwork);
+  NodeConnection *nodeConnectionA2B1 =
+      new NodeConnection(nodeA2, nodeB1, nodeNetwork);
+  NodeConnection *nodeConnectionA2B2 =
+      new NodeConnection(nodeA2, nodeB2, nodeNetwork);
+  NodeConnection *nodeConnectionA2B3 =
+      new NodeConnection(nodeA2, nodeB3, nodeNetwork);
+  NodeConnection *nodeConnectionA3B1 =
+      new NodeConnection(nodeA3, nodeB1, nodeNetwork);
+  NodeConnection *nodeConnectionA3B2 =
+      new NodeConnection(nodeA3, nodeB2, nodeNetwork);
+  NodeConnection *nodeConnectionA3B3 =
+      new NodeConnection(nodeA3, nodeB3, nodeNetwork);
+
+  NodeConnection *nodeConnectionB1C1 =
+      new NodeConnection(nodeB1, nodeC1, nodeNetwork);
+  NodeConnection *nodeConnectionB1C2 =
+      new NodeConnection(nodeB1, nodeC2, nodeNetwork);
+  NodeConnection *nodeConnectionB1C3 =
+      new NodeConnection(nodeB1, nodeC3, nodeNetwork);
+  NodeConnection *nodeConnectionB2C1 =
+      new NodeConnection(nodeB2, nodeC1, nodeNetwork);
+  NodeConnection *nodeConnectionB2C2 =
+      new NodeConnection(nodeB2, nodeC2, nodeNetwork);
+  NodeConnection *nodeConnectionB2C3 =
+      new NodeConnection(nodeB2, nodeC3, nodeNetwork);
+  NodeConnection *nodeConnectionB3C1 =
+      new NodeConnection(nodeB3, nodeC1, nodeNetwork);
+  NodeConnection *nodeConnectionB3C2 =
+      new NodeConnection(nodeB3, nodeC2, nodeNetwork);
+  NodeConnection *nodeConnectionB3C3 =
+      new NodeConnection(nodeB3, nodeC3, nodeNetwork);
+
+  std::vector<AbstractNode *> nodesA = {nodeA1, nodeA2, nodeA3};
+  layerA->addNodes(nodesA);
+
+  std::vector<AbstractNode *> nodesB = {nodeB1, nodeB2, nodeB3};
+  layerB->addNodes(nodesB);
+
+  std::vector<AbstractNode *> nodesC = {nodeC1, nodeC2, nodeC3};
+  layerC->addNodes(nodesC);
+
+  std::vector<AbstractNodeNetworkLayer *> layers = {layerA, layerB, layerC};
+  nodeNetwork->addLayers(layers);
+  mScene->addItem(nodeNetwork->view());
 }
 
 CentralWidgetView *CentralWidget::view() const { return mView; }

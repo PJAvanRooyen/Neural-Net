@@ -1,26 +1,22 @@
-#ifndef NodeNetworkLayerUI_H
-#define NodeNetworkLayerUI_H
+#ifndef NodeNetworkLayerController_H
+#define NodeNetworkLayerController_H
 
-#include <QVector>
+#include "Shared/NodeNetwork/AbstractNodeNetworkLayer.h"
+#include "UI/GraphicsItem/AbstractGraphicsItemController.h"
 
 namespace UI {
 namespace NodeNetwork {
 
-class Node;
-
-class NodeNetworkLayer {
+class NodeNetworkLayer : public AbstractGraphicsItemController,
+                         public Shared::NodeNetwork::AbstractNodeNetworkLayer {
 public:
-  NodeNetworkLayer();
+  NodeNetworkLayer(QObject *parent = Q_NULLPTR);
 
-  ~NodeNetworkLayer();
-
-  QVector<Node *> nodes() const;
-
-private:
-  QVector<Node *> mNodes;
+protected:
+  QGraphicsItem *createView(QGraphicsItem *parentView) override;
 };
 
 } // namespace NodeNetwork
 } // namespace UI
 
-#endif // NodeNetworkLayerUI_H
+#endif // NodeNetworkLayerController_H

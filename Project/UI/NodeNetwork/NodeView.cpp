@@ -48,21 +48,16 @@ void NodeView::paint(QPainter *painter, const QStyleOptionGraphicsItem *option,
   painter->drawEllipse(-10, -10, 20, 20);
 }
 
-void NodeView::addNodeConnection(NodeConnectionView *nodeConnection) {
-  mNodeConnections << nodeConnection;
-  nodeConnection->adjust();
-}
-
-QVector<NodeConnectionView *> NodeView::nodeConnections() const {
-  return mNodeConnections;
-}
-
 QVariant NodeView::itemChange(GraphicsItemChange change,
                               const QVariant &value) {
   switch (change) {
   case ItemPositionHasChanged:
-    for (NodeConnectionView *nodeConnection : qAsConst(mNodeConnections))
-      nodeConnection->adjust();
+    for (Shared::NodeNetwork::AbstractNodeConnection *nodeConnection :
+         qAsConst(mInputNodeConnections))
+      static_cast<NodeConnectionView *>(nodeConnection)->adjust();
+    for (Shared::NodeNetwork::AbstractNodeConnection *nodeConnection :
+         qAsConst(mOutputNodeConnections))
+      static_cast<NodeConnectionView *>(nodeConnection)->adjust();
     break;
   default:
     break;

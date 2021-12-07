@@ -9,24 +9,26 @@ namespace NodeNetwork {
 
 const qreal NodeConnectionView::kArrowSize = 10;
 
-NodeConnectionView::NodeConnectionView(NodeView *sourceNode, NodeView *destNode,
+NodeConnectionView::NodeConnectionView(NodeView *sourceNodeView,
+                                       NodeView *destinationNodeView,
                                        QGraphicsItem *parent)
-    : QGraphicsItem(parent), mSource(sourceNode), mDestination(destNode) {
+    : QGraphicsItem(parent), Shared::NodeNetwork::AbstractNodeConnection(
+                                 sourceNodeView, destinationNodeView) {
   setAcceptedMouseButtons(Qt::NoButton);
-  mSource->addNodeConnection(this);
-  mDestination->addNodeConnection(this);
+  sourceNode()->addInputNodeConnection(this);
+  destinationNode()->addOutputNodeConnection(this);
   adjust();
 }
 
-NodeView *NodeConnectionView::sourceNode() const { return mSource; }
-
-NodeView *NodeConnectionView::destNode() const { return mDestination; }
-
 void NodeConnectionView::adjust() {
-  if (!mSource || !mDestination)
+  auto *source = sourceNode();
+  auto *destination = destinationNode();
+
+  if (!source || !destination)
     return;
 
-  QLineF line(mapFromItem(mSource, 0, 0), mapFromItem(mDestination, 0, 0));
+  QLineF line(mapFromItem(static_cast<NodeView *>(source), 0, 0),
+              mapFromItem(static_cast<NodeView *>(destination), 0, 0));
   qreal length = line.length();
 
   prepareGeometryChange();
@@ -41,7 +43,10 @@ void NodeConnectionView::adjust() {
 }
 
 QRectF NodeConnectionView::boundingRect() const {
-  if (!mSource || !mDestination)
+  auto *source = sourceNode();
+  auto *destination = destinationNode();
+
+  if (!source || !destination)
     return QRectF();
 
   qreal penWidth = 1;
@@ -55,7 +60,10 @@ QRectF NodeConnectionView::boundingRect() const {
 
 void NodeConnectionView::paint(QPainter *painter,
                                const QStyleOptionGraphicsItem *, QWidget *) {
-  if (!mSource || !mDestination)
+  auto *source = sourceNode();
+  auto *destination = destinationNode();
+
+  if (!source || !destination)
     return;
 
   QLineF line(sourcePoint, destPoint);

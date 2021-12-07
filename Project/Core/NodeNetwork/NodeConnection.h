@@ -1,23 +1,12 @@
 #ifndef NodeConnection_H
 #define NodeConnection_H
 
+#include "Shared/NodeNetwork/AbstractNodeConnection.h"
+
 namespace Core {
 namespace NodeNetwork {
 
-class Node;
-
-class NodeConnection {
-public:
-  NodeConnection(Node *sourceNode, Node *destNode);
-
-  ~NodeConnection();
-
-  Node *sourceNode() const;
-  Node *destinationNode() const;
-
-private:
-  Node *mSource, *mDestination;
-};
+class NodeConnection : public Shared::NodeNetwork::AbstractNodeConnection {};
 
 } // namespace NodeNetwork
 } // namespace Core

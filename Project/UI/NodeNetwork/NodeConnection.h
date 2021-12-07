@@ -1,33 +1,25 @@
-#ifndef NodeConnectionUI_H
-#define NodeConnectionUI_H
+#ifndef NodeConnectionController_H
+#define NodeConnectionController_H
 
+#include "Shared/NodeNetwork/AbstractNodeConnection.h"
 #include "UI/GraphicsItem/AbstractGraphicsItemController.h"
-
-#include <QGraphicsItem>
 
 namespace UI {
 namespace NodeNetwork {
 
 class Node;
 
-class NodeConnection : public AbstractGraphicsItemController {
+class NodeConnection : public AbstractGraphicsItemController,
+                       public Shared::NodeNetwork::AbstractNodeConnection {
   Q_OBJECT
 
 public:
   NodeConnection(Node *sourceNode, Node *destNode, QObject *parent = Q_NULLPTR);
 
-  ~NodeConnection();
-
-  Node *sourceNode() const;
-  Node *destinationNode() const;
-
 protected:
   QGraphicsItem *createView(QGraphicsItem *parentView) override;
-
-private:
-  Node *mSource, *mDestination;
 };
 
 } // namespace NodeNetwork
 } // namespace UI
-#endif // NodeConnectionUI_H
+#endif // NodeConnectionController_H

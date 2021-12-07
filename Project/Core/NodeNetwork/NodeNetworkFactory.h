@@ -1,17 +1,13 @@
 #ifndef NodeNetworkFactory_H
 #define NodeNetworkFactory_H
 
-#include "NodeNetwork.h"
+#include "Shared/NodeNetwork/AbstractNodeNetworkFactory.h"
 
 namespace Core {
 namespace NodeNetwork {
 
-class NodeNetworkFactory {
-public:
-  NodeNetworkFactory();
-
-  ~NodeNetworkFactory();
-};
+class NodeNetworkFactory
+    : public Shared::NodeNetwork::AbstractNodeNetworkFactory {};
 
 } // namespace NodeNetwork
 } // namespace Core

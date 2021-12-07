@@ -1,23 +1,12 @@
 #ifndef NodeNetworkLayer_H
 #define NodeNetworkLayer_H
 
-#include <vector>
+#include "Shared/NodeNetwork/AbstractNodeNetworkLayer.h"
 
 namespace Core {
 namespace NodeNetwork {
 
-class Node;
-
-class NodeNetworkLayer {
-public:
-  NodeNetworkLayer();
-
-  ~NodeNetworkLayer();
-
-  std::vector<Node *> nodes() const;
-
-private:
-  std::vector<Node *> mNodes;
+class NodeNetworkLayer : public Shared::NodeNetwork::AbstractNodeNetworkLayer {
 };
 
 } // namespace NodeNetwork

@@ -1,6 +1,8 @@
 #ifndef NodeConnectionView_H
 #define NodeConnectionView_H
 
+#include "Shared/NodeNetwork/AbstractNodeConnection.h"
+
 #include <QGraphicsItem>
 
 namespace UI {
@@ -8,20 +10,15 @@ namespace NodeNetwork {
 
 class NodeView;
 
-class NodeConnectionView : public QGraphicsItem {
+class NodeConnectionView : public QGraphicsItem,
+                           public Shared::NodeNetwork::AbstractNodeConnection {
   static const qreal kArrowSize;
 
 public:
-  NodeConnectionView(NodeView *sourceNode, NodeView *destNode,
+  NodeConnectionView(NodeView *sourceNodeView, NodeView *destinationNodeView,
                      QGraphicsItem *parent = Q_NULLPTR);
 
-  NodeView *sourceNode() const;
-  NodeView *destNode() const;
-
   void adjust();
-
-  enum { Type = UserType + 2 };
-  int type() const override { return Type; }
 
 protected:
   QRectF boundingRect() const override;
@@ -29,8 +26,6 @@ protected:
              QWidget *widget) override;
 
 private:
-  NodeView *mSource, *mDestination;
-
   QPointF sourcePoint;
   QPointF destPoint;
 };

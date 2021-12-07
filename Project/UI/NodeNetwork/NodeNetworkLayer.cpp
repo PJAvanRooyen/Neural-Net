@@ -1,12 +1,16 @@
 #include "NodeNetworkLayer.h"
+#include "NodeConnection.h"
+#include "NodeNetworkLayerView.h"
 
 namespace UI {
 namespace NodeNetwork {
 
-NodeNetworkLayer::NodeNetworkLayer() {}
+NodeNetworkLayer::NodeNetworkLayer(QObject *parent)
+    : AbstractGraphicsItemController(parent),
+      Shared::NodeNetwork::AbstractNodeNetworkLayer() {}
 
-NodeNetworkLayer::~NodeNetworkLayer() {}
-
-QVector<Node *> NodeNetworkLayer::nodes() const { return mNodes; }
+QGraphicsItem *NodeNetworkLayer::createView(QGraphicsItem *parentView) {
+  return new NodeNetworkLayerView(parentView);
+}
 } // namespace NodeNetwork
 } // namespace UI
