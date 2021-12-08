@@ -18,7 +18,7 @@ public:
   addNodes(std::vector<Shared::NodeNetwork::AbstractNode *> &nodes) override;
 
 protected:
-  QGraphicsItem *createView(QGraphicsItem *parentView) override;
+  QGraphicsItem *createViewBase(QGraphicsItem *parentView) override;
 };
 
 } // namespace NodeNetwork

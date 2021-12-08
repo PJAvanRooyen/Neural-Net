@@ -23,7 +23,7 @@ public:
                      &layers) override;
 
 protected:
-  QGraphicsItem *createView(QGraphicsItem *parentView) override;
+  QGraphicsItem *createViewBase(QGraphicsItem *parentView) override;
 };
 
 } // namespace NodeNetwork

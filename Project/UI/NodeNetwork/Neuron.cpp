@@ -8,7 +8,7 @@ Neuron::Neuron(QObject *parent) : Node(parent) {}
 
 Neuron::~Neuron(){};
 
-QGraphicsItem *Neuron::createView(QGraphicsItem *parentView) {
+QGraphicsItem *Neuron::createViewBase(QGraphicsItem *parentView) {
   return new NeuronView(parentView);
 }
 

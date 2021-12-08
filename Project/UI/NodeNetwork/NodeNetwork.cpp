@@ -14,9 +14,8 @@ void NodeNetwork::addLayer(
     Shared::NodeNetwork::AbstractNodeNetworkLayer *layer) {
   AbstractNodeNetwork::addLayer(layer);
 
-  static_cast<NodeNetworkView *>(view())->addLayer(
-      static_cast<NodeNetworkLayerView *>(
-          static_cast<NodeNetworkLayer *>(layer)->view()));
+  view<NodeNetworkView>()->addLayer(
+      static_cast<NodeNetworkLayer *>(layer)->view<NodeNetworkLayerView>());
 }
 
 void NodeNetwork::addLayers(
@@ -24,13 +23,12 @@ void NodeNetwork::addLayers(
   AbstractNodeNetwork::addLayers(layers);
 
   for (auto *layer : layers) {
-    static_cast<NodeNetworkView *>(view())->addLayer(
-        static_cast<NodeNetworkLayerView *>(
-            static_cast<NodeNetworkLayer *>(layer)->view()));
+    view<NodeNetworkView>()->addLayer(
+        static_cast<NodeNetworkLayer *>(layer)->view<NodeNetworkLayerView>());
   }
 }
 
-QGraphicsItem *NodeNetwork::createView(QGraphicsItem *parentView) {
+QGraphicsItem *NodeNetwork::createViewBase(QGraphicsItem *parentView) {
   return new NodeNetworkView(parentView);
 }
 

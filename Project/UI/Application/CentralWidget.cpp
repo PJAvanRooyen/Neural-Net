@@ -6,6 +6,7 @@
 
 #include "NodeNetwork/NodeNetwork.h"
 #include "NodeNetwork/NodeNetworkLayer.h"
+#include "NodeNetwork/NodeNetworkView.h"
 
 namespace UI {
 namespace Application {
@@ -20,6 +21,7 @@ CentralWidget::CentralWidget(QObject *parent)
 
   // TODO: fix parent relation here
   using NodeNetwork = UI::NodeNetwork::NodeNetwork;
+  using NodeNetworkView = UI::NodeNetwork::NodeNetworkView;
   using AbstractNodeNetworkLayer =
       Shared::NodeNetwork::AbstractNodeNetworkLayer;
   using NodeNetworkLayer = UI::NodeNetwork::NodeNetworkLayer;
@@ -89,16 +91,10 @@ CentralWidget::CentralWidget(QObject *parent)
 
   std::vector<AbstractNodeNetworkLayer *> layers = {layerA, layerB, layerC};
   nodeNetwork->addLayers(layers);
-  mScene->addItem(nodeNetwork->view());
+  mScene->addItem(nodeNetwork->view<NodeNetworkView>());
 }
 
 CentralWidgetView *CentralWidget::view() const { return mView; }
-
-void CentralWidget::addNeuron() {
-  using Neuron = UI::NodeNetwork::Neuron;
-  auto *neuron = new Neuron();
-  mScene->addItem(neuron->view());
-}
 
 } // namespace Application
 } // namespace UI

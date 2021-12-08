@@ -17,21 +17,18 @@ NodeConnection::NodeConnection(Node *sourceNode, Node *destNode,
   mSource = sourceNode;
   mDestination = destNode;
 
-  auto *nodeConnectionView = static_cast<NodeConnectionView *>(view());
-  static_cast<NodeView *>(sourceNode->view())
-      ->addOutputNodeConnection(nodeConnectionView);
-  static_cast<NodeView *>(destNode->view())
-      ->addInputNodeConnection(nodeConnectionView);
+  auto *nodeConnectionView = view<NodeConnectionView>();
+  sourceNode->view<NodeView>()->addOutputNodeConnection(nodeConnectionView);
+  destNode->view<NodeView>()->addInputNodeConnection(nodeConnectionView);
 
   mSource->addOutputNodeConnection(this);
   mDestination->addInputNodeConnection(this);
 };
 
-QGraphicsItem *NodeConnection::createView(QGraphicsItem *parentView) {
+QGraphicsItem *NodeConnection::createViewBase(QGraphicsItem *parentView) {
   return new NodeConnectionView(
-      static_cast<NodeView *>(static_cast<Node *>(sourceNode())->view()),
-      static_cast<NodeView *>(static_cast<Node *>(destinationNode())->view()),
-      parentView);
+      static_cast<Node *>(sourceNode())->view<NodeView>(),
+      static_cast<Node *>(destinationNode())->view<NodeView>(), parentView);
 }
 
 } // namespace NodeNetwork

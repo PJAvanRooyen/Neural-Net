@@ -16,8 +16,6 @@ public:
 
   CentralWidgetView *view() const;
 
-  void addNeuron();
-
 private:
   QGraphicsScene *mScene;
   CentralWidgetView *mView;

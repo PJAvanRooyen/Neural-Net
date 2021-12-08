@@ -12,17 +12,13 @@ namespace NodeNetwork {
 
 Node::Node(QObject *parent) : AbstractGraphicsItemController(parent) {}
 
-QGraphicsItem *Node::createView(QGraphicsItem *parentView) {
-  return new NodeView(parentView);
-}
-
 void Node::addInputNodeConnection(
     Shared::NodeNetwork::AbstractNodeConnection *nodeConnection) {
   AbstractNode::addInputNodeConnection(nodeConnection);
 
-  static_cast<NodeView *>(view())->addInputNodeConnection(
-      static_cast<NodeConnectionView *>(
-          static_cast<NodeConnection *>(nodeConnection)->view()));
+  view<NodeView>()->addInputNodeConnection(static_cast<NodeConnectionView *>(
+      static_cast<NodeConnection *>(nodeConnection)
+          ->view<NodeConnectionView>()));
 }
 
 void Node::addInputNodeConnections(
@@ -31,9 +27,9 @@ void Node::addInputNodeConnections(
   AbstractNode::addInputNodeConnections(nodeConnections);
 
   for (auto *nodeConnection : nodeConnections) {
-    static_cast<NodeView *>(view())->addInputNodeConnection(
-        static_cast<NodeConnectionView *>(
-            static_cast<NodeConnection *>(nodeConnection)->view()));
+    view<NodeView>()->addInputNodeConnection(
+        static_cast<NodeConnection *>(nodeConnection)
+            ->view<NodeConnectionView>());
   }
 }
 
@@ -41,9 +37,9 @@ void Node::addOutputNodeConnection(
     Shared::NodeNetwork::AbstractNodeConnection *nodeConnection) {
   AbstractNode::addOutputNodeConnection(nodeConnection);
 
-  static_cast<NodeView *>(view())->addOutputNodeConnection(
-      static_cast<NodeConnectionView *>(
-          static_cast<NodeConnection *>(nodeConnection)->view()));
+  view<NodeView>()->addOutputNodeConnection(
+      static_cast<NodeConnection *>(nodeConnection)
+          ->view<NodeConnectionView>());
 }
 
 void Node::addOutputNodeConnections(
@@ -52,10 +48,14 @@ void Node::addOutputNodeConnections(
   AbstractNode::addOutputNodeConnections(nodeConnections);
 
   for (auto *nodeConnection : nodeConnections) {
-    static_cast<NodeView *>(view())->addOutputNodeConnection(
-        static_cast<NodeConnectionView *>(
-            static_cast<NodeConnection *>(nodeConnection)->view()));
+    view<NodeView>()->addOutputNodeConnection(
+        static_cast<NodeConnection *>(nodeConnection)
+            ->view<NodeConnectionView>());
   }
+}
+
+QGraphicsItem *Node::createViewBase(QGraphicsItem *parentView) {
+  return new NodeView(parentView);
 }
 
 } // namespace NodeNetwork

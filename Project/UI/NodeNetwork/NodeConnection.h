@@ -18,7 +18,7 @@ public:
                  AbstractGraphicsItemController *parent = Q_NULLPTR);
 
 protected:
-  QGraphicsItem *createView(QGraphicsItem *parentView) override;
+  QGraphicsItem *createViewBase(QGraphicsItem *parentView) override;
 };
 
 } // namespace NodeNetwork

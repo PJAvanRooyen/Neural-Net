@@ -16,11 +16,6 @@ class Node : public AbstractGraphicsItemController,
 public:
   Node(QObject *parent = Q_NULLPTR);
 
-protected:
-  QGraphicsItem *createView(QGraphicsItem *parentView) override;
-
-  // AbstractNode interface
-public:
   void addInputNodeConnection(
       Shared::NodeNetwork::AbstractNodeConnection *nodeConnection) override;
 
@@ -34,6 +29,9 @@ public:
   void addOutputNodeConnections(
       std::vector<Shared::NodeNetwork::AbstractNodeConnection *>
           &nodeConnections) override;
+
+protected:
+  QGraphicsItem *createViewBase(QGraphicsItem *parentView) override;
 };
 
 } // namespace NodeNetwork

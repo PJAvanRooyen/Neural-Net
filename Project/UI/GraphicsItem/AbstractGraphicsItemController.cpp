@@ -1,8 +1,21 @@
 #include "AbstractGraphicsItemController.h"
 
 namespace UI {
+AbstractGraphicsItemController::~AbstractGraphicsItemController() {
+  if (mView) {
+    delete mView;
+  }
+}
 
-QGraphicsItem *AbstractGraphicsItemController::view() {
+AbstractGraphicsItemController::AbstractGraphicsItemController(QObject *parent)
+    : QObject(parent), mView(Q_NULLPTR) {}
+
+template <class DerivedView>
+void AbstractGraphicsItemController::setView(DerivedView *view) {
+  mView = view;
+}
+
+QGraphicsItem *AbstractGraphicsItemController::viewBase() {
   if (mView) {
     return mView;
   }
@@ -13,24 +26,10 @@ QGraphicsItem *AbstractGraphicsItemController::view() {
     Q_ASSERT(dynamic_cast<AbstractGraphicsItemController *>(parent));
     auto *parentWidget = static_cast<AbstractGraphicsItemController *>(parent);
     if (parentWidget) {
-      parentWidgetView = parentWidget->view();
+      parentWidgetView = parentWidget->viewBase();
     }
   }
-  auto *a = createView(parentWidgetView);
-  setView(a);
+  setView(createViewBase(parentWidgetView));
   return mView;
-}
-
-AbstractGraphicsItemController::~AbstractGraphicsItemController() {
-  if (mView) {
-    delete mView;
-  }
-}
-
-AbstractGraphicsItemController::AbstractGraphicsItemController(QObject *parent)
-    : QObject(parent), mView(Q_NULLPTR) {}
-
-void AbstractGraphicsItemController::setView(QGraphicsItem *view) {
-  mView = view;
 }
 } // namespace UI
