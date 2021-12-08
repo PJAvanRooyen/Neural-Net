@@ -16,7 +16,8 @@ QGraphicsItem *AbstractGraphicsItemController::view() {
       parentWidgetView = parentWidget->view();
     }
   }
-  setView(createView(parentWidgetView));
+  auto *a = createView(parentWidgetView);
+  setView(a);
   return mView;
 }
 

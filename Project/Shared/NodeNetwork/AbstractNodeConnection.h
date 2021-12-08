@@ -15,7 +15,11 @@ public:
   AbstractNode *sourceNode() const;
   AbstractNode *destinationNode() const;
 
-private:
+protected:
+  // used to pre-initialize derived class. derived class must handle setting the
+  // members.
+  AbstractNodeConnection();
+
   AbstractNode *mSource, *mDestination;
 };
 

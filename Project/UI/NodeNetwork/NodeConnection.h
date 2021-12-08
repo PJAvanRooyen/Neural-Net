@@ -14,7 +14,8 @@ class NodeConnection : public AbstractGraphicsItemController,
   Q_OBJECT
 
 public:
-  NodeConnection(Node *sourceNode, Node *destNode, QObject *parent = Q_NULLPTR);
+  NodeConnection(Node *sourceNode, Node *destNode,
+                 AbstractGraphicsItemController *parent = Q_NULLPTR);
 
 protected:
   QGraphicsItem *createView(QGraphicsItem *parentView) override;

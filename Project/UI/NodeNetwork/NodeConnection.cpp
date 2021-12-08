@@ -10,9 +10,22 @@ namespace UI {
 namespace NodeNetwork {
 
 NodeConnection::NodeConnection(Node *sourceNode, Node *destNode,
-                               QObject *parent)
+                               AbstractGraphicsItemController *parent)
     : AbstractGraphicsItemController(parent),
-      Shared::NodeNetwork::AbstractNodeConnection(sourceNode, destNode){};
+      Shared::NodeNetwork::AbstractNodeConnection() {
+
+  mSource = sourceNode;
+  mDestination = destNode;
+
+  auto *nodeConnectionView = static_cast<NodeConnectionView *>(view());
+  static_cast<NodeView *>(sourceNode->view())
+      ->addOutputNodeConnection(nodeConnectionView);
+  static_cast<NodeView *>(destNode->view())
+      ->addInputNodeConnection(nodeConnectionView);
+
+  mSource->addOutputNodeConnection(this);
+  mDestination->addInputNodeConnection(this);
+};
 
 QGraphicsItem *NodeConnection::createView(QGraphicsItem *parentView) {
   return new NodeConnectionView(

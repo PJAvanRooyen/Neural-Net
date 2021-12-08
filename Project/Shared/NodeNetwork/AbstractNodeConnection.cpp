@@ -13,6 +13,9 @@ AbstractNodeConnection::AbstractNodeConnection(AbstractNode *sourceNode,
   mDestination->addInputNodeConnection(this);
 }
 
+AbstractNodeConnection::AbstractNodeConnection()
+    : mSource(nullptr), mDestination(nullptr) {}
+
 AbstractNodeConnection::~AbstractNodeConnection() {}
 
 AbstractNode *AbstractNodeConnection::sourceNode() const { return mSource; }
