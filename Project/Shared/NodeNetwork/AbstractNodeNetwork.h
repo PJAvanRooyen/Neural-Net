@@ -31,7 +31,7 @@ public:
 
   virtual void addLayers(std::vector<AbstractNodeNetworkLayer *> &layers);
 
-private:
+protected:
   std::vector<AbstractNodeNetworkLayer *> mLayers;
 };
 

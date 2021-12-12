@@ -15,11 +15,24 @@ namespace NodeNetwork {
  */
 class NodeNetworkView : public QGraphicsItem,
                         public Shared::NodeNetwork::AbstractNodeNetwork {
+  static const qreal kBorder;
+  static const qreal kLayerOffset;
+
 public:
   NodeNetworkView(QGraphicsItem *parent = Q_NULLPTR);
 
-  QRectF boundingRect() const;
+protected:
+  void repositionLayers();
 
+  // AbstractNodeNetwork interface
+public:
+  void addLayer(Shared::NodeNetwork::AbstractNodeNetworkLayer *layer);
+  void addLayers(
+      std::vector<Shared::NodeNetwork::AbstractNodeNetworkLayer *> &layers);
+
+  // QGraphicsItem interface
+public:
+  QRectF boundingRect() const;
   void paint(QPainter *painter, const QStyleOptionGraphicsItem *option,
              QWidget *widget);
 };

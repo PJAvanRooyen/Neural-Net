@@ -27,20 +27,32 @@ CentralWidget::CentralWidget(QObject *parent)
   using NodeNetworkLayer = UI::NodeNetwork::NodeNetworkLayer;
 
   NodeNetwork *nodeNetwork = new NodeNetwork();
+  mScene->addItem(nodeNetwork->view<NodeNetworkView>());
 
   NodeNetworkLayer *layerA = new NodeNetworkLayer(nodeNetwork);
   NodeNetworkLayer *layerB = new NodeNetworkLayer(nodeNetwork);
   NodeNetworkLayer *layerC = new NodeNetworkLayer(nodeNetwork);
+  std::vector<AbstractNodeNetworkLayer *> layers = {layerA, layerB, layerC};
+  nodeNetwork->addLayers(layers);
 
-  Neuron *nodeA1 = new Neuron(layerA);
-  Neuron *nodeA2 = new Neuron(layerA);
-  Neuron *nodeA3 = new Neuron(layerA);
-  Neuron *nodeB1 = new Neuron(layerB);
-  Neuron *nodeB2 = new Neuron(layerB);
-  Neuron *nodeB3 = new Neuron(layerB);
-  Neuron *nodeC1 = new Neuron(layerC);
-  Neuron *nodeC2 = new Neuron(layerC);
-  Neuron *nodeC3 = new Neuron(layerC);
+  Neuron *nodeA1 = new Neuron();
+  Neuron *nodeA2 = new Neuron();
+  Neuron *nodeA3 = new Neuron();
+  Neuron *nodeB1 = new Neuron();
+  Neuron *nodeB2 = new Neuron();
+  Neuron *nodeB3 = new Neuron();
+  Neuron *nodeC1 = new Neuron();
+  Neuron *nodeC2 = new Neuron();
+  Neuron *nodeC3 = new Neuron();
+
+  std::vector<AbstractNode *> nodesA = {nodeA1, nodeA2, nodeA3};
+  layerA->addNodes(nodesA);
+
+  std::vector<AbstractNode *> nodesB = {nodeB1, nodeB2, nodeB3};
+  layerB->addNodes(nodesB);
+
+  std::vector<AbstractNode *> nodesC = {nodeC1, nodeC2, nodeC3};
+  layerC->addNodes(nodesC);
 
   NodeConnection *nodeConnectionA1B1 =
       new NodeConnection(nodeA1, nodeB1, nodeNetwork);
@@ -60,7 +72,6 @@ CentralWidget::CentralWidget(QObject *parent)
       new NodeConnection(nodeA3, nodeB2, nodeNetwork);
   NodeConnection *nodeConnectionA3B3 =
       new NodeConnection(nodeA3, nodeB3, nodeNetwork);
-
   NodeConnection *nodeConnectionB1C1 =
       new NodeConnection(nodeB1, nodeC1, nodeNetwork);
   NodeConnection *nodeConnectionB1C2 =
@@ -80,18 +91,7 @@ CentralWidget::CentralWidget(QObject *parent)
   NodeConnection *nodeConnectionB3C3 =
       new NodeConnection(nodeB3, nodeC3, nodeNetwork);
 
-  std::vector<AbstractNode *> nodesA = {nodeA1, nodeA2, nodeA3};
-  layerA->addNodes(nodesA);
-
-  std::vector<AbstractNode *> nodesB = {nodeB1, nodeB2, nodeB3};
-  layerB->addNodes(nodesB);
-
-  std::vector<AbstractNode *> nodesC = {nodeC1, nodeC2, nodeC3};
-  layerC->addNodes(nodesC);
-
-  std::vector<AbstractNodeNetworkLayer *> layers = {layerA, layerB, layerC};
-  nodeNetwork->addLayers(layers);
-  mScene->addItem(nodeNetwork->view<NodeNetworkView>());
+  mScene->update();
 }
 
 CentralWidgetView *CentralWidget::view() const { return mView; }

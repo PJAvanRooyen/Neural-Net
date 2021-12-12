@@ -26,8 +26,8 @@ protected:
              QWidget *widget) override;
 
 private:
-  QPointF sourcePoint;
-  QPointF destPoint;
+  QPointF mSourcePoint;
+  QPointF mDestinationPoint;
 };
 
 } // namespace NodeNetwork

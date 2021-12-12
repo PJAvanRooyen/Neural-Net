@@ -12,6 +12,9 @@ NodeNetworkLayer::NodeNetworkLayer(QObject *parent)
       Shared::NodeNetwork::AbstractNodeNetworkLayer() {}
 
 void NodeNetworkLayer::addNode(Shared::NodeNetwork::AbstractNode *node) {
+
+  auto *nodeController = static_cast<Node *>(node);
+  nodeController->setParent(this);
   AbstractNodeNetworkLayer::addNode(node);
 
   view<NodeNetworkLayerView>()->addNode(
@@ -20,11 +23,8 @@ void NodeNetworkLayer::addNode(Shared::NodeNetwork::AbstractNode *node) {
 
 void NodeNetworkLayer::addNodes(
     std::vector<Shared::NodeNetwork::AbstractNode *> &nodes) {
-  AbstractNodeNetworkLayer::addNodes(nodes);
-
   for (auto *node : nodes) {
-    view<NodeNetworkLayerView>()->addNode(
-        static_cast<Node *>(node)->view<NodeView>());
+    addNode(node);
   }
 }
 

@@ -27,18 +27,21 @@ void NodeConnectionView::adjust() {
   if (!source || !destination)
     return;
 
-  QLineF line(mapFromItem(static_cast<NodeView *>(source), 0, 0),
-              mapFromItem(static_cast<NodeView *>(destination), 0, 0));
+  NodeView *sourceNode = static_cast<NodeView *>(source);
+  NodeView *destinationNode = static_cast<NodeView *>(destination);
+
+  QLineF line(mapFromItem(sourceNode, 0, 0),
+              mapFromItem(destinationNode, 0, 0));
   qreal length = line.length();
 
   prepareGeometryChange();
 
   if (length > qreal(20.)) {
     QPointF edgeOffset((line.dx() * 10) / length, (line.dy() * 10) / length);
-    sourcePoint = line.p1() + edgeOffset;
-    destPoint = line.p2() - edgeOffset;
+    mSourcePoint = line.p1() + edgeOffset;
+    mDestinationPoint = line.p2() - edgeOffset;
   } else {
-    sourcePoint = destPoint = line.p1();
+    mSourcePoint = mDestinationPoint = line.p1();
   }
 }
 
@@ -52,8 +55,8 @@ QRectF NodeConnectionView::boundingRect() const {
   qreal penWidth = 1;
   qreal extra = (penWidth + kArrowSize) / 2.0;
 
-  return QRectF(sourcePoint, QSizeF(destPoint.x() - sourcePoint.x(),
-                                    destPoint.y() - sourcePoint.y()))
+  return QRectF(mSourcePoint, QSizeF(mDestinationPoint.x() - mSourcePoint.x(),
+                                     mDestinationPoint.y() - mSourcePoint.y()))
       .normalized()
       .adjusted(-extra, -extra, extra, extra);
 }
@@ -66,7 +69,7 @@ void NodeConnectionView::paint(QPainter *painter,
   if (!source || !destination)
     return;
 
-  QLineF line(sourcePoint, destPoint);
+  QLineF line(mSourcePoint, mDestinationPoint);
   if (qFuzzyCompare(line.length(), qreal(0.)))
     return;
 
@@ -96,11 +99,11 @@ void NodeConnectionView::paint(QPainter *painter,
   // destination arrow
   {
     QPointF destArrowP1 =
-        destPoint + QPointF(sin(angle - M_PI / 3) * kArrowSize,
-                            cos(angle - M_PI / 3) * kArrowSize);
+        mDestinationPoint + QPointF(sin(angle - M_PI / 3) * kArrowSize,
+                                    cos(angle - M_PI / 3) * kArrowSize);
     QPointF destArrowP2 =
-        destPoint + QPointF(sin(angle - M_PI + M_PI / 3) * kArrowSize,
-                            cos(angle - M_PI + M_PI / 3) * kArrowSize);
+        mDestinationPoint + QPointF(sin(angle - M_PI + M_PI / 3) * kArrowSize,
+                                    cos(angle - M_PI + M_PI / 3) * kArrowSize);
 
     painter->drawPolygon(QPolygonF()
                          << line.p2() << destArrowP1 << destArrowP2);

@@ -20,7 +20,7 @@ public:
 
   virtual void addNodes(std::vector<AbstractNode *> &nodes);
 
-private:
+protected:
   std::vector<AbstractNode *> mNodes;
 };
 
