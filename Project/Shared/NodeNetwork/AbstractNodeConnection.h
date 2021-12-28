@@ -10,7 +10,7 @@ class AbstractNodeConnection {
 public:
   AbstractNodeConnection(AbstractNode *sourceNode, AbstractNode *destNode);
 
-  ~AbstractNodeConnection();
+  virtual ~AbstractNodeConnection();
 
   AbstractNode *sourceNode() const;
   AbstractNode *destinationNode() const;

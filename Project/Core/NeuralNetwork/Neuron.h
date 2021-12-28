@@ -8,6 +8,7 @@
 #include <cmath>
 #include <numeric>
 #include <optional>
+#include <random>
 
 namespace Core {
 namespace NodeNetwork {
@@ -44,36 +45,49 @@ namespace NodeNetwork {
    line.
 */
 
+//----------------------------------------------------------------------------
 template <typename DataType>
-DataType weightFunctionLinear(const DataType input, const DataType gradient) {
-  return input * gradient;
+DataType weightFunctionLinear(const DataType input, const DataType weight) {
+  return input * weight;
 }
-
+//----------------------------------------------------------------------------
 template <typename DataType>
 DataType biasFunctionConstant(const DataType input, const DataType bias) {
   return input + bias;
 }
-
+//----------------------------------------------------------------------------
 template <typename DataType>
 DataType activationFunctionSigmoid(const DataType input) {
-  return DataType(1) / (DataType(1) + std::exp(input));
+  return DataType(1) / (DataType(1) + std::exp(-input));
 }
+
+template <typename DataType>
+DataType activationFunctionReLu(const DataType input) {
+  return std::max(DataType(0), input);
+}
+//----------------------------------------------------------------------------
+std::default_random_engine randomizer(1);
+
+template <typename DataType>
+std::normal_distribution<DataType>
+    dist = std::normal_distribution<DataType>(DataType(0.5), DataType(1));
 
 template <typename DataType> class Neuron : public Node {
 
   typedef DataType (*ActivationFunction)(DataType);
 
-  typedef DataType (*BiasFunction)(DataType);
+  typedef DataType (*BiasFunction)(DataType, DataType);
 
 public:
-  Neuron(
-      const ActivationFunction &activationFunction = activationFunctionSigmoid,
-      const BiasFunction &biasFunction = biasFunctionConstant,
-      const DataType initialBias = 1)
+  Neuron(const ActivationFunction &activationFunction = activationFunctionReLu,
+         const BiasFunction &biasFunction = biasFunctionConstant,
+         const DataType initialBias = dist<DataType>(randomizer))
       : Node(), mActivationFunction(activationFunction),
         mBiasFunction(biasFunction), mBias(initialBias) {}
 
   ~Neuron();
+
+  DataType bias() const { return mBias; }
 
   void activate();
 
@@ -93,25 +107,23 @@ private:
 
 template <typename DataType> class NeuronConnection : public NodeConnection {
 
-  typedef DataType (*WeightFunction)(DataType);
+  typedef DataType (*WeightFunction)(DataType, DataType);
 
 public:
   NeuronConnection(Neuron<DataType> *sourceNeuron, Neuron<DataType> *destNeuron,
                    const WeightFunction &weightFunction = weightFunctionLinear,
-                   const DataType initialWeight = 1)
+                   const DataType initialWeight = dist<DataType>(randomizer))
       : NodeConnection(sourceNeuron, destNeuron),
         mWeightFunction(weightFunction), mWeight(initialWeight),
         mInputValue(std::nullopt) {}
-
-  ~NeuronConnection();
 
   void setInputValue(const DataType inputValue) {
     mInputValue.emplace(inputValue);
   }
 
   DataType output() const {
-    if (!mInputValue.hasValue()) {
-      return 0;
+    if (!mInputValue.has_value()) {
+      return DataType(0);
     }
     return mWeightFunction(mInputValue.value(), mWeight);
   }
@@ -131,26 +143,29 @@ template <typename DataType> inline void Neuron<DataType>::activate() {
 
   // sum the output values of all input connections.
   auto connectionOutput =
-      [](const NeuronConnection<DataType> *neuronConnection) {
-        return neuronConnection->output();
+      [](DataType val,
+         const Shared::NodeNetwork::AbstractNodeConnection *neuronConnection) {
+        return val +
+               static_cast<const NeuronConnection<DataType> *>(neuronConnection)
+                   ->output();
       };
 
-  const DataType connectionOutputSum =
-      std::accumulate(mInputNodeConnections.cbegin(),
-                      mInputNodeConnections.cend(), 0, connectionOutput);
+  DataType connectionOutputSum = std::accumulate(mInputNodeConnections.cbegin(),
+                                                 mInputNodeConnections.cend(),
+                                                 DataType(0), connectionOutput);
 
-  // pass the sum through this neuron's bias function.
+  // normalize the value
+  connectionOutputSum /= std::sqrt(mInputNodeConnections.size());
+
+  // pass the sum through this neuron's bias and activation functions.
   const DataType activationValue =
-      mActivationFunction(mBiasFunction(connectionOutput, mBias));
+      mActivationFunction(mBiasFunction(connectionOutputSum, mBias));
 
   // set the input value of all output connections.
-  auto setConnectionInput =
-      [activationValue](const NeuronConnection<DataType> *neuronConnection) {
-        neuronConnection->setInputValue(activationValue);
-      };
-
-  std::for_each(mOutputNodeConnections.begin(), mOutputNodeConnections.end(),
-                &setConnectionInput);
+  for (auto nodeConnection : mOutputNodeConnections) {
+    static_cast<NeuronConnection<DataType> *>(nodeConnection)
+        ->setInputValue(activationValue);
+  }
 }
 
 } // namespace NodeNetwork

@@ -6,7 +6,12 @@
 namespace Core {
 namespace NodeNetwork {
 
-class NodeConnection : public Shared::NodeNetwork::AbstractNodeConnection {};
+class Node;
+
+class NodeConnection : public Shared::NodeNetwork::AbstractNodeConnection {
+public:
+  NodeConnection(Node *sourceNode, Node *destNode);
+};
 
 } // namespace NodeNetwork
 } // namespace Core
