@@ -45,32 +45,60 @@ namespace NodeNetwork {
    line.
 */
 
+// ___WEIGHT FUNCTIONS___
 //----------------------------------------------------------------------------
 template <typename DataType>
-DataType weightFunctionLinear(const DataType input, const DataType weight) {
+DataType LinearScale(const DataType input, const DataType weight) {
   return input * weight;
 }
 //----------------------------------------------------------------------------
+
+// ___BIAS FUNCTIONS___
+//----------------------------------------------------------------------------
 template <typename DataType>
-DataType biasFunctionConstant(const DataType input, const DataType bias) {
+DataType constantOffset(const DataType input, const DataType bias) {
   return input + bias;
 }
 //----------------------------------------------------------------------------
-template <typename DataType>
-DataType activationFunctionSigmoid(const DataType input) {
+
+// ___ACTIVATION FUNCTIONS___
+//----------------------------------------------------------------------------
+template <typename DataType> DataType sigmoid(const DataType input) {
   return DataType(1) / (DataType(1) + std::exp(-input));
 }
+template <typename DataType> DataType sigmoidDerivative(const DataType input) {
+  return input * (DataType(1) - input);
+}
 
-template <typename DataType>
-DataType activationFunctionReLu(const DataType input) {
+template <typename DataType> DataType reLu(const DataType input) {
   return std::max(DataType(0), input);
 }
+template <typename DataType> DataType reLuDerivative(const DataType) {
+  return DataType(1);
+}
+//----------------------------------------------------------------------------
+
+// ___COST FUNCTIONS___
+//----------------------------------------------------------------------------
+template <typename DataType>
+DataType squareError(const DataType output, const DataType desiredOutput) {
+  return std::pow(output - desiredOutput, 2);
+}
+template <typename DataType>
+DataType squareErrorDerivative(const DataType output,
+                               const DataType desiredOutput) {
+  return 2 * (output - desiredOutput);
+}
+//----------------------------------------------------------------------------
+
+// ___RANDOMIZATION FUNCTIONS___
 //----------------------------------------------------------------------------
 std::default_random_engine randomizer(1);
 
 template <typename DataType>
-std::normal_distribution<DataType>
-    dist = std::normal_distribution<DataType>(DataType(0.5), DataType(1));
+std::normal_distribution<DataType> kNormalDist =
+    std::normal_distribution<DataType>(DataType(0.5), DataType(1));
+//----------------------------------------------------------------------------
 
 template <typename DataType> class Neuron : public Node {
 
@@ -79,9 +107,9 @@ template <typename DataType> class Neuron : public Node {
   typedef DataType (*BiasFunction)(DataType, DataType);
 
 public:
-  Neuron(const ActivationFunction &activationFunction = activationFunctionReLu,
-         const BiasFunction &biasFunction = biasFunctionConstant,
-         const DataType initialBias = dist<DataType>(randomizer))
+  Neuron(const ActivationFunction &activationFunction = reLu,
+         const BiasFunction &biasFunction = constantOffset,
+         const DataType initialBias = kNormalDist<DataType>(randomizer))
       : Node(), mActivationFunction(activationFunction),
         mBiasFunction(biasFunction), mBias(initialBias) {}
 
@@ -110,9 +138,10 @@ template <typename DataType> class NeuronConnection : public NodeConnection {
   typedef DataType (*WeightFunction)(DataType, DataType);
 
 public:
-  NeuronConnection(Neuron<DataType> *sourceNeuron, Neuron<DataType> *destNeuron,
-                   const WeightFunction &weightFunction = weightFunctionLinear,
-                   const DataType initialWeight = dist<DataType>(randomizer))
+  NeuronConnection(
+      Neuron<DataType> *sourceNeuron, Neuron<DataType> *destNeuron,
+      const WeightFunction &weightFunction = LinearScale,
+      const DataType initialWeight = kNormalDist<DataType>(randomizer))
       : NodeConnection(sourceNeuron, destNeuron),
         mWeightFunction(weightFunction), mWeight(initialWeight),
         mInputValue(std::nullopt) {}
@@ -143,7 +172,7 @@ template <typename DataType> inline void Neuron<DataType>::activate() {
 
   // sum the output values of all input connections.
   auto connectionOutput =
-      [](DataType val,
+      [](const DataType val,
          const Shared::NodeNetwork::AbstractNodeConnection *neuronConnection) {
         return val +
                static_cast<const NeuronConnection<DataType> *>(neuronConnection)
