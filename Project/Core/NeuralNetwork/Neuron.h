@@ -81,9 +81,16 @@ template <typename DataType> DataType reLuDerivative(const DataType) {
 // ___COST FUNCTIONS___
 //----------------------------------------------------------------------------
 template <typename DataType>
+DataType error(const DataType output, const DataType desiredOutput) {
+  return output - desiredOutput;
+}
+
+template <typename DataType>
 DataType squareError(const DataType output, const DataType desiredOutput) {
   return std::pow(output - desiredOutput, 2);
 }
+// ___COST FUNCTION DERIVATIVE dC/dA___
+// where C is the cost, and A is the activation value
 template <typename DataType>
 DataType squareErrorDerivative(const DataType output,
                                const DataType desiredOutput) {
@@ -91,46 +98,67 @@ DataType squareErrorDerivative(const DataType output,
 }
 //----------------------------------------------------------------------------
 
+// ___LEARNING RATE___
+//----------------------------------------------------------------------------
+double kLearningRate = 0.1;
+//----------------------------------------------------------------------------
+
 // ___RANDOMIZATION FUNCTIONS___
 //----------------------------------------------------------------------------
 std::default_random_engine randomizer(1);
 
 template <typename DataType>
-std::normal_distribution<DataType> kNormalDist =
-    std::normal_distribution<DataType>(DataType(0.5), DataType(1));
+std::normal_distribution<DataType>
+    kNormalDist = std::normal_distribution<DataType>(DataType(0), DataType(1));
 //----------------------------------------------------------------------------
 
 template <typename DataType> class Neuron : public Node {
 
-  typedef DataType (*ActivationFunction)(DataType);
+  typedef DataType (*ActivationFunction)(const DataType);
 
-  typedef DataType (*BiasFunction)(DataType, DataType);
+  typedef DataType (*BiasFunction)(const DataType, const DataType);
+
+  typedef DataType (*CostFunction)(const DataType, const DataType);
 
 public:
-  Neuron(const ActivationFunction &activationFunction = reLu,
-         const BiasFunction &biasFunction = constantOffset,
-         const DataType initialBias = kNormalDist<DataType>(randomizer))
-      : Node(), mActivationFunction(activationFunction),
-        mBiasFunction(biasFunction), mBias(initialBias) {}
+  Neuron()
+      : Node(), mBiasFunction(constantOffset),
+        mBias(kNormalDist<DataType>(randomizer)), mActivationFunction(reLu),
+        mActivation(std::nullopt) {}
 
   ~Neuron();
 
   DataType bias() const { return mBias; }
 
-  void activate();
+  DataType value() {
+    if (mActivation.has_value()) {
+      return mActivation.value();
+    }
+    return activate();
+  }
+
+  void setBias(const DataType bias) { mBias = bias; }
+
+  void setValue(const DataType value) { mActivation.emplace(value); }
+
+  DataType activate();
+
+  void backPropagate(const DataType desiredActivation);
 
 private:
-  /*
-   * \brief function pointer for the activation function.
-   */
-  ActivationFunction mActivationFunction;
-
   /*
    * \brief function pointer for the bias function.
    */
   BiasFunction mBiasFunction;
 
   DataType mBias;
+
+  /*
+   * \brief function pointer for the activation function.
+   */
+  ActivationFunction mActivationFunction;
+
+  std::optional<DataType> mActivation;
 }; // namespace NodeNetwork
 
 template <typename DataType> class NeuronConnection : public NodeConnection {
@@ -138,23 +166,32 @@ template <typename DataType> class NeuronConnection : public NodeConnection {
   typedef DataType (*WeightFunction)(DataType, DataType);
 
 public:
-  NeuronConnection(
-      Neuron<DataType> *sourceNeuron, Neuron<DataType> *destNeuron,
-      const WeightFunction &weightFunction = LinearScale,
-      const DataType initialWeight = kNormalDist<DataType>(randomizer))
-      : NodeConnection(sourceNeuron, destNeuron),
-        mWeightFunction(weightFunction), mWeight(initialWeight),
-        mInputValue(std::nullopt) {}
+  NeuronConnection(Neuron<DataType> *sourceNeuron, Neuron<DataType> *destNeuron)
+      : NodeConnection(sourceNeuron, destNeuron), mWeightFunction(LinearScale),
+        mWeight(kNormalDist<DataType>(randomizer)), mActivation(std::nullopt) {}
 
-  void setInputValue(const DataType inputValue) {
-    mInputValue.emplace(inputValue);
+  DataType weight() const { return mWeight; }
+
+  void setWeight(const DataType weight) { mWeight = weight; }
+
+  DataType value() {
+    if (mActivation.has_value()) {
+      return mActivation.value();
+    }
+    return activate();
   }
 
-  DataType output() const {
-    if (!mInputValue.has_value()) {
-      return DataType(0);
-    }
-    return mWeightFunction(mInputValue.value(), mWeight);
+  DataType activate() {
+    Neuron<DataType> *sourceNeuron = static_cast<Neuron<DataType> *>(mSource);
+    mActivation.emplace(mWeightFunction(sourceNeuron->activate(), mWeight));
+
+    return mActivation.value();
+  }
+
+  void backPropagate(const DataType desiredOutput) {
+    // back propagate
+
+    mActivation.reset();
   }
 
 private:
@@ -165,36 +202,67 @@ private:
 
   DataType mWeight;
 
-  std::optional<DataType> mInputValue;
+  std::optional<DataType> mActivation;
 };
 
-template <typename DataType> inline void Neuron<DataType>::activate() {
+template <typename DataType> inline DataType Neuron<DataType>::activate() {
+  if (mInputNodeConnections.size() == 0) {
+    if (mActivation.has_value()) {
+      return mActivation.value();
+    } else {
+      return DataType(0);
+    }
+  }
 
   // sum the output values of all input connections.
   auto connectionOutput =
       [](const DataType val,
-         const Shared::NodeNetwork::AbstractNodeConnection *neuronConnection) {
-        return val +
-               static_cast<const NeuronConnection<DataType> *>(neuronConnection)
-                   ->output();
+         Shared::NodeNetwork::AbstractNodeConnection *neuronConnection) {
+        return val + static_cast<NeuronConnection<DataType> *>(neuronConnection)
+                         ->activate();
       };
 
   DataType connectionOutputSum = std::accumulate(mInputNodeConnections.cbegin(),
                                                  mInputNodeConnections.cend(),
                                                  DataType(0), connectionOutput);
-
   // normalize the value
-  connectionOutputSum /= std::sqrt(mInputNodeConnections.size());
+  connectionOutputSum /=
+      mInputNodeConnections.size();
 
-  // pass the sum through this neuron's bias and activation functions.
-  const DataType activationValue =
-      mActivationFunction(mBiasFunction(connectionOutputSum, mBias));
+  // pass the sum through this neuron's bias function.
+  const DataType biasedSum = mBiasFunction(connectionOutputSum, mBias);
 
-  // set the input value of all output connections.
-  for (auto nodeConnection : mOutputNodeConnections) {
-    static_cast<NeuronConnection<DataType> *>(nodeConnection)
-        ->setInputValue(activationValue);
-  }
+  // pass the sum through this neuron's activation function.
+  mActivation.emplace(mActivationFunction(biasedSum));
+
+  return mActivation.value();
+}
+
+template <typename DataType>
+inline void Neuron<DataType>::backPropagate(const DataType desiredActivation) {
+  //  DataType normConnectionOutputSum = mConnectionOutputSum;
+  //  if (mInputNodeConnections.size() != 0) {
+  //    normConnectionOutputSum /= std::sqrt(mInputNodeConnections.size());
+  //  }
+
+  //  const DataType desiredBias = desiredActivation - normConnectionOutputSum;
+  //  mBias -= kLearningRate * (mBias - desiredBias);
+
+  //  DataType desiredConnectionSum = (desiredActivation - mBias) *
+  //  std::sqrt(2);
+
+  //  for (auto nodeConnection : mInputNodeConnections) {
+  //    auto *neuronConnection =
+  //        static_cast<NeuronConnection<DataType> *>(nodeConnection);
+  //    DataType desiredWeight =
+  //        desiredConnectionSum -
+  //        (mConnectionOutputSum - neuronConnection->output());
+  //    DataType weightError = neuronConnection->weight() - desiredWeight;
+  //    neuronConnection->setWeight(kLearningRate * (weightError) /
+  //                                mInputNodeConnections.size());
+  //  }
+
+  mActivation.reset();
 }
 
 } // namespace NodeNetwork
