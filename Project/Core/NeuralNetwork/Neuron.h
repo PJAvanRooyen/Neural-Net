@@ -149,7 +149,7 @@ namespace NodeNetwork {
    for the kth output neuron, and the jth weight going to that neuron.
 
    for hidden neurons:
-   Wj_i' = Wj_i - r * sum{(Ak - Pk) * g'(Ak) * Wk_j} * g'(Aj) * Xi
+   Wj_i' = Wj_i - r * g'(Aj) * Ai * sum{(Ak - Pk) * g'(Ak) * Wk_j}
 
    NOTE:
    the sum over 'k' output neurons only sums the outputs which are
@@ -217,7 +217,7 @@ DataType squareErrorDerivative(const DataType output,
 
 // ___LEARNING RATE___
 //----------------------------------------------------------------------------
-double kLearningRate = 0.01;
+double kLearningRate = 0.1;
 //----------------------------------------------------------------------------
 
 // ___RANDOMIZATION FUNCTIONS___
@@ -235,13 +235,18 @@ template <typename DataType> class Neuron : public Node {
 
   typedef DataType (*BiasFunction)(const DataType, const DataType);
 
-  typedef DataType (*CostFunction)(const DataType, const DataType);
+  typedef DataType (*ActivationFunctionDerivative)(const DataType);
+
+  typedef DataType (*CostFunctionDerivative)(const DataType, const DataType);
 
 public:
   Neuron()
       : Node(), mBiasFunction(constantOffset),
         mBias(0 /*kNormalDist<DataType>(randomizer)*/),
-        mActivationFunction(sigmoid), mActivation(std::nullopt) {}
+        mActivationFunction(sigmoid), mActivation(std::nullopt),
+        mActivationFunctionDerivative(sigmoidDerivative),
+        mCostFunctionDerivative(squareErrorDerivative),
+        mSensitivity(DataType(0)) {}
 
   ~Neuron();
 
@@ -260,7 +265,10 @@ public:
 
   DataType activate();
 
-  void backPropagate(const DataType desiredActivation);
+  void
+  backPropagate(const std::optional<DataType> desiredActivation = std::nullopt);
+
+  DataType sensitivity() const { return mSensitivity; }
 
 private:
   /*
@@ -276,6 +284,15 @@ private:
   ActivationFunction mActivationFunction;
 
   std::optional<DataType> mActivation;
+
+  ActivationFunctionDerivative mActivationFunctionDerivative;
+
+  CostFunctionDerivative mCostFunctionDerivative;
+
+  /*
+   * \brief sensitivity = dC/dA * dA/dB for current activation value.
+   */
+  DataType mSensitivity;
 }; // namespace NodeNetwork
 
 template <typename DataType> class NeuronConnection : public NodeConnection {
@@ -307,8 +324,13 @@ public:
 
   void backPropagate(const DataType desiredOutput) {
     // back propagate
+    //   for output neurons:
+    //   Wk_j' = Wk_j - r * (Ak - Pk) * g'(Ak) * Aj
 
-    mActivation.reset();
+    //   for the kth output neuron, and the jth weight going to that neuron.
+
+    //   for hidden neurons:
+    //   Wj_i' = Wj_i - r * g'(Aj) * Ai * sum{(Ak - Pk) * g'(Ak) * Wk_j}
   }
 
 private:
@@ -355,30 +377,66 @@ template <typename DataType> inline DataType Neuron<DataType>::activate() {
 }
 
 template <typename DataType>
-inline void Neuron<DataType>::backPropagate(const DataType desiredActivation) {
-  //  DataType normConnectionOutputSum = mConnectionOutputSum;
-  //  if (mInputNodeConnections.size() != 0) {
-  //    normConnectionOutputSum /= std::sqrt(mInputNodeConnections.size());
-  //  }
+inline void Neuron<DataType>::backPropagate(
+    const std::optional<DataType> desiredActivation) {
+  // back propagate
 
-  //  const DataType desiredBias = desiredActivation - normConnectionOutputSum;
-  //  mBias -= kLearningRate * (mBias - desiredBias);
+  // update this neuron's bias
+  // TODO: update bias
 
-  //  DataType desiredConnectionSum = (desiredActivation - mBias) *
-  //  std::sqrt(2);
+  if (!mActivation.has_value() || mInputNodeConnections.size() == 0) {
+    return;
+  }
 
-  //  for (auto nodeConnection : mInputNodeConnections) {
-  //    auto *neuronConnection =
-  //        static_cast<NeuronConnection<DataType> *>(nodeConnection);
-  //    DataType desiredWeight =
-  //        desiredConnectionSum -
-  //        (mConnectionOutputSum - neuronConnection->output());
-  //    DataType weightError = neuronConnection->weight() - desiredWeight;
-  //    neuronConnection->setWeight(kLearningRate * (weightError) /
-  //                                mInputNodeConnections.size());
-  //  }
+  DataType activation = mActivation.value();
 
-  mActivation.reset();
+  if (mOutputNodeConnections.size() == 0) {
+    //   for output neurons:
+    //   Wk_j' = Wk_j - r * (Ak - Pk) * g'(Ak) * Aj
+
+    if (!desiredActivation.has_value()) {
+      // error can't back propagate without desired output.
+      return;
+    }
+
+    // output's sensitivity replaces the activation value with the cost
+    // derivative.
+    mSensitivity =
+        mCostFunctionDerivative(activation, desiredActivation.value()) *
+        mActivationFunctionDerivative(activation);
+  } else {
+    //   for hidden neurons:
+    //   Wj_i' = Wj_i - r * g'(Aj) * sum{ Wk_j * g'(Ak) * (Ak - Pk)}  * Ai
+
+    mSensitivity = mActivationFunctionDerivative(activation);
+    for (auto nodeConnection : mOutputNodeConnections) {
+      NeuronConnection<DataType> *neuronConnection =
+          static_cast<NeuronConnection<DataType> *>(nodeConnection);
+
+      Neuron<DataType> *neuronConnectionDestination =
+          static_cast<Neuron<DataType> *>(neuronConnection->destinationNode());
+
+      mSensitivity += neuronConnection->weight() *
+                      neuronConnectionDestination->sensitivity();
+    }
+  }
+
+  // for each input connection, update the connection's weight
+  for (auto nodeConnection : mInputNodeConnections) {
+    NeuronConnection<DataType> *neuronConnection =
+        static_cast<NeuronConnection<DataType> *>(nodeConnection);
+
+    Neuron<DataType> *neuronConnectionSource =
+        static_cast<Neuron<DataType> *>(neuronConnection->sourceNode());
+
+    DataType updatedWeight =
+        neuronConnection->weight() -
+        kLearningRate * mSensitivity * neuronConnectionSource->value();
+
+    neuronConnection->setWeight(updatedWeight);
+
+    neuronConnectionSource->backPropagate();
+  }
 }
 
 } // namespace NodeNetwork

@@ -78,9 +78,12 @@ int main(int argc, char *argv[]) {
   std::uniform_real_distribution<float> distribution(0.0f, 1.0f);
   std::mt19937 engine; // Mersenne twister MT19937
 
+  unsigned long long kLearningIterations = 1000000;
+  unsigned long long kTestingIterations = 1000000;
+
   // learn
   srand(2);
-  for (int i = 0; i < 1000000; ++i) {
+  for (unsigned long long i = 0; i < kLearningIterations; ++i) {
     // set test value
     l1n1->setValue(rand() % 2);
     l1n2->setValue(rand() % 2);
@@ -89,15 +92,16 @@ int main(int argc, char *argv[]) {
     l4n1->activate();
 
     // back propagate
-    l1n1->backPropagate(static_cast<bool>(l1n1->value()) &&
-                        static_cast<bool>(l1n2->value()));
+    bool desiredValue =
+        static_cast<bool>(l1n1->value()) && !static_cast<bool>(l1n2->value());
+    l4n1->backPropagate(desiredValue);
 
     qt_noop();
   }
 
   // test result
   double correct = 0.0;
-  for (int i = 0; i < 1000000; ++i) {
+  for (unsigned long long i = 0; i < kTestingIterations; ++i) {
     // set test value
     l1n1->setValue(rand() % 2);
     l1n2->setValue(rand() % 2);
@@ -105,15 +109,17 @@ int main(int argc, char *argv[]) {
     // activate
     const double activation = l4n1->activate();
 
-    if (static_cast<bool>(activation) == (static_cast<bool>(l1n1->value()) &&
-                                          static_cast<bool>(l1n2->value()))) {
+    bool obtainedValue = std::round(activation);
+    bool desiredValue =
+        static_cast<bool>(l1n1->value()) && !static_cast<bool>(l1n2->value());
+    if (obtainedValue == desiredValue) {
       ++correct;
     } else {
       qt_noop();
     }
   }
 
-  double accuracy = 100 * correct / 1000000;
+  double accuracy = 100 * correct / kTestingIterations;
   Q_UNUSED(accuracy)
   qt_noop();
 
