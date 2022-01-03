@@ -166,17 +166,44 @@ struct Test {
 
   // desired network outputs
   static std::bitset<inputLayerSize>
-  desiredOutputs(std::bitset<inputLayerSize> inputs) {
+  desiredOutputs(const std::bitset<inputLayerSize> &inputs) {
     std::bitset<outputLayerSize> outputs{0};
+    bool in0 = inputs[0];
+    bool in1 = inputs[1];
 
-    outputs.set(0, inputs[0] && !inputs[1]);
-    outputs.set(1, !inputs[0] && inputs[1]);
+    outputs.set(0, in0 && !in1);
+    outputs.set(1, !in0 && in1);
+
+    bool out0 = inputs[0];
+    bool out1 = inputs[1];
+    Q_UNUSED(out0)
+    Q_UNUSED(out1)
+
+    return outputs;
+  };
+
+  static std::bitset<inputLayerSize>
+  doubleToBitset(const std::vector<double> &inputs) {
+    std::bitset<inputLayerSize> outputs{0};
+
+    outputs.set(0, std::round(inputs[0]));
+    outputs.set(1, std::round(inputs[1]));
+
+    return outputs;
+  };
+
+  static std::vector<double>
+  bitsetToDouble(const std::bitset<inputLayerSize> &inputs) {
+    std::vector<double> outputs;
+
+    outputs.push_back(inputs[0]);
+    outputs.push_back(inputs[1]);
 
     return outputs;
   };
 
   static bool
-  test(std::bitset<inputLayerSize> inputValues,
+  test(std::vector<double> &inputValues,
        std::vector<std::vector<Core::NodeNetwork::Neuron<double> *>>
            &layerNeurons,
        std::vector<std::vector<
@@ -200,7 +227,7 @@ struct Test {
       neuron->activate();
     }
 
-    auto desired = desiredOutputs(inputValues);
+    auto desired = desiredOutputs(doubleToBitset(inputValues));
 
     // show debug info
     if (debug) {
@@ -222,7 +249,6 @@ struct Test {
 
     // teach the network
     if (learn) {
-      auto desired = desiredOutputs(inputValues);
       // set the desiredOutput of the output neurons
       for (unsigned long neuronIdx = 0; neuronIdx < outputLayer.size();
            ++neuronIdx) {
@@ -252,8 +278,6 @@ struct Test {
         neuron->activate();
       }
 
-      auto desired = desiredOutputs(inputValues);
-
       // show debug info
       if (debug) {
         std::cout << "post-update:\n";
@@ -275,6 +299,19 @@ struct Test {
     }
 
     return desired == obtained;
+  }
+
+  static bool
+  test(std::bitset<inputLayerSize> &inputValues,
+       std::vector<std::vector<Core::NodeNetwork::Neuron<double> *>>
+           &layerNeurons,
+       std::vector<std::vector<
+           std::vector<Core::NodeNetwork::NeuronConnection<double> *>>>
+           &layerConnections,
+       const bool learn, const bool debug) {
+
+    auto inputs = bitsetToDouble(inputValues);
+    return test(inputs, layerNeurons, layerConnections, learn, debug);
   }
 
   static double
@@ -343,7 +380,7 @@ struct Test {
     }
   }
 
-  static void learnFromRandomInputs(
+  static void learnFromRandomBoolInputs(
       std::vector<std::vector<Core::NodeNetwork::Neuron<double> *>>
           &layerNeurons,
       std::vector<std::vector<
@@ -360,14 +397,57 @@ struct Test {
       }
 
       if (i != 0 && i % kLearnPoll == 0) {
-        // test the current weights without updating the network.
+        double accuracy = 100.0 * correctCount / kLearnPoll;
+        accuracies.push_back(accuracy);
+        correctCount = 0;
         bool correct = test(inputs, layerNeurons, layerConnections, true, true);
         if (correct) {
           ++correctCount;
         }
+      } else {
+        // teach the network
+        bool correct =
+            test(inputs, layerNeurons, layerConnections, true, false);
+        if (correct) {
+          ++correctCount;
+        }
+      }
+    }
+
+    if (debug) {
+      std::cout << "accuracies: ";
+      for (auto accuracy : accuracies) {
+        std::cout << accuracy << ", ";
+      }
+      std::cout << "\n\n";
+    }
+  }
+
+  static void learnFromRandomInputs(
+      std::vector<std::vector<Core::NodeNetwork::Neuron<double> *>>
+          &layerNeurons,
+      std::vector<std::vector<
+          std::vector<Core::NodeNetwork::NeuronConnection<double> *>>>
+          &layerConnections,
+      const bool debug) {
+    unsigned long long correctCount = 0;
+    std::vector<double> accuracies;
+
+    std::vector<double> inputs;
+    for (unsigned long long i = 0; i < kLearningIterations * 4; ++i) {
+      for (unsigned long long nodeIdx = 0; nodeIdx < inputLayerSize;
+           ++nodeIdx) {
+        inputs.push_back(static_cast<double>(rand()) / RAND_MAX);
+      }
+
+      if (i != 0 && i % kLearnPoll == 0) {
         double accuracy = 100.0 * correctCount / kLearnPoll;
         accuracies.push_back(accuracy);
         correctCount = 0;
+        bool correct = test(inputs, layerNeurons, layerConnections, true, true);
+        if (correct) {
+          ++correctCount;
+        }
       } else {
         // teach the network
         bool correct =
@@ -393,7 +473,7 @@ int main(int argc, char *argv[]) {
   std::mt19937 engine; // Mersenne twister MT19937
 
   // input randomization seed
-  srand(2);
+  srand(3);
 
   // start test
   Core::NodeNetwork::Neuron<double> *l1n1 =

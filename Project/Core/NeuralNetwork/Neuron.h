@@ -210,12 +210,12 @@ DataType meanSquareErrorDerivative(const DataType output,
 
 // ___LEARNING RATE___
 //----------------------------------------------------------------------------
-double kLearningRate = 0.4;
+double kLearningRate = 0.01;
 //----------------------------------------------------------------------------
 
 // ___RANDOMIZATION FUNCTIONS___
 //----------------------------------------------------------------------------
-std::default_random_engine randomizer(1);
+std::default_random_engine randomizer(3);
 
 template <typename DataType>
 std::normal_distribution<DataType>
