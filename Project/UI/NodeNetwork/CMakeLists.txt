@@ -11,6 +11,7 @@ set( HEADERS
     NodeNetworkView.h
     Neuron.h
     NeuronView.h
+    NeuralNetworkFactory.h
 )
 
 set( SOURCES
@@ -24,6 +25,7 @@ set( SOURCES
     NodeNetworkView.cpp
     Neuron.cpp
     NeuronView.cpp
+    NeuralNetworkFactory.cpp
 )
 
 include_directories( ../.. )
