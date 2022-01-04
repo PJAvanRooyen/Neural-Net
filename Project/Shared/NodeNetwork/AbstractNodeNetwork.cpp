@@ -1,4 +1,5 @@
 #include "AbstractNodeNetwork.h"
+#include "AbstractNodeConnection.h"
 #include "AbstractNodeNetworkLayer.h"
 
 namespace Shared {
@@ -8,25 +9,35 @@ AbstractNodeNetwork::AbstractNodeNetwork() : AbstractNode() {}
 
 AbstractNodeNetwork::~AbstractNodeNetwork() {}
 
-std::vector<AbstractNodeNetworkLayer *> AbstractNodeNetwork::layers() const {
+const AbstractNodeNetworkLayer *
+AbstractNodeNetwork::layer(const unsigned long long layerIdx) const {
+  return mLayers[layerIdx];
+}
+
+const std::vector<AbstractNodeNetworkLayer *> &
+AbstractNodeNetwork::layers() const {
   return mLayers;
 }
 
-std::vector<AbstractNodeConnection *>
+const std::vector<AbstractNodeConnection *> &
 AbstractNodeNetwork::layerInputConnections(
-    const unsigned long layerIndex) const {
+    const unsigned long long layerIndex) const {
+  static const std::vector<AbstractNodeConnection *> kEmpty = {};
+
   if (layerIndex < mLayers.size() - 1) {
-    return {};
+    return kEmpty;
   } else {
     return mLayers[layerIndex]->inputNodeConnections();
   }
 }
 
-std::vector<AbstractNodeConnection *>
+const std::vector<AbstractNodeConnection *> &
 AbstractNodeNetwork::layerOutputConnections(
-    const unsigned long layerIndex) const {
+    const unsigned long long layerIndex) const {
+  static const std::vector<AbstractNodeConnection *> kEmpty = {};
+
   if (layerIndex < mLayers.size() - 1) {
-    return {};
+    return kEmpty;
   } else {
     return mLayers[layerIndex]->inputNodeConnections();
   }
@@ -61,6 +72,24 @@ void AbstractNodeNetwork::addLayers(
   mOutputNodeConnections = (*(--layers.end()))->outputNodeConnections();
 
   mLayers.insert(mLayers.end(), layers.begin(), layers.end());
+}
+
+void AbstractNodeNetwork::addNodeConnection(
+    AbstractNodeConnection *connection) {
+
+  auto *connectionSourceNode = connection->sourceNode();
+  auto nodeIt = mNodeOutputConnections.find(connectionSourceNode);
+  if (nodeIt != mNodeOutputConnections.end()) {
+    mNodeOutputConnections[connectionSourceNode].push_back(connection);
+  } else {
+    std::vector<AbstractNodeConnection *> nodeConnections = {connection};
+    mNodeOutputConnections.insert(
+        std::make_pair(connectionSourceNode, nodeConnections));
+  }
+}
+
+unsigned long long AbstractNodeNetwork::layerCount() const {
+  return mLayers.size();
 }
 
 } // namespace NodeNetwork

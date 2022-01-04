@@ -2,6 +2,7 @@
 #include "UI/Application/Application.h"
 
 // test
+#include "Core/NeuralNetwork/NeuralNetworkFactory.h"
 #include "Core/NeuralNetwork/Neuron.h"
 #include <bitset>
 #include <iostream>
@@ -202,19 +203,14 @@ struct Test {
     return outputs;
   };
 
-  static bool
-  test(std::vector<double> &inputValues,
-       std::vector<std::vector<Core::NodeNetwork::Neuron<double> *>>
-           &layerNeurons,
-       std::vector<std::vector<
-           std::vector<Core::NodeNetwork::NeuronConnection<double> *>>>
-           &layerConnections,
-       const bool learn, const bool debug) {
+  static bool test(std::vector<double> &inputValues,
+                   Core::NodeNetwork::NeuralNetwork<double> *neuralNetwork,
+                   const bool learn, const bool debug) {
 
-    std::vector<Core::NodeNetwork::Neuron<double> *> &inputLayer =
-        layerNeurons.front();
-    std::vector<Core::NodeNetwork::Neuron<double> *> &outputLayer =
-        layerNeurons.back();
+    const std::vector<Core::NodeNetwork::Neuron<double> *> &inputLayer =
+        neuralNetwork->layer(0)->neurons();
+    const std::vector<Core::NodeNetwork::Neuron<double> *> &outputLayer =
+        neuralNetwork->layer(neuralNetwork->layerCount() - 1)->neurons();
 
     // set test values
     for (unsigned long neuronIdx = 0; neuronIdx < inputLayer.size();
@@ -231,12 +227,12 @@ struct Test {
 
     // show debug info
     if (debug) {
-      std::cout << "pre-update:\n";
-      Print::printWeights(layerConnections);
-      Print::printBiases(layerNeurons);
-      Print::printActivations(layerNeurons);
-      Print::printSensitivities(layerNeurons);
-      Print::printErrors(outputLayer, desired);
+      //      std::cout << "pre-update:\n";
+      //      Print::printWeights(layerConnections);
+      //      Print::printBiases(layerNeurons);
+      //      Print::printActivations(layerNeurons);
+      //      Print::printSensitivities(layerNeurons);
+      //      Print::printErrors(outputLayer, desired);
     }
 
     // compare to desired outputs
@@ -280,12 +276,12 @@ struct Test {
 
       // show debug info
       if (debug) {
-        std::cout << "post-update:\n";
-        Print::printWeights(layerConnections);
-        Print::printBiases(layerNeurons);
-        Print::printActivations(layerNeurons);
-        Print::printSensitivities(layerNeurons);
-        Print::printErrors(outputLayer, desired);
+        //        std::cout << "post-update:\n";
+        //        Print::printWeights(layerConnections);
+        //        Print::printBiases(layerNeurons);
+        //        Print::printActivations(layerNeurons);
+        //        Print::printSensitivities(layerNeurons);
+        //        Print::printErrors(outputLayer, desired);
       }
 
       // deactivate (to get ready for new inputs)
@@ -301,29 +297,19 @@ struct Test {
     return desired == obtained;
   }
 
-  static bool
-  test(std::bitset<inputLayerSize> &inputValues,
-       std::vector<std::vector<Core::NodeNetwork::Neuron<double> *>>
-           &layerNeurons,
-       std::vector<std::vector<
-           std::vector<Core::NodeNetwork::NeuronConnection<double> *>>>
-           &layerConnections,
-       const bool learn, const bool debug) {
+  static bool test(std::bitset<inputLayerSize> &inputValues,
+                   Core::NodeNetwork::NeuralNetwork<double> *neuralNetwork,
+                   const bool learn, const bool debug) {
 
     auto inputs = bitsetToDouble(inputValues);
-    return test(inputs, layerNeurons, layerConnections, learn, debug);
+    return test(inputs, neuralNetwork, learn, debug);
   }
 
-  static double
-  testSet(std::vector<std::vector<Core::NodeNetwork::Neuron<double> *>>
-              &layerNeurons,
-          std::vector<std::vector<
-              std::vector<Core::NodeNetwork::NeuronConnection<double> *>>>
-              &layerConnections,
-          const bool learn, const bool debug) {
+  static double testSet(Core::NodeNetwork::NeuralNetwork<double> *neuralNetwork,
+                        const bool learn, const bool debug) {
 
-    std::vector<Core::NodeNetwork::Neuron<double> *> &inputLayer =
-        layerNeurons.front();
+    const std::vector<Core::NodeNetwork::Neuron<double> *> &inputLayer =
+        neuralNetwork->layer(0)->neurons();
 
     unsigned long long kTestingIterations = std::pow(2, inputLayer.size());
     unsigned long long correctCount = 0;
@@ -333,8 +319,7 @@ struct Test {
       std::bitset<inputLayerSize> inputValues{i};
 
       // run test
-      bool correct =
-          test(inputValues, layerNeurons, layerConnections, learn, debug);
+      bool correct = test(inputValues, neuralNetwork, learn, debug);
       if (correct) {
         ++correctCount;
       }
@@ -349,23 +334,19 @@ struct Test {
     return accuracy;
   }
 
-  static void learnFromInputSets(
-      std::vector<std::vector<Core::NodeNetwork::Neuron<double> *>>
-          &layerNeurons,
-      std::vector<std::vector<
-          std::vector<Core::NodeNetwork::NeuronConnection<double> *>>>
-          &layerConnections,
-      const bool debug) {
+  static void
+  learnFromInputSets(Core::NodeNetwork::NeuralNetwork<double> *neuralNetwork,
+                     const bool debug) {
     std::vector<double> accuracies;
 
     for (unsigned long long i = 0; i < kLearningIterations; ++i) {
       if (i % kLearnPoll == 0) {
         // test the current weights without updating the network.
-        double accuracy = testSet(layerNeurons, layerConnections, true, true);
+        double accuracy = testSet(neuralNetwork, true, true);
         accuracies.push_back(accuracy);
       } else {
         // teach the network
-        double accuracy = testSet(layerNeurons, layerConnections, true, false);
+        double accuracy = testSet(neuralNetwork, true, false);
         Q_UNUSED(accuracy)
         // accuracies.push_back(accuracy);
       }
@@ -381,11 +362,7 @@ struct Test {
   }
 
   static void learnFromRandomBoolInputs(
-      std::vector<std::vector<Core::NodeNetwork::Neuron<double> *>>
-          &layerNeurons,
-      std::vector<std::vector<
-          std::vector<Core::NodeNetwork::NeuronConnection<double> *>>>
-          &layerConnections,
+      Core::NodeNetwork::NeuralNetwork<double> *neuralNetwork,
       const bool debug) {
     unsigned long long correctCount = 0;
     std::vector<double> accuracies;
@@ -400,14 +377,13 @@ struct Test {
         double accuracy = 100.0 * correctCount / kLearnPoll;
         accuracies.push_back(accuracy);
         correctCount = 0;
-        bool correct = test(inputs, layerNeurons, layerConnections, true, true);
+        bool correct = test(inputs, neuralNetwork, true, true);
         if (correct) {
           ++correctCount;
         }
       } else {
         // teach the network
-        bool correct =
-            test(inputs, layerNeurons, layerConnections, true, false);
+        bool correct = test(inputs, neuralNetwork, true, false);
         if (correct) {
           ++correctCount;
         }
@@ -423,13 +399,9 @@ struct Test {
     }
   }
 
-  static void learnFromRandomInputs(
-      std::vector<std::vector<Core::NodeNetwork::Neuron<double> *>>
-          &layerNeurons,
-      std::vector<std::vector<
-          std::vector<Core::NodeNetwork::NeuronConnection<double> *>>>
-          &layerConnections,
-      const bool debug) {
+  static void
+  learnFromRandomInputs(Core::NodeNetwork::NeuralNetwork<double> *neuralNetwork,
+                        const bool debug) {
     unsigned long long correctCount = 0;
     std::vector<double> accuracies;
 
@@ -444,14 +416,13 @@ struct Test {
         double accuracy = 100.0 * correctCount / kLearnPoll;
         accuracies.push_back(accuracy);
         correctCount = 0;
-        bool correct = test(inputs, layerNeurons, layerConnections, true, true);
+        bool correct = test(inputs, neuralNetwork, true, true);
         if (correct) {
           ++correctCount;
         }
       } else {
         // teach the network
-        bool correct =
-            test(inputs, layerNeurons, layerConnections, true, false);
+        bool correct = test(inputs, neuralNetwork, true, false);
         if (correct) {
           ++correctCount;
         }
@@ -475,241 +446,15 @@ int main(int argc, char *argv[]) {
   // input randomization seed
   srand(3);
 
-  // start test
-  Core::NodeNetwork::Neuron<double> *l1n1 =
-      new Core::NodeNetwork::Neuron<double>();
-  Core::NodeNetwork::Neuron<double> *l1n2 =
-      new Core::NodeNetwork::Neuron<double>();
-  //  Core::NodeNetwork::Neuron<double> *l1n3 =
-  //      new Core::NodeNetwork::Neuron<double>();
-  //  Core::NodeNetwork::Neuron<double> *l1n4 =
-  //      new Core::NodeNetwork::Neuron<double>();
-  //  Core::NodeNetwork::Neuron<double> *l1n5 =
-  //      new Core::NodeNetwork::Neuron<double>();
-
-  Core::NodeNetwork::Neuron<double> *l2n1 =
-      new Core::NodeNetwork::Neuron<double>();
-  Core::NodeNetwork::Neuron<double> *l2n2 =
-      new Core::NodeNetwork::Neuron<double>();
-  //  Core::NodeNetwork::Neuron<double> *l2n3 =
-  //      new Core::NodeNetwork::Neuron<double>();
-  //  Core::NodeNetwork::Neuron<double> *l2n4 =
-  //      new Core::NodeNetwork::Neuron<double>();
-  //  Core::NodeNetwork::Neuron<double> *l2n5 =
-  //      new Core::NodeNetwork::Neuron<double>();
-
-  Core::NodeNetwork::Neuron<double> *l3n1 =
-      new Core::NodeNetwork::Neuron<double>();
-  Core::NodeNetwork::Neuron<double> *l3n2 =
-      new Core::NodeNetwork::Neuron<double>();
-  //  Core::NodeNetwork::Neuron<double> *l3n3 =
-  //      new Core::NodeNetwork::Neuron<double>();
-  //  Core::NodeNetwork::Neuron<double> *l3n4 =
-  //      new Core::NodeNetwork::Neuron<double>();
-  //  Core::NodeNetwork::Neuron<double> *l3n5 =
-  //      new Core::NodeNetwork::Neuron<double>();
-
-  //  Core::NodeNetwork::Neuron<double> *l4n1 =
-  //      new Core::NodeNetwork::Neuron<double>();
-  //  Core::NodeNetwork::Neuron<double> *l4n2 =
-  //      new Core::NodeNetwork::Neuron<double>();
-  //  Core::NodeNetwork::Neuron<double> *l4n3 =
-  //      new Core::NodeNetwork::Neuron<double>();
-  //  Core::NodeNetwork::Neuron<double> *l4n4 =
-  //      new Core::NodeNetwork::Neuron<double>();
-  //  Core::NodeNetwork::Neuron<double> *l4n5 =
-  //      new Core::NodeNetwork::Neuron<double>();
-
-  // l1 -> l2
-  //---------------------------------------------------------
-  Core::NodeNetwork::NeuronConnection c_l1n1_l2n1 =
-      Core::NodeNetwork::NeuronConnection<double>(l1n1, l2n1);
-  Core::NodeNetwork::NeuronConnection c_l1n2_l2n1 =
-      Core::NodeNetwork::NeuronConnection<double>(l1n2, l2n1);
-  //  Core::NodeNetwork::NeuronConnection c_l1n3_l2n1 =
-  //      Core::NodeNetwork::NeuronConnection<double>(l1n3, l2n1);
-  //  Core::NodeNetwork::NeuronConnection c_l1n4_l2n1 =
-  //      Core::NodeNetwork::NeuronConnection<double>(l1n4, l2n1);
-  //  Core::NodeNetwork::NeuronConnection c_l1n5_l2n1 =
-  //      Core::NodeNetwork::NeuronConnection<double>(l1n5, l2n1);
-
-  Core::NodeNetwork::NeuronConnection c_l1n1_l2n2 =
-      Core::NodeNetwork::NeuronConnection<double>(l1n1, l2n2);
-  Core::NodeNetwork::NeuronConnection c_l1n2_l2n2 =
-      Core::NodeNetwork::NeuronConnection<double>(l1n2, l2n2);
-  //  Core::NodeNetwork::NeuronConnection c_l1n3_l2n2 =
-  //      Core::NodeNetwork::NeuronConnection<double>(l1n3, l2n2);
-  //  Core::NodeNetwork::NeuronConnection c_l1n4_l2n2 =
-  //      Core::NodeNetwork::NeuronConnection<double>(l1n4, l2n2);
-  //  Core::NodeNetwork::NeuronConnection c_l1n5_l2n2 =
-  //      Core::NodeNetwork::NeuronConnection<double>(l1n5, l2n2);
-
-  //  Core::NodeNetwork::NeuronConnection c_l1n1_l2n3 =
-  //      Core::NodeNetwork::NeuronConnection<double>(l1n1, l2n3);
-  //  Core::NodeNetwork::NeuronConnection c_l1n2_l2n3 =
-  //      Core::NodeNetwork::NeuronConnection<double>(l1n2, l2n3);
-  //  Core::NodeNetwork::NeuronConnection c_l1n3_l2n3 =
-  //      Core::NodeNetwork::NeuronConnection<double>(l1n3, l2n3);
-  //  Core::NodeNetwork::NeuronConnection c_l1n4_l2n3 =
-  //      Core::NodeNetwork::NeuronConnection<double>(l1n4, l2n3);
-  //  Core::NodeNetwork::NeuronConnection c_l1n5_l2n3 =
-  //      Core::NodeNetwork::NeuronConnection<double>(l1n5, l2n3);
-
-  //  Core::NodeNetwork::NeuronConnection c_l1n1_l2n4 =
-  //      Core::NodeNetwork::NeuronConnection<double>(l1n1, l2n4);
-  //  Core::NodeNetwork::NeuronConnection c_l1n2_l2n4 =
-  //      Core::NodeNetwork::NeuronConnection<double>(l1n2, l2n4);
-  //  Core::NodeNetwork::NeuronConnection c_l1n3_l2n4 =
-  //      Core::NodeNetwork::NeuronConnection<double>(l1n3, l2n4);
-  //  Core::NodeNetwork::NeuronConnection c_l1n4_l2n4 =
-  //      Core::NodeNetwork::NeuronConnection<double>(l1n4, l2n4);
-  //  Core::NodeNetwork::NeuronConnection c_l1n5_l2n4 =
-  //      Core::NodeNetwork::NeuronConnection<double>(l1n5, l2n4);
-
-  //  Core::NodeNetwork::NeuronConnection c_l1n1_l2n5 =
-  //      Core::NodeNetwork::NeuronConnection<double>(l1n1, l2n5);
-  //  Core::NodeNetwork::NeuronConnection c_l1n2_l2n5 =
-  //      Core::NodeNetwork::NeuronConnection<double>(l1n2, l2n5);
-  //  Core::NodeNetwork::NeuronConnection c_l1n3_l2n5 =
-  //      Core::NodeNetwork::NeuronConnection<double>(l1n3, l2n5);
-  //  Core::NodeNetwork::NeuronConnection c_l1n4_l2n5 =
-  //      Core::NodeNetwork::NeuronConnection<double>(l1n4, l2n5);
-  //  Core::NodeNetwork::NeuronConnection c_l1n5_l2n5 =
-  //      Core::NodeNetwork::NeuronConnection<double>(l1n5, l2n5);
-  //---------------------------------------------------------
-
-  // l2 -> l3
-  //---------------------------------------------------------
-  Core::NodeNetwork::NeuronConnection c_l2n1_l3n1 =
-      Core::NodeNetwork::NeuronConnection<double>(l2n1, l3n1);
-  Core::NodeNetwork::NeuronConnection c_l2n2_l3n1 =
-      Core::NodeNetwork::NeuronConnection<double>(l2n2, l3n1);
-  //  Core::NodeNetwork::NeuronConnection c_l2n3_l3n1 =
-  //      Core::NodeNetwork::NeuronConnection<double>(l2n3, l3n1);
-  //  Core::NodeNetwork::NeuronConnection c_l2n4_l3n1 =
-  //      Core::NodeNetwork::NeuronConnection<double>(l2n4, l3n1);
-  //  Core::NodeNetwork::NeuronConnection c_l2n5_l3n1 =
-  //      Core::NodeNetwork::NeuronConnection<double>(l2n5, l3n1);
-
-  Core::NodeNetwork::NeuronConnection c_l2n1_l3n2 =
-      Core::NodeNetwork::NeuronConnection<double>(l2n1, l3n2);
-  Core::NodeNetwork::NeuronConnection c_l2n2_l3n2 =
-      Core::NodeNetwork::NeuronConnection<double>(l2n2, l3n2);
-  //  Core::NodeNetwork::NeuronConnection c_l2n3_l3n2 =
-  //      Core::NodeNetwork::NeuronConnection<double>(l2n3, l3n2);
-  //  Core::NodeNetwork::NeuronConnection c_l2n4_l3n2 =
-  //      Core::NodeNetwork::NeuronConnection<double>(l2n4, l3n2);
-  //  Core::NodeNetwork::NeuronConnection c_l2n5_l3n2 =
-  //      Core::NodeNetwork::NeuronConnection<double>(l2n5, l3n2);
-
-  //  Core::NodeNetwork::NeuronConnection c_l2n1_l3n3 =
-  //      Core::NodeNetwork::NeuronConnection<double>(l2n1, l3n3);
-  //  Core::NodeNetwork::NeuronConnection c_l2n2_l3n3 =
-  //      Core::NodeNetwork::NeuronConnection<double>(l2n2, l3n3);
-  //  Core::NodeNetwork::NeuronConnection c_l2n3_l3n3 =
-  //      Core::NodeNetwork::NeuronConnection<double>(l2n3, l3n3);
-  //  Core::NodeNetwork::NeuronConnection c_l2n4_l3n3 =
-  //      Core::NodeNetwork::NeuronConnection<double>(l2n4, l3n3);
-  //  Core::NodeNetwork::NeuronConnection c_l2n5_l3n3 =
-  //      Core::NodeNetwork::NeuronConnection<double>(l2n5, l3n3);
-
-  //  Core::NodeNetwork::NeuronConnection c_l2n1_l3n4 =
-  //      Core::NodeNetwork::NeuronConnection<double>(l2n1, l3n4);
-  //  Core::NodeNetwork::NeuronConnection c_l2n2_l3n4 =
-  //      Core::NodeNetwork::NeuronConnection<double>(l2n2, l3n4);
-  //  Core::NodeNetwork::NeuronConnection c_l2n3_l3n4 =
-  //      Core::NodeNetwork::NeuronConnection<double>(l2n3, l3n4);
-  //  Core::NodeNetwork::NeuronConnection c_l2n4_l3n4 =
-  //      Core::NodeNetwork::NeuronConnection<double>(l2n4, l3n4);
-  //  Core::NodeNetwork::NeuronConnection c_l2n5_l3n4 =
-  //      Core::NodeNetwork::NeuronConnection<double>(l2n5, l3n4);
-
-  //  Core::NodeNetwork::NeuronConnection c_l2n1_l3n5 =
-  //      Core::NodeNetwork::NeuronConnection<double>(l2n1, l3n5);
-  //  Core::NodeNetwork::NeuronConnection c_l2n2_l3n5 =
-  //      Core::NodeNetwork::NeuronConnection<double>(l2n2, l3n5);
-  //  Core::NodeNetwork::NeuronConnection c_l2n3_l3n5 =
-  //      Core::NodeNetwork::NeuronConnection<double>(l2n3, l3n5);
-  //  Core::NodeNetwork::NeuronConnection c_l2n4_l3n5 =
-  //      Core::NodeNetwork::NeuronConnection<double>(l2n4, l3n5);
-  //  Core::NodeNetwork::NeuronConnection c_l2n5_l3n5 =
-  //      Core::NodeNetwork::NeuronConnection<double>(l2n5, l3n5);
-  //---------------------------------------------------------
-
-  // l3 -> l4
-  //---------------------------------------------------------
-  //  Core::NodeNetwork::NeuronConnection c_l3n1_l4n1 =
-  //      Core::NodeNetwork::NeuronConnection<double>(l3n1, l4n1);
-  //  Core::NodeNetwork::NeuronConnection c_l3n2_l4n1 =
-  //      Core::NodeNetwork::NeuronConnection<double>(l3n2, l4n1);
-  //  Core::NodeNetwork::NeuronConnection c_l3n3_l4n1 =
-  //      Core::NodeNetwork::NeuronConnection<double>(l3n3, l4n1);
-  //  Core::NodeNetwork::NeuronConnection c_l3n4_l4n1 =
-  //      Core::NodeNetwork::NeuronConnection<double>(l3n4, l4n1);
-  //  Core::NodeNetwork::NeuronConnection c_l3n5_l4n1 =
-  //      Core::NodeNetwork::NeuronConnection<double>(l3n5, l4n1);
-
-  //  Core::NodeNetwork::NeuronConnection c_l3n1_l4n2 =
-  //      Core::NodeNetwork::NeuronConnection<double>(l3n1, l4n2);
-  //  Core::NodeNetwork::NeuronConnection c_l3n2_l4n2 =
-  //      Core::NodeNetwork::NeuronConnection<double>(l3n2, l4n2);
-  //  Core::NodeNetwork::NeuronConnection c_l3n3_l4n2 =
-  //      Core::NodeNetwork::NeuronConnection<double>(l3n3, l4n2);
-  //  Core::NodeNetwork::NeuronConnection c_l3n4_l4n2 =
-  //      Core::NodeNetwork::NeuronConnection<double>(l3n4, l4n2);
-  //  Core::NodeNetwork::NeuronConnection c_l3n5_l4n2 =
-  //      Core::NodeNetwork::NeuronConnection<double>(l3n5, l4n2);
-
-  //  Core::NodeNetwork::NeuronConnection c_l3n1_l4n3 =
-  //      Core::NodeNetwork::NeuronConnection<double>(l3n1, l4n3);
-  //  Core::NodeNetwork::NeuronConnection c_l3n2_l4n3 =
-  //      Core::NodeNetwork::NeuronConnection<double>(l3n2, l4n3);
-  //  Core::NodeNetwork::NeuronConnection c_l3n3_l4n3 =
-  //      Core::NodeNetwork::NeuronConnection<double>(l3n3, l4n3);
-  //  Core::NodeNetwork::NeuronConnection c_l3n4_l4n3 =
-  //      Core::NodeNetwork::NeuronConnection<double>(l3n4, l4n3);
-  //  Core::NodeNetwork::NeuronConnection c_l3n5_l4n3 =
-  //      Core::NodeNetwork::NeuronConnection<double>(l3n5, l4n3);
-
-  //  Core::NodeNetwork::NeuronConnection c_l3n1_l4n4 =
-  //      Core::NodeNetwork::NeuronConnection<double>(l3n1, l4n4);
-  //  Core::NodeNetwork::NeuronConnection c_l3n2_l4n4 =
-  //      Core::NodeNetwork::NeuronConnection<double>(l3n2, l4n4);
-  //  Core::NodeNetwork::NeuronConnection c_l3n3_l4n4 =
-  //      Core::NodeNetwork::NeuronConnection<double>(l3n3, l4n4);
-  //  Core::NodeNetwork::NeuronConnection c_l3n4_l4n4 =
-  //      Core::NodeNetwork::NeuronConnection<double>(l3n4, l4n4);
-  //  Core::NodeNetwork::NeuronConnection c_l3n5_l4n4 =
-  //      Core::NodeNetwork::NeuronConnection<double>(l3n5, l4n4);
-
-  //  Core::NodeNetwork::NeuronConnection c_l3n1_l4n5 =
-  //      Core::NodeNetwork::NeuronConnection<double>(l3n1, l4n5);
-  //  Core::NodeNetwork::NeuronConnection c_l3n2_l4n5 =
-  //      Core::NodeNetwork::NeuronConnection<double>(l3n2, l4n5);
-  //  Core::NodeNetwork::NeuronConnection c_l3n3_l4n5 =
-  //      Core::NodeNetwork::NeuronConnection<double>(l3n3, l4n5);
-  //  Core::NodeNetwork::NeuronConnection c_l3n4_l4n5 =
-  //      Core::NodeNetwork::NeuronConnection<double>(l3n4, l4n5);
-  //  Core::NodeNetwork::NeuronConnection c_l3n5_l4n5 =
-  //      Core::NodeNetwork::NeuronConnection<double>(l3n5, l4n5);
-  //---------------------------------------------------------
-
-  std::vector<Core::NodeNetwork::Neuron<double> *> inputLayer = {
-      l1n1, l1n2 /*, l1n3, l1n4, l1n5*/};
-  std::vector<Core::NodeNetwork::Neuron<double> *> outputLayer = {
-      l3n1, l3n2 /*l4n1, l4n2, l4n3, l4n4, l4n5*/};
-
-  std::vector<std::vector<Core::NodeNetwork::Neuron<double> *>> layerNeurons = {
-      inputLayer, {l2n1, l2n2}, outputLayer};
-
-  std::vector<
-      std::vector<std::vector<Core::NodeNetwork::NeuronConnection<double> *>>>
-      layerConnections = {
-          {{&c_l1n1_l2n1, &c_l1n1_l2n2}, {&c_l1n2_l2n1, &c_l1n2_l2n2}},
-          {{&c_l2n1_l3n1, &c_l2n1_l3n2}, {&c_l2n2_l3n1, &c_l2n2_l3n2}}};
+  Core::NodeNetwork::NeuralNetworkFactory<double> factory =
+      Core::NodeNetwork::NeuralNetworkFactory<double>();
+  Shared::NodeNetwork::AbstractNodeNetwork *abstractNet =
+      factory.createMeshNetwork({2, 2, 2});
+  Core::NodeNetwork::NeuralNetwork<double> *neuralNet =
+      static_cast<Core::NodeNetwork::NeuralNetwork<double> *>(abstractNet);
 
   // teach the network
-  Test::learnFromRandomInputs(layerNeurons, layerConnections, true);
+  Test::learnFromRandomInputs(neuralNet, true);
 
   // UI
   //=========================================================================

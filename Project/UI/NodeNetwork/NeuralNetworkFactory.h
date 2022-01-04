@@ -1,23 +1,41 @@
-#ifndef NodeNetworkFactoryUI_H
-#define NodeNetworkFactoryUI_H
+#ifndef NeuralNetworkFactoryUI_H
+#define NeuralNetworkFactoryUI_H
 
-#include "UI/NodeNetwork/Node.h"
+#include "Shared/NodeNetwork/AbstractNodeNetworkFactory.h"
+
+namespace Shared::NodeNetwork {
+class AbstractNodeNetwork;
+class AbstractNodeNetworkLayer;
+class AbstractNode;
+class AbstractNodeConnection;
+} // namespace Shared::NodeNetwork
 
 namespace UI {
-namespace NodeNetworkFactory {
+namespace NodeNetwork {
 
-class Neuron : public Node {
-  Q_OBJECT
+class NeuralNetworkFactory
+    : public Shared::NodeNetwork::AbstractNodeNetworkFactory {
 
 public:
-  Neuron(QObject *parent = Q_NULLPTR);
+  NeuralNetworkFactory();
 
-  ~Neuron();
+  ~NeuralNetworkFactory();
 
-protected:
-  QGraphicsItem *createViewBase(QGraphicsItem *parentView) override;
+  Shared::NodeNetwork::AbstractNodeNetwork *createNodeNetwork() const override;
+
+  Shared::NodeNetwork::AbstractNodeNetworkLayer *addNodeNetworkLayer(
+      Shared::NodeNetwork::AbstractNodeNetwork *nodeNetwork) const override;
+
+  Shared::NodeNetwork::AbstractNode *
+  addNode(Shared::NodeNetwork::AbstractNodeNetworkLayer *nodeNetworkLayer)
+      const override;
+
+  Shared::NodeNetwork::AbstractNodeConnection *addNodeConnection(
+      Shared::NodeNetwork::AbstractNode *sourceNode,
+      Shared::NodeNetwork::AbstractNode *destinationNode,
+      Shared::NodeNetwork::AbstractNodeNetwork *nodeNetwork) const override;
 };
 
 } // namespace NodeNetwork
 } // namespace UI
-#endif // NodeNetworkFactoryUI_H
+#endif // NeuralNetworkFactoryUI_H

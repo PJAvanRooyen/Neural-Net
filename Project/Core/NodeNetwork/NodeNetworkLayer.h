@@ -7,6 +7,10 @@ namespace Core {
 namespace NodeNetwork {
 
 class NodeNetworkLayer : public Shared::NodeNetwork::AbstractNodeNetworkLayer {
+public:
+  NodeNetworkLayer();
+
+  ~NodeNetworkLayer();
 };
 
 } // namespace NodeNetwork

@@ -1,25 +1,31 @@
 #ifndef NeuralNetwork_H
 #define NeuralNetwork_H
 
-#include "Shared/NodeNetwork/AbstractNodeNetwork.h"
-
-#include <Eigen/Dense>
+#include "Core/NodeNetwork/NodeNetwork.h"
 
 namespace Core {
 namespace NodeNetwork {
 
-class NeuralNetwork {
+template <typename DataType> class NeuralNetworkLayer;
+
+template <typename DataType> class NeuralNetwork : public NodeNetwork {
 
 public:
-  NeuralNetwork(unsigned long layerSizes[]);
+  NeuralNetwork() {}
 
-  template <typename DataType>
-  DataType predict(){
+  ~NeuralNetwork() {}
 
-  };
+  const NeuralNetworkLayer<DataType> *
+  layer(const unsigned long long layerIdx) const {
+    return static_cast<const NeuralNetworkLayer<DataType> *>(
+        NodeNetwork::layer(layerIdx));
+  }
 
-protected:
-  std::vector<unsigned long> mLayerSizes;
+  const std::vector<NeuralNetworkLayer<DataType> *> &layers() const {
+    return reinterpret_cast<
+        const std::vector<NeuralNetworkLayer<DataType> *> &>(
+        NodeNetwork::layers());
+  }
 };
 } // namespace NodeNetwork
 } // namespace Core

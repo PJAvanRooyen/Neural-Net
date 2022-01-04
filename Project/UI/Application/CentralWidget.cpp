@@ -1,11 +1,8 @@
 #include "CentralWidget.h"
 #include "CentralWidgetView.h"
 
-#include "NodeNetwork/Neuron.h"
-#include "NodeNetwork/NodeConnection.h"
-
+#include "NodeNetwork/NeuralNetworkFactory.h"
 #include "NodeNetwork/NodeNetwork.h"
-#include "NodeNetwork/NodeNetworkLayer.h"
 #include "NodeNetwork/NodeNetworkView.h"
 
 namespace UI {
@@ -14,82 +11,15 @@ namespace Application {
 CentralWidget::CentralWidget(QObject *parent)
     : mScene(new QGraphicsScene(parent)), mView(new CentralWidgetView(mScene)) {
 
-  // addNeuron();
-  using AbstractNode = Shared::NodeNetwork::AbstractNode;
-  using Neuron = UI::NodeNetwork::Neuron;
-  using NodeConnection = UI::NodeNetwork::NodeConnection;
+  using NeuralNetworkFactory = UI::NodeNetwork::NeuralNetworkFactory;
+  using NeuralNetwork = UI::NodeNetwork::NodeNetwork;
 
-  // TODO: fix parent relation here
-  using NodeNetwork = UI::NodeNetwork::NodeNetwork;
-  using NodeNetworkView = UI::NodeNetwork::NodeNetworkView;
-  using AbstractNodeNetworkLayer =
-      Shared::NodeNetwork::AbstractNodeNetworkLayer;
-  using NodeNetworkLayer = UI::NodeNetwork::NodeNetworkLayer;
+  NeuralNetworkFactory factory = NeuralNetworkFactory();
+  Shared::NodeNetwork::AbstractNodeNetwork *abstractNet =
+      factory.createMeshNetwork({5, 6, 7, 3});
+  NeuralNetwork *neuralNet = static_cast<NeuralNetwork *>(abstractNet);
 
-  NodeNetwork *nodeNetwork = new NodeNetwork();
-  mScene->addItem(nodeNetwork->view<NodeNetworkView>());
-
-  NodeNetworkLayer *layerA = new NodeNetworkLayer(nodeNetwork);
-  NodeNetworkLayer *layerB = new NodeNetworkLayer(nodeNetwork);
-  NodeNetworkLayer *layerC = new NodeNetworkLayer(nodeNetwork);
-  std::vector<AbstractNodeNetworkLayer *> layers = {layerA, layerB, layerC};
-  nodeNetwork->addLayers(layers);
-
-  Neuron *nodeA1 = new Neuron();
-  Neuron *nodeA2 = new Neuron();
-  Neuron *nodeA3 = new Neuron();
-  Neuron *nodeB1 = new Neuron();
-  Neuron *nodeB2 = new Neuron();
-  Neuron *nodeB3 = new Neuron();
-  Neuron *nodeC1 = new Neuron();
-  Neuron *nodeC2 = new Neuron();
-  Neuron *nodeC3 = new Neuron();
-
-  std::vector<AbstractNode *> nodesA = {nodeA1, nodeA2, nodeA3};
-  layerA->addNodes(nodesA);
-
-  std::vector<AbstractNode *> nodesB = {nodeB1, nodeB2, nodeB3};
-  layerB->addNodes(nodesB);
-
-  std::vector<AbstractNode *> nodesC = {nodeC1, nodeC2, nodeC3};
-  layerC->addNodes(nodesC);
-
-  NodeConnection *nodeConnectionA1B1 =
-      new NodeConnection(nodeA1, nodeB1, nodeNetwork);
-  NodeConnection *nodeConnectionA1B2 =
-      new NodeConnection(nodeA1, nodeB2, nodeNetwork);
-  NodeConnection *nodeConnectionA1B3 =
-      new NodeConnection(nodeA1, nodeB3, nodeNetwork);
-  NodeConnection *nodeConnectionA2B1 =
-      new NodeConnection(nodeA2, nodeB1, nodeNetwork);
-  NodeConnection *nodeConnectionA2B2 =
-      new NodeConnection(nodeA2, nodeB2, nodeNetwork);
-  NodeConnection *nodeConnectionA2B3 =
-      new NodeConnection(nodeA2, nodeB3, nodeNetwork);
-  NodeConnection *nodeConnectionA3B1 =
-      new NodeConnection(nodeA3, nodeB1, nodeNetwork);
-  NodeConnection *nodeConnectionA3B2 =
-      new NodeConnection(nodeA3, nodeB2, nodeNetwork);
-  NodeConnection *nodeConnectionA3B3 =
-      new NodeConnection(nodeA3, nodeB3, nodeNetwork);
-  NodeConnection *nodeConnectionB1C1 =
-      new NodeConnection(nodeB1, nodeC1, nodeNetwork);
-  NodeConnection *nodeConnectionB1C2 =
-      new NodeConnection(nodeB1, nodeC2, nodeNetwork);
-  NodeConnection *nodeConnectionB1C3 =
-      new NodeConnection(nodeB1, nodeC3, nodeNetwork);
-  NodeConnection *nodeConnectionB2C1 =
-      new NodeConnection(nodeB2, nodeC1, nodeNetwork);
-  NodeConnection *nodeConnectionB2C2 =
-      new NodeConnection(nodeB2, nodeC2, nodeNetwork);
-  NodeConnection *nodeConnectionB2C3 =
-      new NodeConnection(nodeB2, nodeC3, nodeNetwork);
-  NodeConnection *nodeConnectionB3C1 =
-      new NodeConnection(nodeB3, nodeC1, nodeNetwork);
-  NodeConnection *nodeConnectionB3C2 =
-      new NodeConnection(nodeB3, nodeC2, nodeNetwork);
-  NodeConnection *nodeConnectionB3C3 =
-      new NodeConnection(nodeB3, nodeC3, nodeNetwork);
+  mScene->addItem(neuralNet->view<UI::NodeNetwork::NodeNetworkView>());
 
   mScene->update();
 }

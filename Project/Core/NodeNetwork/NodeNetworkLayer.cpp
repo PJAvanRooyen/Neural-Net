@@ -1,5 +1,11 @@
 #include "NodeNetworkLayer.h"
 
 namespace Core {
-namespace NodeNetwork {} // namespace NodeNetwork
+namespace NodeNetwork {
+
+NodeNetworkLayer::NodeNetworkLayer() {}
+
+NodeNetworkLayer::~NodeNetworkLayer() {}
+
+} // namespace NodeNetwork
 } // namespace Core

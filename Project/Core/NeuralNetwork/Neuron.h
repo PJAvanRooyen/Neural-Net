@@ -315,8 +315,10 @@ public:
 
   DataType activate() {
     Neuron<DataType> *sourceNeuron = static_cast<Neuron<DataType> *>(mSource);
+    const DataType sourceActivation = sourceNeuron->activate();
+    const DataType activation = mWeightFunction(sourceActivation, mWeight);
 
-    mActivation.emplace(mWeightFunction(sourceNeuron->activate(), mWeight));
+    mActivation.emplace(activation);
     return mActivation.value();
   }
 
@@ -369,9 +371,10 @@ template <typename DataType> inline DataType Neuron<DataType>::activate() {
   // sum the output values of all input connections.
   auto connectionOutput =
       [](const DataType val,
-         Shared::NodeNetwork::AbstractNodeConnection *neuronConnection) {
-        return val + static_cast<NeuronConnection<DataType> *>(neuronConnection)
-                         ->activate();
+         Shared::NodeNetwork::AbstractNodeConnection *nodeConnection) {
+        auto *neuronConnection =
+            static_cast<NeuronConnection<DataType> *>(nodeConnection);
+        return val + neuronConnection->activate();
       };
 
   DataType connectionOutputSum = std::accumulate(mInputNodeConnections.cbegin(),

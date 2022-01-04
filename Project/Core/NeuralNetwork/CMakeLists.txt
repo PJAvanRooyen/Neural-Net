@@ -2,10 +2,16 @@ set( TARGET_NAME NeuralNetwork )
 
 set( HEADERS
   Neuron.h
+  NeuralNetworkLayer.h
+  NeuralNetwork.h
+  NeuralNetworkFactory.h
 )
 
 set( SOURCES
   Neuron.cpp
+  NeuralNetworkLayer.cpp
+  NeuralNetwork.cpp
+  NeuralNetworkFactory.cpp
 )
 
 # needed to find WidgetManager

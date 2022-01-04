@@ -11,7 +11,12 @@ namespace NodeNetwork {
  * A node network has input and output connections, which are the start and end
  * of the network. It further has node network layers between those connections.
  */
-class NodeNetwork : public Shared::NodeNetwork::AbstractNodeNetwork {};
+class NodeNetwork : public Shared::NodeNetwork::AbstractNodeNetwork {
+public:
+  NodeNetwork();
+
+  ~NodeNetwork();
+};
 
 } // namespace NodeNetwork
 } // namespace Core

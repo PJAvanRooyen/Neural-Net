@@ -3,6 +3,8 @@
 
 #include "AbstractNode.h"
 
+#include <map>
+
 namespace Shared {
 namespace NodeNetwork {
 
@@ -19,20 +21,30 @@ public:
 
   ~AbstractNodeNetwork();
 
-  std::vector<AbstractNodeNetworkLayer *> layers() const;
+  const AbstractNodeNetworkLayer *
+  layer(const unsigned long long layerIdx) const;
 
-  std::vector<AbstractNodeConnection *>
-  layerInputConnections(const unsigned long layerIndex) const;
+  const std::vector<AbstractNodeNetworkLayer *> &layers() const;
 
-  std::vector<AbstractNodeConnection *>
-  layerOutputConnections(const unsigned long layerIndex) const;
+  const std::vector<AbstractNodeConnection *> &
+  layerInputConnections(const unsigned long long layerIndex) const;
+
+  const std::vector<AbstractNodeConnection *> &
+  layerOutputConnections(const unsigned long long layerIndex) const;
 
   virtual void addLayer(AbstractNodeNetworkLayer *layer);
 
   virtual void addLayers(std::vector<AbstractNodeNetworkLayer *> &layers);
 
+  void addNodeConnection(AbstractNodeConnection *connection);
+
+  unsigned long long layerCount() const;
+
 protected:
   std::vector<AbstractNodeNetworkLayer *> mLayers;
+
+  std::map<AbstractNode *, std::vector<AbstractNodeConnection *>>
+      mNodeOutputConnections;
 };
 
 } // namespace NodeNetwork

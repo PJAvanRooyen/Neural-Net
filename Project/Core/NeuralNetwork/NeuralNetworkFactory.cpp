@@ -1,4 +1,4 @@
-#include "NeuralNetwork.h"
+#include "NeuralNetworkFactory.h"
 
 namespace Core {
 namespace NodeNetwork {} // namespace NodeNetwork
