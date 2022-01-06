@@ -2,8 +2,10 @@
 #include "UI/Application/Application.h"
 
 // test
-#include "Core/NeuralNetwork/NeuralNetworkFactory.h"
+#include "Core/NeuralNetwork/NeuralNetwork.h"
+#include "Core/NeuralNetwork/NeuralNetworkLayer.h"
 #include "Core/NeuralNetwork/Neuron.h"
+#include "Shared/NodeNetwork/NodeNetworkFactory.h"
 #include <bitset>
 #include <iostream>
 
@@ -446,10 +448,11 @@ int main(int argc, char *argv[]) {
   // input randomization seed
   srand(3);
 
-  Core::NodeNetwork::NeuralNetworkFactory<double> factory =
-      Core::NodeNetwork::NeuralNetworkFactory<double>();
+  Shared::NodeNetwork::NodeNetworkFactory factory =
+      Shared::NodeNetwork::NodeNetworkFactory();
   Shared::NodeNetwork::AbstractNodeNetwork *abstractNet =
-      factory.createMeshNetwork({2, 2, 2});
+      factory.createMeshNetwork<Core::NodeNetwork::NeuralNetwork<double>>(
+          {2, 2, 2});
   Core::NodeNetwork::NeuralNetwork<double> *neuralNet =
       static_cast<Core::NodeNetwork::NeuralNetwork<double> *>(abstractNet);
 

@@ -1,7 +1,6 @@
 set( TARGET_NAME NodeNetwork )
 
 set( HEADERS
-  NodeNetworkFactory.h
   NodeNetwork.h
   NodeNetworkLayer.h
   Node.h
@@ -9,7 +8,6 @@ set( HEADERS
 )
 
 set( SOURCES
-  NodeNetworkFactory.cpp
   NodeNetwork.cpp
   NodeNetworkLayer.cpp
   Node.cpp

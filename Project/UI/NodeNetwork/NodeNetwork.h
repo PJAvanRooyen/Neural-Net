@@ -22,6 +22,15 @@ public:
   void addLayers(std::vector<Shared::NodeNetwork::AbstractNodeNetworkLayer *>
                      &layers) override;
 
+  Shared::NodeNetwork::AbstractNodeNetworkLayer *addLayer() override;
+
+  Shared::NodeNetwork::AbstractNodeConnection *
+  addConnection(AbstractNode *sourceNode,
+                AbstractNode *destinationNode) override;
+
+  void addConnection(
+      Shared::NodeNetwork::AbstractNodeConnection *connection) override;
+
 protected:
   QGraphicsItem *createViewBase(QGraphicsItem *parentView) override;
 };

@@ -74,8 +74,7 @@ void AbstractNodeNetwork::addLayers(
   mLayers.insert(mLayers.end(), layers.begin(), layers.end());
 }
 
-void AbstractNodeNetwork::addNodeConnection(
-    AbstractNodeConnection *connection) {
+void AbstractNodeNetwork::addConnection(AbstractNodeConnection *connection) {
 
   auto *connectionSourceNode = connection->sourceNode();
   auto nodeIt = mNodeOutputConnections.find(connectionSourceNode);

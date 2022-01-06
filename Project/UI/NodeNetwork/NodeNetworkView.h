@@ -26,15 +26,24 @@ protected:
 
   // AbstractNodeNetwork interface
 public:
-  void addLayer(Shared::NodeNetwork::AbstractNodeNetworkLayer *layer);
-  void addLayers(
-      std::vector<Shared::NodeNetwork::AbstractNodeNetworkLayer *> &layers);
+  void addLayer(Shared::NodeNetwork::AbstractNodeNetworkLayer *layer) override;
+  void addLayers(std::vector<Shared::NodeNetwork::AbstractNodeNetworkLayer *>
+                     &layers) override;
+
+  Shared::NodeNetwork::AbstractNodeNetworkLayer *addLayer() override;
+
+  Shared::NodeNetwork::AbstractNodeConnection *
+  addConnection(AbstractNode *sourceNode,
+                AbstractNode *destinationNode) override;
+
+  void addConnection(
+      Shared::NodeNetwork::AbstractNodeConnection *connection) override;
 
   // QGraphicsItem interface
 public:
-  QRectF boundingRect() const;
+  QRectF boundingRect() const override;
   void paint(QPainter *painter, const QStyleOptionGraphicsItem *option,
-             QWidget *widget);
+             QWidget *widget) override;
 };
 
 } // namespace NodeNetwork

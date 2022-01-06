@@ -10,8 +10,6 @@ class AbstractNodeConnection;
 
 class AbstractNode {
 public:
-  AbstractNode();
-
   ~AbstractNode();
 
   virtual void addInputNodeConnection(AbstractNodeConnection *nodeConnection);
@@ -31,6 +29,8 @@ public:
   const std::vector<AbstractNodeConnection *> nodeConnections() const;
 
 protected:
+  AbstractNode();
+
   std::vector<AbstractNodeConnection *> mInputNodeConnections;
   std::vector<AbstractNodeConnection *> mOutputNodeConnections;
 };

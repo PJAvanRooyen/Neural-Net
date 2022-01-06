@@ -1,5 +1,7 @@
 #include "NodeNetworkView.h"
+#include "NodeConnectionView.h"
 #include "NodeNetworkLayerView.h"
+#include "NodeView.h"
 
 #include <QPainter>
 
@@ -16,17 +18,6 @@ void NodeNetworkView::repositionLayers() {
   if (mLayers.empty()) {
     return;
   }
-
-  //  // sort by x-position
-  //  auto sortByXPos = [](Shared::NodeNetwork::AbstractNodeNetworkLayer
-  //  *layer1,
-  //                       Shared::NodeNetwork::AbstractNodeNetworkLayer
-  //                       *layer2) {
-  //    return static_cast<NodeNetworkLayerView *>(layer1)->pos().x() <=
-  //           static_cast<NodeNetworkLayerView *>(layer2)->pos().x();
-  //  };
-
-  //  std::sort(mLayers.begin(), mLayers.end(), sortByXPos);
 
   auto layersSize = mLayers.size();
   for (unsigned long layerIdx = 0; layerIdx < layersSize; ++layerIdx) {
@@ -50,6 +41,28 @@ void NodeNetworkView::addLayers(
 
   // position layers
   repositionLayers();
+}
+
+Shared::NodeNetwork::AbstractNodeNetworkLayer *NodeNetworkView::addLayer() {
+  auto *layer = new NodeNetworkLayerView(this);
+  this->addLayer(layer);
+  return layer;
+}
+
+Shared::NodeNetwork::AbstractNodeConnection *NodeNetworkView::addConnection(
+    Shared::NodeNetwork::AbstractNode *sourceNode,
+    Shared::NodeNetwork::AbstractNode *destinationNode) {
+  auto *source = static_cast<NodeView *>(sourceNode);
+  auto *destination = static_cast<NodeView *>(destinationNode);
+
+  auto *nodeConnection = new NodeConnectionView(source, destination, this);
+  this->addConnection(nodeConnection);
+  return nodeConnection;
+}
+
+void NodeNetworkView::addConnection(
+    Shared::NodeNetwork::AbstractNodeConnection *connection) {
+  AbstractNodeNetwork::addConnection(connection);
 }
 
 QRectF NodeNetworkView::boundingRect() const {

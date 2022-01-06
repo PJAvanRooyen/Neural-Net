@@ -8,14 +8,14 @@ class AbstractNode;
 
 class AbstractNodeConnection {
 public:
-  AbstractNodeConnection(AbstractNode *sourceNode, AbstractNode *destNode);
-
   virtual ~AbstractNodeConnection();
 
   AbstractNode *sourceNode() const;
   AbstractNode *destinationNode() const;
 
 protected:
+  AbstractNodeConnection(AbstractNode *sourceNode, AbstractNode *destNode);
+
   // used to pre-initialize derived class. derived class must handle setting the
   // members.
   AbstractNodeConnection();

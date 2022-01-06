@@ -12,6 +12,8 @@ class NodeNetworkLayer : public AbstractGraphicsItemController,
 public:
   NodeNetworkLayer(QObject *parent = Q_NULLPTR);
 
+  Shared::NodeNetwork::AbstractNode *addNode() override;
+
   void addNode(Shared::NodeNetwork::AbstractNode *node) override;
 
   void

@@ -11,6 +11,12 @@ NodeNetworkLayer::NodeNetworkLayer(QObject *parent)
     : AbstractGraphicsItemController(parent),
       Shared::NodeNetwork::AbstractNodeNetworkLayer() {}
 
+Shared::NodeNetwork::AbstractNode *NodeNetworkLayer::addNode() {
+  auto *node = new Node(this);
+  this->addNode(node);
+  return node;
+}
+
 void NodeNetworkLayer::addNode(Shared::NodeNetwork::AbstractNode *node) {
 
   auto *nodeController = static_cast<Node *>(node);

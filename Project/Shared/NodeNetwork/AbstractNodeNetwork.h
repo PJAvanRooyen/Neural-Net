@@ -16,9 +16,9 @@ class AbstractNodeNetworkLayer;
  * of the network. It further has node network layers between those connections.
  */
 class AbstractNodeNetwork : public AbstractNode {
-public:
-  AbstractNodeNetwork();
+  friend class AbstractNodeNetworkFactory;
 
+public:
   ~AbstractNodeNetwork();
 
   const AbstractNodeNetworkLayer *
@@ -32,15 +32,22 @@ public:
   const std::vector<AbstractNodeConnection *> &
   layerOutputConnections(const unsigned long long layerIndex) const;
 
+  virtual Shared::NodeNetwork::AbstractNodeNetworkLayer *addLayer() = 0;
+
   virtual void addLayer(AbstractNodeNetworkLayer *layer);
 
   virtual void addLayers(std::vector<AbstractNodeNetworkLayer *> &layers);
 
-  void addNodeConnection(AbstractNodeConnection *connection);
+  virtual void addConnection(AbstractNodeConnection *connection);
+
+  virtual AbstractNodeConnection *
+  addConnection(AbstractNode *sourceNode, AbstractNode *destinationNode) = 0;
 
   unsigned long long layerCount() const;
 
 protected:
+  AbstractNodeNetwork();
+
   std::vector<AbstractNodeNetworkLayer *> mLayers;
 
   std::map<AbstractNode *, std::vector<AbstractNodeConnection *>>

@@ -35,6 +35,12 @@ void NodeNetworkLayerView::repositionNodes() {
   update();
 }
 
+Shared::NodeNetwork::AbstractNode *NodeNetworkLayerView::addNode() {
+  auto *node = new NodeView(this);
+  this->addNode(node);
+  return node;
+}
+
 void NodeNetworkLayerView::addNode(Shared::NodeNetwork::AbstractNode *node) {
   AbstractNodeNetworkLayer::addNode(node);
 
