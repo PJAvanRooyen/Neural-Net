@@ -215,7 +215,7 @@ double kLearningRate = 0.01;
 
 // ___RANDOMIZATION FUNCTIONS___
 //----------------------------------------------------------------------------
-std::default_random_engine randomizer(3);
+std::default_random_engine randomizer(1);
 
 template <typename DataType>
 std::normal_distribution<DataType>
@@ -381,7 +381,7 @@ template <typename DataType> inline DataType Neuron<DataType>::activate() {
                                                  mInputNodeConnections.cend(),
                                                  DataType(0), connectionOutput);
   // normalize the value
-  // connectionOutputSum /= mInputNodeConnections.size();
+  // connectionOutputSum /= std::sqrt(mInputNodeConnections.size());
 
   // pass the sum through this neuron's bias function.
   const DataType biasedSum = mBiasFunction(connectionOutputSum, mBias);

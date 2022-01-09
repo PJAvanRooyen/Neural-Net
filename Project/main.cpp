@@ -50,17 +50,25 @@ struct Print {
     std::cout << "\n";
   };
 
-  static void printSensitivities(
-      std::vector<std::vector<Core::NodeNetwork::Neuron<double> *>>
-          &layerNeurons) {
+  static void
+  printSensitivities(Core::NodeNetwork::NeuralNetwork<double> *neuralNetwork) {
+    double sensitivitySum = 0;
+    unsigned long long neuronCount = 0;
+    const auto &layers = neuralNetwork->layers();
+
     std::cout << "sensitivities: ";
-    for (auto &layer : layerNeurons) {
+    for (auto &layer : layers) {
+      const auto &neurons = layer->neurons();
       std::cout << "{";
-      for (auto &node : layer) {
-        std::cout << "[" << node->sensitivity() << "],";
+      for (auto &neuron : neurons) {
+        const auto sensitivity = neuron->sensitivity();
+        sensitivitySum += sensitivity;
+        ++neuronCount;
+        std::cout << "[" << sensitivity << "],";
       }
       std::cout << "},";
     }
+    std::cout << "\nAverage sensitivity = " << sensitivitySum / neuronCount;
     std::cout << "\n";
   };
 
@@ -164,7 +172,7 @@ struct Print {
 };
 
 struct Test {
-  static constexpr unsigned long long kLearningIterations = 1000000;
+  static constexpr unsigned long long kLearningIterations = 500;
   static constexpr unsigned long long kLearnPoll = kLearningIterations / 100;
 
   // desired network outputs
@@ -229,11 +237,11 @@ struct Test {
 
     // show debug info
     if (debug) {
-      //      std::cout << "pre-update:\n";
+      std::cout << "pre-update:\n";
       //      Print::printWeights(layerConnections);
       //      Print::printBiases(layerNeurons);
       //      Print::printActivations(layerNeurons);
-      //      Print::printSensitivities(layerNeurons);
+      Print::printSensitivities(neuralNetwork);
       //      Print::printErrors(outputLayer, desired);
     }
 
@@ -278,11 +286,11 @@ struct Test {
 
       // show debug info
       if (debug) {
-        //        std::cout << "post-update:\n";
+        std::cout << "post-update:\n";
         //        Print::printWeights(layerConnections);
         //        Print::printBiases(layerNeurons);
         //        Print::printActivations(layerNeurons);
-        //        Print::printSensitivities(layerNeurons);
+        Print::printSensitivities(neuralNetwork);
         //        Print::printErrors(outputLayer, desired);
       }
 
