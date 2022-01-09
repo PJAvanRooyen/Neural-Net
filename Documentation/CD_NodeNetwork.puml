@@ -1,0 +1,90 @@
+@startuml
+skinparam linetype ortho
+
+class QObject
+class QGraphicsItem
+
+namespace Shared{
+interface INode
+interface INodeConnection
+
+abstract AbstractNode
+abstract AbstractNodeConnection
+abstract AbstractNodeNetworkLayer
+abstract AbstractNodeNetwork
+}
+
+namespace Core{
+class Node
+class NodeConnection
+class NodeNetworkLayer
+class NodeNetwork
+}
+
+namespace UI{
+abstract AbstractGraphicsItemController
+
+class NodeController
+class NodeConnectionController
+class NodeNetworkLayerController
+class NodeNetworkController
+}
+
+' node view
+namespace UI_View{
+class NodeView
+class NodeConnectionView
+class NodeNetworkLayerView
+class NodeNetworkView
+}
+
+'__SHARED__
+' nodes
+Shared.INode <|-- Shared.AbstractNode
+Shared.AbstractNode <|-- Shared.AbstractNodeNetworkLayer
+Shared.AbstractNode <|-- Shared.AbstractNodeNetwork
+' node connections
+Shared.INodeConnection <|-u- Shared.AbstractNodeConnection
+'__SHARED composition__
+Shared.AbstractNode --->"0...n" Shared.AbstractNodeConnection
+Shared.AbstractNodeConnection --->"2" Shared.AbstractNode
+Shared.AbstractNodeNetworkLayer --->"0...n" Shared.AbstractNode
+Shared.AbstractNodeNetworkLayer ---->"0...n" Shared.AbstractNodeConnection
+Shared.AbstractNodeNetwork --u->"0...n" Shared.AbstractNodeNetworkLayer
+Shared.AbstractNodeNetwork --->"0...n" Shared.AbstractNodeConnection
+
+'__CORE__
+Shared.AbstractNode  <|-- Core.Node
+Shared.AbstractNodeConnection  <|-- Core.NodeConnection
+Shared.AbstractNodeNetworkLayer  <|-- Core.NodeNetworkLayer
+Shared.AbstractNodeNetwork  <|-- Core.NodeNetwork
+
+'__UI__
+QObject  <|-- UI.AbstractGraphicsItemController
+UI.AbstractGraphicsItemController <|-- UI.NodeController
+UI.AbstractGraphicsItemController <|-- UI.NodeConnectionController
+UI.AbstractGraphicsItemController <|-- UI.NodeNetworkLayerController
+UI.AbstractGraphicsItemController <|-- UI.NodeNetworkController
+
+Shared.AbstractNode  <|-l- UI.NodeController
+Shared.AbstractNodeConnection  <|-l- UI.NodeConnectionController
+Shared.AbstractNodeNetworkLayer  <|-l- UI.NodeNetworkLayerController
+Shared.AbstractNodeNetwork  <|-l- UI.NodeNetworkController
+
+'__UI VIEWS__
+QGraphicsItem  <|-- UI_View.NodeView
+QGraphicsItem  <|-- UI_View.NodeConnectionView
+QGraphicsItem  <|-- UI_View.NodeNetworkLayerView
+QGraphicsItem <|-- UI_View.NodeNetworkView
+
+Shared.AbstractNode  <|-l- UI_View.NodeView
+Shared.AbstractNodeConnection  <|-l- UI_View.NodeConnectionView
+Shared.AbstractNodeNetworkLayer  <|-l- UI_View.NodeNetworkLayerView
+Shared.AbstractNodeNetwork  <|-l- UI_View.NodeNetworkView
+
+'__UI composition__
+UI.NodeController *---->"1" UI_View.NodeView
+UI.NodeConnectionController *---->"1" UI_View.NodeConnectionView
+UI.NodeNetworkLayerController *---->"1" UI_View.NodeNetworkLayerView
+UI.NodeNetworkController *---->"1" UI_View.NodeNetworkView
+@enduml
