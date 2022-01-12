@@ -54,11 +54,15 @@ public:
 
     std::vector<Iris> irises;
     for (std::string line; std::getline(ifs, line);) {
+      if (line.empty()) {
+        break;
+      }
+
       QRegularExpressionMatch match =
           kIrisMatcher.match(QString::fromStdString(line));
 
       if (!match.hasMatch()) {
-        return {};
+        continue;
       }
 
       std::string typeStr = match.captured("type").toStdString();
