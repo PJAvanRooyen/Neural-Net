@@ -22,7 +22,11 @@ public:
   ~AbstractNodeNetwork();
 
   const AbstractNodeNetworkLayer *
-  layer(const unsigned long long layerIdx) const;
+  layerAt(const unsigned long long layerIndex) const;
+
+  const AbstractNodeNetworkLayer *inputLayer() const;
+
+  const AbstractNodeNetworkLayer *outputLayer() const;
 
   const std::vector<AbstractNodeNetworkLayer *> &layers() const;
 

@@ -29,5 +29,9 @@ void AbstractNodeNetworkLayer::addNodes(std::vector<AbstractNode *> &nodes) {
     addNode(node);
   }
 }
+
+unsigned long long AbstractNodeNetworkLayer::size() const {
+  return mNodes.size();
+}
 } // namespace NodeNetwork
 } // namespace Shared
