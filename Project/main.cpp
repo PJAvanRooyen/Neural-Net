@@ -9,7 +9,7 @@
 
 int main(int argc, char *argv[]) {
 
-  Tests::NeuralNetTest::logicGateTest();
+  Tests::NeuralNetTest::irisTest();
 
   // UI
   //=========================================================================

@@ -45,7 +45,7 @@ void NeuralNetTest::logicGateTest() {
   // setup test
   const unsigned long long learningIterations = 50000;
   const unsigned long long testingIterations = 10000;
-  const double valuePollingRate = 100;
+  const double valuesToPoll = 100;
   std::srand(unsigned(std::time(0)));
 
   // setup network
@@ -54,10 +54,12 @@ void NeuralNetTest::logicGateTest() {
   std::vector<std::pair<std::vector<double> /*inputs*/,
                         std::vector<double> /*desiredOutputs*/>>
       learningSet;
+  learningSet.reserve(learningIterations);
 
   std::vector<std::pair<std::vector<double> /*inputs*/,
                         std::vector<double> /*desiredOutputs*/>>
       testingSet;
+  testingSet.reserve(testingIterations);
 
   auto desiredOutputs = [](const std::vector<double> &inputs) {
     bool in0 = std::round(inputs[0]);
@@ -79,11 +81,12 @@ void NeuralNetTest::logicGateTest() {
           const unsigned long long iterations) {
         for (unsigned long long idx = 0; idx < iterations; ++idx) {
           std::vector<double> inputs;
+          inputs.reserve(inputNodeCount);
           for (unsigned long long nodeIdx = 0; nodeIdx < inputNodeCount;
                ++nodeIdx) {
-            inputs.push_back(static_cast<double>(rand()) / RAND_MAX);
+            inputs[nodeIdx] = static_cast<double>(rand()) / RAND_MAX;
           }
-          dataset.push_back(std::make_pair(inputs, desiredOutputs(inputs)));
+          dataset[idx] = std::make_pair(inputs, desiredOutputs(inputs));
         }
       };
 
@@ -101,60 +104,47 @@ void NeuralNetTest::logicGateTest() {
       static_cast<Core::NodeNetwork::NeuralNetwork<double> &>(*abstractNet);
 
   // teach the network
-  test(learningSet, testingSet, neuralNet, valuePollingRate);
+  test(learningSet, testingSet, neuralNet, valuesToPoll);
 }
 
 void NeuralNetTest::irisTest() {
-  srand(1);
+  // setup test
+  const unsigned long long learningIterations = 5000;
+  const unsigned long long testingIterations = 1000;
+  const double valuesToPoll = 100;
+  std::srand(unsigned(std::time(0)));
 
-  auto inputValueGenerator = []() {
-    // get the data
-    auto dataset = DataExtractor::DataExtractor::extract();
-    // split into sets for each output type
-    std::vector<DataExtractor::Iris> setosa;
-    std::vector<DataExtractor::Iris> versicolour;
-    std::vector<DataExtractor::Iris> virginica;
-    setosa.insert(setosa.begin(), dataset.cbegin(), dataset.cbegin() + 49);
-    versicolour.insert(versicolour.begin(), dataset.cbegin() + 50,
-                       dataset.cbegin() + 99);
-    virginica.insert(virginica.begin(), dataset.cbegin() + 99,
-                     dataset.cbegin() + 149);
+  // setup network
+  const unsigned long inputNodeCount = 4;
+  const unsigned long outputNodeCount = 3;
+  const std::vector<unsigned long> shape = {inputNodeCount, 4, 4, 4,
+                                            outputNodeCount};
 
-    // randomly shuffle the data
-    std::srand(unsigned(std::time(0)));
-    std::random_shuffle(setosa.begin(), setosa.end());
-    std::random_shuffle(versicolour.begin(), versicolour.end());
-    std::random_shuffle(virginica.begin(), virginica.end());
+  std::vector<std::pair<std::vector<double> /*inputs*/,
+                        std::vector<double> /*desiredOutputs*/>>
+      learningSet;
+  learningSet.reserve(learningIterations);
 
-    // create the learning set
-    double learnFraction = 0.7;
-    std::vector<DataExtractor::Iris> learnSet;
-    learnSet.insert(learnSet.begin(), setosa.cbegin(),
-                    setosa.cbegin() +
-                        std::round(setosa.size() * learnFraction));
-    learnSet.insert(learnSet.begin(), versicolour.cbegin(),
-                    versicolour.cbegin() +
-                        std::round(versicolour.size() * learnFraction));
-    learnSet.insert(learnSet.begin(), virginica.cbegin(),
-                    virginica.cbegin() +
-                        std::round(virginica.size() * learnFraction));
+  std::vector<std::pair<std::vector<double> /*inputs*/,
+                        std::vector<double> /*desiredOutputs*/>>
+      testingSet;
+  testingSet.reserve(testingIterations);
 
-    std::vector<double> inputs;
-
-    return inputs;
-  };
+  DataExtractor::DataExtractor::generateLearningAndTestingSets(
+      learningSet, testingSet, inputNodeCount, learningIterations,
+      testingIterations);
 
   // create the network
   Shared::NodeNetwork::NodeNetworkFactory factory =
       Shared::NodeNetwork::NodeNetworkFactory();
   Shared::NodeNetwork::AbstractNodeNetwork *abstractNet =
       factory.createMeshNetwork<Core::NodeNetwork::NeuralNetwork<double>>(
-          {2, 2, 2});
+          shape);
   Core::NodeNetwork::NeuralNetwork<double> &neuralNet =
       static_cast<Core::NodeNetwork::NeuralNetwork<double> &>(*abstractNet);
 
   // teach the network
-  // test(inputValueGenerator, neuralNet, compareWithDesiredOutputs);
+  test(learningSet, testingSet, neuralNet, valuesToPoll);
 }
 
 void NeuralNetTest::test(
