@@ -1,5 +1,6 @@
 set( TARGET_NAME Shared )
 
+add_subdirectory( Communicator )
 add_subdirectory( NodeNetwork )
 
 set( OBJ_FILES
