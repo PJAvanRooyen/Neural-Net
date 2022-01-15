@@ -16,9 +16,19 @@ public:
   ~NeuralNetwork() {}
 
   const NeuralNetworkLayer<DataType> *
-  layer(const unsigned long long layerIdx) const {
+  layerAt(const unsigned long long layerIndex) const {
     return static_cast<const NeuralNetworkLayer<DataType> *>(
-        NodeNetwork::layer(layerIdx));
+        NodeNetwork::layerAt(layerIndex));
+  }
+
+  const NeuralNetworkLayer<DataType> *inputLayer() const {
+    return static_cast<const NeuralNetworkLayer<DataType> *>(
+        NodeNetwork::inputLayer());
+  }
+
+  const NeuralNetworkLayer<DataType> *outputLayer() const {
+    return static_cast<const NeuralNetworkLayer<DataType> *>(
+        NodeNetwork::outputLayer());
   }
 
   const std::vector<NeuralNetworkLayer<DataType> *> &layers() const {
@@ -51,6 +61,84 @@ public:
   void addConnection(
       Shared::NodeNetwork::AbstractNodeConnection *connection) override {
     AbstractNodeNetwork::addConnection(connection);
+  }
+
+  bool activate(const std::vector<DataType> &values) {
+    deactivate();
+
+    const bool valuesSet = setInputValues(values);
+
+    const auto &outputNeurons = outputLayer()->neurons();
+
+    for (auto *neuron : outputNeurons) {
+      neuron->activate();
+    }
+
+    return valuesSet;
+  }
+
+  std::vector<DataType> outputValues() const {
+    const auto &outputNeurons = outputLayer()->neurons();
+
+    std::vector<DataType> obtainedValues;
+    for (auto *neuron : outputNeurons) {
+      obtainedValues.push_back(neuron->value());
+    }
+
+    return obtainedValues;
+  }
+
+  bool backPropagete(const std::vector<DataType> &values) {
+    const bool valuesSet = setDesiredOutputValues(values);
+
+    const auto &inputNeurons = inputLayer()->neurons();
+
+    for (auto *neuron : inputNeurons) {
+      neuron->backPropagate();
+    }
+
+    return valuesSet;
+  }
+
+private:
+  void deactivate() {
+    const auto &outputNeurons = outputLayer()->neurons();
+
+    for (auto *neuron : outputNeurons) {
+      neuron->deActivate();
+    }
+  }
+
+  bool setInputValues(const std::vector<DataType> &values) {
+    const auto &inputNeurons = inputLayer()->neurons();
+
+    auto valueCount = values.size();
+    auto inputNeuronCount = inputNeurons.size();
+
+    for (auto neuronIdx = 0; neuronIdx < inputNeuronCount; ++neuronIdx) {
+      if (neuronIdx < valueCount) {
+        inputNeurons[neuronIdx]->setValue(values[neuronIdx]);
+      }
+    }
+
+    return inputNeuronCount == valueCount;
+  }
+
+  bool setDesiredOutputValues(const std::vector<DataType> &values) {
+    const auto &outputNeurons = outputLayer()->neurons();
+
+    auto valueCount = values.size();
+    auto outputNeuronCount = outputNeurons.size();
+
+    for (unsigned long neuronIdx = 0; neuronIdx < outputNeuronCount;
+         ++neuronIdx) {
+      if (neuronIdx < valueCount) {
+        DataType desiredValue = values[neuronIdx];
+        outputNeurons[neuronIdx]->setDesiredActivation(desiredValue);
+      }
+    }
+
+    return outputNeuronCount == valueCount;
   }
 };
 } // namespace NodeNetwork
