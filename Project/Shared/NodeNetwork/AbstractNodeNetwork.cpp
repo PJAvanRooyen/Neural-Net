@@ -10,8 +10,28 @@ AbstractNodeNetwork::AbstractNodeNetwork() : AbstractNode() {}
 AbstractNodeNetwork::~AbstractNodeNetwork() {}
 
 const AbstractNodeNetworkLayer *
-AbstractNodeNetwork::layer(const unsigned long long layerIdx) const {
-  return mLayers[layerIdx];
+AbstractNodeNetwork::layerAt(const unsigned long long layerIndex) const {
+  if (layerIndex > mLayers.size() - 1) {
+    return nullptr;
+  } else {
+    return mLayers[layerIndex];
+  }
+}
+
+const AbstractNodeNetworkLayer *AbstractNodeNetwork::inputLayer() const {
+  if (mLayers.size() == 0) {
+    return nullptr;
+  } else {
+    return mLayers[0];
+  }
+}
+
+const AbstractNodeNetworkLayer *AbstractNodeNetwork::outputLayer() const {
+  if (mLayers.size() == 0) {
+    return nullptr;
+  } else {
+    return mLayers[layerCount() - 1];
+  }
 }
 
 const std::vector<AbstractNodeNetworkLayer *> &
@@ -24,7 +44,7 @@ AbstractNodeNetwork::layerInputConnections(
     const unsigned long long layerIndex) const {
   static const std::vector<AbstractNodeConnection *> kEmpty = {};
 
-  if (layerIndex < mLayers.size() - 1) {
+  if (layerIndex > mLayers.size() - 1) {
     return kEmpty;
   } else {
     return mLayers[layerIndex]->inputNodeConnections();
@@ -36,7 +56,7 @@ AbstractNodeNetwork::layerOutputConnections(
     const unsigned long long layerIndex) const {
   static const std::vector<AbstractNodeConnection *> kEmpty = {};
 
-  if (layerIndex < mLayers.size() - 1) {
+  if (layerIndex > mLayers.size() - 1) {
     return kEmpty;
   } else {
     return mLayers[layerIndex]->inputNodeConnections();
