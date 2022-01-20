@@ -264,7 +264,9 @@ bool NeuralNetTest::testIteration(
 
   // teach the network
   if (learn) {
+    const auto dataBefore = neuralNetwork.getData();
     neuralNetwork.backPropagete(desiredOutputs);
+    const auto dataAfter = neuralNetwork.getData();
   }
 
   if (learn && debug) {
