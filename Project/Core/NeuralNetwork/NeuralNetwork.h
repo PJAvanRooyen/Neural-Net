@@ -15,6 +15,12 @@ public:
 
   ~NeuralNetwork() {}
 
+  using NeuronData = typename Neuron<DataType>::Data;
+  using NeuronConnectionData = typename NeuronConnection<DataType>::Data;
+  using LayerData =
+      std::vector<std::pair<NeuronData, std::vector<NeuronConnectionData>>>;
+  using Data = std::vector<LayerData>;
+
   const NeuralNetworkLayer<DataType> *
   layerAt(const unsigned long long layerIndex) const {
     return static_cast<const NeuralNetworkLayer<DataType> *>(
@@ -98,6 +104,41 @@ public:
     }
 
     return valuesSet;
+  }
+
+  Data getData() {
+    const auto &layers = this->layers();
+    const auto layerCount = this->layerCount();
+    Data data;
+    data.reserve(layerCount);
+
+    for (unsigned long layerIdx = 0; layerIdx < layerCount; ++layerIdx) {
+      const auto *layer = layers.at(layerIdx);
+      const auto &neurons = layer->neurons();
+      const auto neuronCount = neurons.size();
+      LayerData layerData;
+      layerData.reserve(neuronCount);
+
+      for (unsigned long neuronIdx = 0; neuronIdx < neuronCount; ++neuronIdx) {
+        const auto *neuron = neurons.at(neuronIdx);
+        const auto &outputConnections = neuron->outputNeuronConnections();
+        const auto connectionCount = outputConnections.size();
+        std::pair<NeuronData, std::vector<NeuronConnectionData>>
+            layerNeuronData = std::make_pair(
+                neuron->data(), std::vector<NeuronConnectionData>{});
+        auto &neuronConnectionData = layerNeuronData.second;
+        neuronConnectionData.reserve(connectionCount);
+
+        for (unsigned long connectionIdx = 0; connectionIdx < connectionCount;
+             ++connectionIdx) {
+          const auto *connection = outputConnections.at(connectionIdx);
+          neuronConnectionData.push_back(connection->data());
+        }
+        layerData.push_back(std::move(layerNeuronData));
+      }
+      data.push_back(std::move(layerData));
+    }
+    return data;
   }
 
 private:

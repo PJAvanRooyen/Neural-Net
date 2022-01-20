@@ -10,9 +10,6 @@
 #include <optional>
 #include <random>
 
-namespace Core {
-namespace NodeNetwork {
-
 /* Weight vs. Bias
    (source:
    https://deepai.org/machine-learning-glossary-and-terms/weight-artificial-neural-network)
@@ -153,6 +150,11 @@ namespace NodeNetwork {
    connected to the current hidden neuron.
 */
 
+namespace Core {
+namespace NodeNetwork {
+
+template <typename DataType> class NeuronConnection;
+
 // ___WEIGHT FUNCTIONS___
 //----------------------------------------------------------------------------
 template <typename DataType>
@@ -233,31 +235,49 @@ template <typename DataType> class Neuron : public Node {
   typedef DataType (*CostFunctionDerivative)(const DataType, const DataType);
 
 public:
+  struct Data {
+    DataType bias;
+
+    std::optional<DataType> activation;
+
+    /*
+     * \brief sensitivity = dC/dA * dA/dB for current activation value.
+     */
+    std::optional<DataType> sensitivity;
+
+    std::optional<DataType> desiredActivation;
+  };
+
   Neuron()
-      : Node(), mBiasFunction(constantOffset),
-        mBias(kNormalDist<DataType>(randomizer)), mActivationFunction(sigmoid),
-        mActivation(std::nullopt),
+      : Node(), mBiasFunction(constantOffset), mActivationFunction(sigmoid),
         mActivationFunctionDerivative(sigmoidDerivative),
         mCostFunctionDerivative(meanSquareErrorDerivative),
-        mSensitivity(std::nullopt), mDesiredActivation(std::nullopt) {}
+        mData({kNormalDist<DataType>(randomizer), std::nullopt, std::nullopt,
+               std::nullopt}) {}
 
   ~Neuron();
 
-  DataType bias() const { return mBias; }
+  const std::vector<NeuronConnection<DataType> *> &
+  outputNeuronConnections() const {
+    return reinterpret_cast<const std::vector<NeuronConnection<DataType> *> &>(
+        mOutputNodeConnections);
+  }
+
+  DataType bias() const { return mData.bias; }
 
   DataType value() {
-    if (mActivation.has_value()) {
-      return mActivation.value();
+    if (mData.activation.has_value()) {
+      return mData.activation.value();
     }
     return activate();
   }
 
-  void setValue(const DataType value) { mActivation.emplace(value); }
+  void setValue(const DataType value) { mData.activation.emplace(value); }
 
   DataType activate();
 
   void setDesiredActivation(const DataType desiredActivation) {
-    mDesiredActivation.emplace(desiredActivation);
+    mData.desiredActivation.emplace(desiredActivation);
   }
 
   DataType backPropagate();
@@ -266,31 +286,25 @@ public:
 
   void deActivate();
 
+  const Data &data() const { return mData; }
+
 private:
   /*
    * \brief function pointer for the bias function.
    */
   BiasFunction mBiasFunction;
 
-  DataType mBias;
-
   /*
    * \brief function pointer for the activation function.
    */
   ActivationFunction mActivationFunction;
 
-  std::optional<DataType> mActivation;
-
   ActivationFunctionDerivative mActivationFunctionDerivative;
 
   CostFunctionDerivative mCostFunctionDerivative;
 
-  /*
-   * \brief sensitivity = dC/dA * dA/dB for current activation value.
-   */
-  std::optional<DataType> mSensitivity;
+  Data mData;
 
-  std::optional<DataType> mDesiredActivation;
 }; // namespace NodeNetwork
 
 template <typename DataType> class NeuronConnection : public NodeConnection {
@@ -298,17 +312,23 @@ template <typename DataType> class NeuronConnection : public NodeConnection {
   typedef DataType (*WeightFunction)(DataType, DataType);
 
 public:
+  struct Data {
+    DataType weight;
+
+    std::optional<DataType> activation;
+  };
+
   NeuronConnection(Neuron<DataType> *sourceNeuron, Neuron<DataType> *destNeuron)
       : NodeConnection(sourceNeuron, destNeuron), mWeightFunction(LinearScale),
-        mWeight(kNormalDist<DataType>(randomizer)), mActivation(std::nullopt) {}
+        mData({kNormalDist<DataType>(randomizer), std::nullopt}) {}
 
-  DataType weight() const { return mWeight; }
+  DataType weight() const { return mData.weight; }
 
-  void setWeight(const DataType weight) { mWeight = weight; }
+  void setWeight(const DataType weight) { mData.weight = weight; }
 
   DataType value() {
-    if (mActivation.has_value()) {
-      return mActivation.value();
+    if (mData.activation.has_value()) {
+      return mData.activation.value();
     }
     return activate();
   }
@@ -316,16 +336,16 @@ public:
   DataType activate() {
     Neuron<DataType> *sourceNeuron = static_cast<Neuron<DataType> *>(mSource);
     const DataType sourceActivation = sourceNeuron->activate();
-    const DataType activation = mWeightFunction(sourceActivation, mWeight);
+    const DataType activation = mWeightFunction(sourceActivation, mData.weight);
 
-    mActivation.emplace(activation);
-    return mActivation.value();
+    mData.activation.emplace(activation);
+    return mData.activation.value();
   }
 
   void updateWeight(const DataType destinationNodeSensitivity) {
     Neuron<DataType> *sourceNeuron = static_cast<Neuron<DataType> *>(mSource);
 
-    mWeight +=
+    mData.weight +=
         kLearningRate * destinationNodeSensitivity * sourceNeuron->value();
   }
 
@@ -334,7 +354,7 @@ public:
         static_cast<Neuron<DataType> *>(mDestination);
 
     const DataType sensitivity = destinationNeuron->backPropagate();
-    return mWeight * sensitivity;
+    return mData.weight * sensitivity;
   }
 
   void deActivate() {
@@ -347,21 +367,21 @@ public:
     sourceNeuron->deActivate();
   }
 
+  const Data &data() const { return mData; }
+
 private:
   /*
    * \brief function pointer for the weight function.
    */
   WeightFunction mWeightFunction;
 
-  DataType mWeight;
-
-  std::optional<DataType> mActivation;
+  Data mData;
 };
 
 template <typename DataType> inline DataType Neuron<DataType>::activate() {
 
-  if (mActivation.has_value()) {
-    return mActivation.value();
+  if (mData.activation.has_value()) {
+    return mData.activation.value();
   } else if (mInputNodeConnections.size() == 0) {
     // error, activations of input neurons should already have been set
     // manually.
@@ -384,31 +404,31 @@ template <typename DataType> inline DataType Neuron<DataType>::activate() {
   // connectionOutputSum /= std::sqrt(mInputNodeConnections.size());
 
   // pass the sum through this neuron's bias function.
-  const DataType biasedSum = mBiasFunction(connectionOutputSum, mBias);
+  const DataType biasedSum = mBiasFunction(connectionOutputSum, mData.bias);
 
   // pass the sum through this neuron's activation function.
-  mActivation.emplace(mActivationFunction(biasedSum));
+  mData.activation.emplace(mActivationFunction(biasedSum));
 
-  return mActivation.value();
+  return mData.activation.value();
 }
 
 template <typename DataType> inline DataType Neuron<DataType>::backPropagate() {
-  if (!mActivation.has_value()) {
+  if (!mData.activation.has_value()) {
     // error, must have activated for it to back propagate.
     return DataType(0);
   }
 
-  if (mSensitivity.has_value()) {
+  if (mData.sensitivity.has_value()) {
     // don't re-update bias or re-calculate sensitivity if it has already been
     // calculated.
-    return mSensitivity.value();
+    return mData.sensitivity.value();
   }
 
   // calculate the sensitivity if not yet calculated.
   DataType sensitivity = this->sensitivity();
 
   // update this neuron's bias
-  mBias += kLearningRate * sensitivity;
+  mData.bias += kLearningRate * sensitivity;
 
   // for each input connection, update the connection's weight
   for (auto nodeConnection : mInputNodeConnections) {
@@ -420,18 +440,18 @@ template <typename DataType> inline DataType Neuron<DataType>::backPropagate() {
 }
 
 template <typename DataType> inline DataType Neuron<DataType>::sensitivity() {
-  if (!mActivation.has_value()) {
+  if (!mData.activation.has_value()) {
     // error
     return DataType(0);
   }
 
-  if (mSensitivity.has_value()) {
-    return mSensitivity.value();
+  if (mData.sensitivity.has_value()) {
+    return mData.sensitivity.value();
   }
 
   // get the activation value, it must already exist for back propagation to
   // work.
-  DataType activation = mActivation.value();
+  DataType activation = mData.activation.value();
 
   DataType dA_da = mActivationFunctionDerivative(activation);
 
@@ -439,7 +459,7 @@ template <typename DataType> inline DataType Neuron<DataType>::sensitivity() {
     //   for output neurons:
     //   Wk_j' = Wk_j + r * (Pk - Ak) * g'(Ak) * Aj
 
-    if (!mDesiredActivation.has_value()) {
+    if (!mData.desiredActivation.has_value()) {
       // error can't back propagate without desired output.
       return DataType(0);
     }
@@ -447,8 +467,8 @@ template <typename DataType> inline DataType Neuron<DataType>::sensitivity() {
     // output's sensitivity replaces the activation value with the cost
     // derivative.
     DataType dC_dA =
-        mCostFunctionDerivative(activation, mDesiredActivation.value());
-    mSensitivity.emplace(dC_dA * dA_da);
+        mCostFunctionDerivative(activation, mData.desiredActivation.value());
+    mData.sensitivity.emplace(dC_dA * dA_da);
   } else {
     //   for hidden neurons:
     //   Wj_i' = Wj_i + r * g'(Aj) * sum{ Wk_j * g'(Ak) * (Pk - Ak)}  * Ai
@@ -461,14 +481,14 @@ template <typename DataType> inline DataType Neuron<DataType>::sensitivity() {
       sensitivity += neuronConnection->backPropagate();
     }
     sensitivity *= dA_da;
-    mSensitivity.emplace(sensitivity);
+    mData.sensitivity.emplace(sensitivity);
   }
 
-  return mSensitivity.value();
+  return mData.sensitivity.value();
 }
 
 template <typename DataType> inline void Neuron<DataType>::deActivate() {
-  if (!mActivation.has_value() && !mSensitivity.has_value()) {
+  if (!mData.activation.has_value() && !mData.sensitivity.has_value()) {
     return;
   }
 
@@ -479,8 +499,8 @@ template <typename DataType> inline void Neuron<DataType>::deActivate() {
     neuronConnection->deActivate();
   }
 
-  mActivation.reset();
-  mSensitivity.reset();
+  mData.activation.reset();
+  mData.sensitivity.reset();
 }
 
 } // namespace NodeNetwork
