@@ -1,14 +1,11 @@
-set( TARGET_NAME Communicator )
+set( TARGET_NAME NeuralNetworkShared )
 
 set( HEADERS
-  Communicator.h
+  Defines.h
 )
 
 set( SOURCES
-  Communicator.cpp
 )
-
-include_directories( ../.. )
 
 add_library( ${TARGET_NAME} OBJECT ${SOURCES} ${HEADERS} )
 target_link_libraries( ${TARGET_NAME} Qt5::Core)

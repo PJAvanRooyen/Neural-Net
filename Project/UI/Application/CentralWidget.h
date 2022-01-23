@@ -2,6 +2,7 @@
 #define CentralWidget_H
 
 #include "CentralWidgetView.h"
+#include "UI/NodeNetwork/NeuralNetworkManager.h"
 
 #include <QGraphicsScene>
 
@@ -16,9 +17,12 @@ public:
 
   CentralWidgetView *view() const;
 
+  bool createMeshNetwork(const std::vector<unsigned long> &layerSizes);
+
 private:
   QGraphicsScene *mScene;
   CentralWidgetView *mView;
+  UI::NodeNetwork::NeuralNetworkManager mNetworkManager;
 };
 
 } // namespace Application

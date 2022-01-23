@@ -24,6 +24,20 @@ public:
 
   static void irisTest();
 
+  static void irisDataToNetworkInputs(
+      std::vector<std::pair<std::vector<double>, std::vector<double>>>
+          &learningSet,
+      std::vector<std::pair<std::vector<double>, std::vector<double>>>
+          &testingSet,
+      const unsigned long outputNodeCount = 3);
+
+  static void
+  irisTest(std::vector<std::pair<std::vector<double>, std::vector<double>>>
+               &learningSet,
+           std::vector<std::pair<std::vector<double>, std::vector<double>>>
+               &testingSet,
+           Core::NodeNetwork::NeuralNetwork<double> &neuralNet);
+
   static void
   test(std::vector<std::pair<std::vector<double> /*inputs*/,
                              std::vector<double> /*desiredOutputs*/>>
@@ -108,31 +122,15 @@ void NeuralNetTest::logicGateTest() {
 }
 
 void NeuralNetTest::irisTest() {
-  // setup test
-  const unsigned long long learningIterations = 5000;
-  const unsigned long long testingIterations = 1000;
-  const double valuesToPoll = 100;
-  std::srand(unsigned(std::time(0)));
-
   // setup network
   const unsigned long inputNodeCount = 4;
   const unsigned long outputNodeCount = 3;
   const std::vector<unsigned long> shape = {inputNodeCount, 4, 4, 4,
                                             outputNodeCount};
 
-  std::vector<std::pair<std::vector<double> /*inputs*/,
-                        std::vector<double> /*desiredOutputs*/>>
-      learningSet;
-  learningSet.reserve(learningIterations);
-
-  std::vector<std::pair<std::vector<double> /*inputs*/,
-                        std::vector<double> /*desiredOutputs*/>>
-      testingSet;
-  testingSet.reserve(testingIterations);
-
-  DataExtractor::DataExtractor::generateLearningAndTestingSets(
-      learningSet, testingSet, inputNodeCount, learningIterations,
-      testingIterations);
+  std::vector<std::pair<std::vector<double>, std::vector<double>>> learningSet;
+  std::vector<std::pair<std::vector<double>, std::vector<double>>> testingSet;
+  irisDataToNetworkInputs(learningSet, testingSet, outputNodeCount);
 
   // create the network
   Shared::NodeNetwork::NodeNetworkFactory factory =
@@ -143,7 +141,36 @@ void NeuralNetTest::irisTest() {
   Core::NodeNetwork::NeuralNetwork<double> &neuralNet =
       static_cast<Core::NodeNetwork::NeuralNetwork<double> &>(*abstractNet);
 
+  irisTest(learningSet, testingSet, neuralNet);
+}
+
+void NeuralNetTest::irisDataToNetworkInputs(
+    std::vector<std::pair<std::vector<double>, std::vector<double>>>
+        &learningSet,
+    std::vector<std::pair<std::vector<double>, std::vector<double>>>
+        &testingSet,
+    const unsigned long outputNodeCount) {
+  // setup test
+  const unsigned long long learningIterations = 5000;
+  const unsigned long long testingIterations = 1000;
+  std::srand(unsigned(std::time(0)));
+
+  learningSet.reserve(learningIterations);
+  testingSet.reserve(testingIterations);
+
+  DataExtractor::DataExtractor::generateLearningAndTestingSets(
+      learningSet, testingSet, outputNodeCount, learningIterations,
+      testingIterations);
+}
+
+void NeuralNetTest::irisTest(
+    std::vector<std::pair<std::vector<double> /*inputs*/,
+                          std::vector<double> /*desiredOutputs*/>> &learningSet,
+    std::vector<std::pair<std::vector<double> /*inputs*/,
+                          std::vector<double> /*desiredOutputs*/>> &testingSet,
+    Core::NodeNetwork::NeuralNetwork<double> &neuralNet) {
   // teach the network
+  const double valuesToPoll = 100;
   test(learningSet, testingSet, neuralNet, valuesToPoll);
 }
 

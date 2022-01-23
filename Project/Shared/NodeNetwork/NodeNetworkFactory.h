@@ -4,6 +4,7 @@
 #include "AbstractNodeNetwork.h"
 #include "AbstractNodeNetworkLayer.h"
 
+#include <memory>
 #include <vector>
 
 namespace Shared {
@@ -21,9 +22,9 @@ public:
   ~NodeNetworkFactory();
 
   template <class DerivedNetwork>
-  AbstractNodeNetwork *
+  static DerivedNetwork *
   createMeshNetwork(const std::vector<unsigned long> &layerSizes) {
-    AbstractNodeNetwork *nodeNetwork = new DerivedNetwork();
+    auto *nodeNetwork = new DerivedNetwork();
 
     for (unsigned long long layerIdx = 0; layerIdx < layerSizes.size();
          ++layerIdx) {
@@ -48,7 +49,7 @@ public:
       }
     }
 
-    return nodeNetwork;
+    return std::move(nodeNetwork);
   }
 };
 

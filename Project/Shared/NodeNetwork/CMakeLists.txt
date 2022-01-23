@@ -1,6 +1,7 @@
 set( TARGET_NAME NodeNetworkShared )
 
 set( HEADERS
+  NodeNetworkManager.h
   NodeNetworkFactory.h
   AbstractNodeNetwork.h
   AbstractNodeNetworkLayer.h
@@ -9,6 +10,7 @@ set( HEADERS
 )
 
 set( SOURCES
+  NodeNetworkManager.cpp
   NodeNetworkFactory.cpp
   AbstractNodeNetwork.cpp
   AbstractNodeNetworkLayer.cpp

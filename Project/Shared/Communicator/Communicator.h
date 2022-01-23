@@ -3,9 +3,14 @@
 
 #include <QCoreApplication>
 #include <QEvent>
+#include <QMetaEnum>
 #include <QUuid>
 #include <optional>
 #include <set>
+
+// test neuralNetInfo
+#include "Shared/NeuralNetwork/Defines.h"
+// test
 
 namespace Shared {
 namespace Communicator {
@@ -17,45 +22,58 @@ protected:
   IEvent(const QEvent::Type eventType) : QEvent(eventType) {}
 };
 
-template <class EventType> class AbstractEvent : public IEvent {
+template <class EventType> class Event : public IEvent {
 public:
-protected:
-  AbstractEvent()
-      : IEvent(static_cast<QEvent::Type>(QEvent::registerEventType())) {}
+  virtual ~Event() {}
+
+  static QEvent::Type staticType() {
+    static QEvent::Type sType =
+        static_cast<QEvent::Type>(QEvent::registerEventType());
+    return sType;
+  }
 
   IEvent *copy() const {
     return new EventType(*static_cast<const EventType *>(this));
   }
+
+protected:
+  Event() : IEvent(staticType()) {}
 };
 
-struct EvNeuralNetCreate : public AbstractEvent<EvNeuralNetCreate> {
-  EvNeuralNetCreate(const std::vector<unsigned long> &layerSizes)
-      : AbstractEvent<EvNeuralNetCreate>(), mLayerSizes(layerSizes) {}
+struct EvNeuralNetCreate : public Event<EvNeuralNetCreate> {
+  EvNeuralNetCreate(const std::vector<unsigned long> &layerSizes,
+                    const QUuid &neuralNetId)
+      : Event<EvNeuralNetCreate>(), mLayerSizes(layerSizes),
+        mNetId(neuralNetId) {}
 
   const std::vector<unsigned long> mLayerSizes;
+
+  const QUuid mNetId;
 };
 
-struct EvNeuralNetCreateResponse
-    : public AbstractEvent<EvNeuralNetCreateResponse> {
+struct EvNeuralNetCreateResponse : public Event<EvNeuralNetCreateResponse> {
   EvNeuralNetCreateResponse(const std::optional<QUuid> &neuralNetId)
-      : AbstractEvent<EvNeuralNetCreateResponse>(), mNetId(neuralNetId) {}
+      : Event<EvNeuralNetCreateResponse>(), mNetId(neuralNetId) {}
 
   const std::optional<const QUuid> mNetId;
 };
 
-struct EvNeuralNetRun : public AbstractEvent<EvNeuralNetRun> {
+struct EvNeuralNetRun : public Event<EvNeuralNetRun> {
   EvNeuralNetRun(const QUuid &neuralNetId)
-      : AbstractEvent<EvNeuralNetRun>(), mNetId(neuralNetId) {}
+      : Event<EvNeuralNetRun>(), mNetId(neuralNetId) {}
 
   const QUuid mNetId;
 };
 
-class EvNeuralNetRunInfo : public AbstractEvent<EvNeuralNetRunInfo> {
+class EvNeuralNetRunInfo : public Event<EvNeuralNetRunInfo> {
 public:
-  EvNeuralNetRunInfo(const QUuid &neuralNetId)
-      : AbstractEvent<EvNeuralNetRunInfo>(), mNetId(neuralNetId) {}
+  EvNeuralNetRunInfo(const QUuid &neuralNetId,
+                     const Shared::NodeNetwork::NeuralNetworkData<double> &data)
+      : Event<EvNeuralNetRunInfo>(), mNetId(neuralNetId), mNetData(data) {}
 
   const QUuid mNetId;
+
+  const Shared::NodeNetwork::NeuralNetworkData<double> mNetData;
 };
 
 class Communicator {
@@ -77,7 +95,7 @@ public:
 
   void postEvent(const IEvent *const event) const {
     const IEvent::Type eventType = event->type();
-    if (eventType != IEvent::Type::User) {
+    if (eventType < QEvent::Type::User) {
       return;
     }
 
