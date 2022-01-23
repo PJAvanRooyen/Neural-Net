@@ -3,6 +3,7 @@
 
 #include "Core/NodeNetwork/Node.h"
 #include "Core/NodeNetwork/NodeConnection.h"
+#include "Shared/NeuralNetwork/Defines.h"
 
 #include <algorithm>
 #include <cmath>
@@ -235,19 +236,6 @@ template <typename DataType> class Neuron : public Node {
   typedef DataType (*CostFunctionDerivative)(const DataType, const DataType);
 
 public:
-  struct Data {
-    DataType bias;
-
-    std::optional<DataType> activation;
-
-    /*
-     * \brief sensitivity = dC/dA * dA/dB for current activation value.
-     */
-    std::optional<DataType> sensitivity;
-
-    std::optional<DataType> desiredActivation;
-  };
-
   Neuron()
       : Node(), mBiasFunction(constantOffset), mActivationFunction(sigmoid),
         mActivationFunctionDerivative(sigmoidDerivative),
@@ -286,7 +274,9 @@ public:
 
   void deActivate();
 
-  const Data &data() const { return mData; }
+  const Shared::NodeNetwork::NeuronData<DataType> &data() const {
+    return mData;
+  }
 
 private:
   /*
@@ -303,7 +293,7 @@ private:
 
   CostFunctionDerivative mCostFunctionDerivative;
 
-  Data mData;
+  Shared::NodeNetwork::NeuronData<DataType> mData;
 
 }; // namespace NodeNetwork
 
@@ -312,12 +302,6 @@ template <typename DataType> class NeuronConnection : public NodeConnection {
   typedef DataType (*WeightFunction)(DataType, DataType);
 
 public:
-  struct Data {
-    DataType weight;
-
-    std::optional<DataType> activation;
-  };
-
   NeuronConnection(Neuron<DataType> *sourceNeuron, Neuron<DataType> *destNeuron)
       : NodeConnection(sourceNeuron, destNeuron), mWeightFunction(LinearScale),
         mData({kNormalDist<DataType>(randomizer), std::nullopt}) {}
@@ -367,7 +351,9 @@ public:
     sourceNeuron->deActivate();
   }
 
-  const Data &data() const { return mData; }
+  const Shared::NodeNetwork::NeuronConnectionData<DataType> &data() const {
+    return mData;
+  }
 
 private:
   /*
@@ -375,7 +361,7 @@ private:
    */
   WeightFunction mWeightFunction;
 
-  Data mData;
+  Shared::NodeNetwork::NeuronConnectionData<DataType> mData;
 };
 
 template <typename DataType> inline DataType Neuron<DataType>::activate() {

@@ -1,25 +1,25 @@
 #ifndef NeuralNetwork_H
 #define NeuralNetwork_H
 
+#include "Core/NeuralNetwork/NeuralNetworkLayer.h"
 #include "Core/NeuralNetwork/Neuron.h"
 #include "Core/NodeNetwork/NodeNetwork.h"
 
 namespace Core {
 namespace NodeNetwork {
 
-template <typename DataType> class NeuralNetworkLayer;
-
 template <typename DataType> class NeuralNetwork : public NodeNetwork {
+  using NeuralNetworkData = Shared::NodeNetwork::NeuralNetworkData<DataType>;
+  using NeuralNetworkLayerData =
+      Shared::NodeNetwork::NeuralNetworkLayerData<DataType>;
+  using NeuronData = Shared::NodeNetwork::NeuronData<DataType>;
+  using NeuronConnectionData =
+      Shared::NodeNetwork::NeuronConnectionData<DataType>;
+
 public:
   NeuralNetwork() {}
 
   ~NeuralNetwork() {}
-
-  using NeuronData = typename Neuron<DataType>::Data;
-  using NeuronConnectionData = typename NeuronConnection<DataType>::Data;
-  using LayerData =
-      std::vector<std::pair<NeuronData, std::vector<NeuronConnectionData>>>;
-  using Data = std::vector<LayerData>;
 
   const NeuralNetworkLayer<DataType> *
   layerAt(const unsigned long long layerIndex) const {
@@ -106,17 +106,17 @@ public:
     return valuesSet;
   }
 
-  Data getData() {
+  Shared::NodeNetwork::NeuralNetworkData<DataType> getData() {
     const auto &layers = this->layers();
     const auto layerCount = this->layerCount();
-    Data data;
+    NeuralNetworkData data;
     data.reserve(layerCount);
 
     for (unsigned long layerIdx = 0; layerIdx < layerCount; ++layerIdx) {
       const auto *layer = layers.at(layerIdx);
       const auto &neurons = layer->neurons();
       const auto neuronCount = neurons.size();
-      LayerData layerData;
+      NeuralNetworkLayerData layerData;
       layerData.reserve(neuronCount);
 
       for (unsigned long neuronIdx = 0; neuronIdx < neuronCount; ++neuronIdx) {

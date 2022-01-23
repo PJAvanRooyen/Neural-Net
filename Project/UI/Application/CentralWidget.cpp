@@ -3,25 +3,27 @@
 
 #include "NodeNetwork/NodeNetwork.h"
 #include "NodeNetwork/NodeNetworkView.h"
-#include "Shared/NodeNetwork/NodeNetworkFactory.h"
 
 namespace UI {
 namespace Application {
 
 CentralWidget::CentralWidget(QObject *parent)
-    : mScene(new QGraphicsScene(parent)), mView(new CentralWidgetView(mScene)) {
+    : QObject(parent), mScene(new QGraphicsScene(parent)),
+      mView(new CentralWidgetView(mScene)),
+      mNetworkManager(UI::NodeNetwork::NeuralNetworkManager(this)) {}
 
-  using NeuralNetworkFactory = Shared::NodeNetwork::NodeNetworkFactory;
+bool CentralWidget::createMeshNetwork(
+    const std::vector<unsigned long> &layerSizes) {
   using NeuralNetwork = UI::NodeNetwork::NodeNetwork;
 
-  NeuralNetworkFactory factory = NeuralNetworkFactory();
-  Shared::NodeNetwork::AbstractNodeNetwork *abstractNet =
-      factory.createMeshNetwork<NeuralNetwork>({5, 6, 7, 3});
-  NeuralNetwork *neuralNet = static_cast<NeuralNetwork *>(abstractNet);
+  auto *neuralNet =
+      mNetworkManager.createMeshNetwork<NeuralNetwork>(layerSizes);
 
+  neuralNet->setParent(this);
   mScene->addItem(neuralNet->view<UI::NodeNetwork::NodeNetworkView>());
 
   mScene->update();
+  return true;
 }
 
 CentralWidgetView *CentralWidget::view() const { return mView; }

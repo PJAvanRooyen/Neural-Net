@@ -21,16 +21,20 @@ public:
     return neuron;
   }
 
+  void addNode(AbstractNode *node) override {
+    AbstractNodeNetworkLayer::addNode(node);
+  }
+
+  void
+  addNodes(std::vector<Shared::NodeNetwork::AbstractNode *> &nodes) override {
+    AbstractNodeNetworkLayer::addNodes(nodes);
+  }
+
   void addNeuron(Neuron<DataType> *neuron) { this->addNode(neuron); }
 
   const std::vector<Neuron<DataType> *> &neurons() const {
     return reinterpret_cast<const std::vector<Neuron<DataType> *> &>(
         NodeNetworkLayer::nodes());
-  }
-
-private:
-  void addNode(AbstractNode *node) override {
-    AbstractNodeNetworkLayer::addNode(node);
   }
 };
 
