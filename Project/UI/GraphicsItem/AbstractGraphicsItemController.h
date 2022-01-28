@@ -28,6 +28,8 @@ public:
     return static_cast<DerivedView *>(mView);
   }
 
+  QGraphicsItem *getView() const { return mView; }
+
   ~AbstractGraphicsItemController();
 
 protected:

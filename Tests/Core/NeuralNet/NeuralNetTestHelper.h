@@ -46,7 +46,7 @@ struct Print {
   static void
   printSensitivities(Core::NodeNetwork::NeuralNetwork<double> &neuralNetwork) {
     double sensitivitySum = 0;
-    unsigned long long neuronCount = 0;
+    unsigned long neuronCount = 0;
     const auto &layers = neuralNetwork.layers();
 
     std::cout << "sensitivities: ";
@@ -103,16 +103,16 @@ struct Print {
           std::vector<Core::NodeNetwork::NeuronConnection<double> *>>>
           layerConnections) {
     std::cout << "equations: ";
-    for (unsigned long long layerIdx = 0; layerIdx < layerConnections.size();
+    for (unsigned long layerIdx = 0; layerIdx < layerConnections.size();
          ++layerIdx) {
       auto &layer = layerConnections[layerIdx];
 
       std::cout << "{";
-      for (unsigned long long nodeIdx = 0; nodeIdx < layer.size(); ++nodeIdx) {
+      for (unsigned long nodeIdx = 0; nodeIdx < layer.size(); ++nodeIdx) {
         auto &node = layer[nodeIdx];
 
         std::cout << "[";
-        for (unsigned long long connectionIdx = 0; connectionIdx < node.size();
+        for (unsigned long connectionIdx = 0; connectionIdx < node.size();
              ++connectionIdx) {
           auto &connection = node[connectionIdx];
 
@@ -142,17 +142,17 @@ struct Print {
     std::vector<std::vector<std::vector<double>>> weights;
     weights.resize(layerConnections.size());
 
-    for (unsigned long long layerIdx = 0; layerIdx < layerConnections.size();
+    for (unsigned long layerIdx = 0; layerIdx < layerConnections.size();
          ++layerIdx) {
       auto &layer = layerConnections[layerIdx];
       weights[layerIdx].resize(layerConnections[layerIdx].size());
 
-      for (unsigned long long nodeIdx = 0; nodeIdx < layer.size(); ++nodeIdx) {
+      for (unsigned long nodeIdx = 0; nodeIdx < layer.size(); ++nodeIdx) {
         auto &node = layer[nodeIdx];
         weights[layerIdx][nodeIdx].resize(
             layerConnections[layerIdx][nodeIdx].size());
 
-        for (unsigned long long connectionIdx = 0; connectionIdx < node.size();
+        for (unsigned long connectionIdx = 0; connectionIdx < node.size();
              ++connectionIdx) {
           auto &connection = node[connectionIdx];
 

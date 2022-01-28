@@ -6,7 +6,13 @@ namespace NodeNetwork {
 
 Neuron::Neuron(QObject *parent) : Node(parent) {}
 
-Neuron::~Neuron(){};
+Neuron::~Neuron() {}
+
+void Neuron::setData(
+    const Shared::NodeNetwork::NeuronData<double> &neuronData) {
+  auto *view = this->view<NeuronView>();
+  view->setData(neuronData);
+};
 
 QGraphicsItem *Neuron::createViewBase(QGraphicsItem *parentView) {
   return new NeuronView(parentView);

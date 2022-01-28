@@ -20,7 +20,7 @@ public:
 
   virtual void addNodes(std::vector<AbstractNode *> &nodes);
 
-  unsigned long long size() const;
+  unsigned long size() const;
 
 protected:
   AbstractNodeNetworkLayer();

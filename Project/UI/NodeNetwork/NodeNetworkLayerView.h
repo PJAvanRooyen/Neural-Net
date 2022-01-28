@@ -26,7 +26,7 @@ protected:
 public:
   Shared::NodeNetwork::AbstractNode *addNode() override;
 
-  void addNode(Shared::NodeNetwork::AbstractNode *node) override;
+  void addNode(Shared::NodeNetwork::AbstractNode *node);
 
   void
   addNodes(std::vector<Shared::NodeNetwork::AbstractNode *> &nodes) override;

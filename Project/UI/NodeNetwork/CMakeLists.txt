@@ -12,6 +12,10 @@ set( HEADERS
     Neuron.h
     NeuronView.h
     NeuralNetworkManager.h
+    NeuralNetwork.h
+    NeuronConnection.h
+    NeuronConnectionView.h
+    NeuralNetworkLayer.h
 )
 
 set( SOURCES
@@ -26,6 +30,10 @@ set( SOURCES
     Neuron.cpp
     NeuronView.cpp
     NeuralNetworkManager.cpp
+    NeuralNetwork.cpp
+    NeuronConnection.cpp
+    NeuronConnectionView.cpp
+    NeuralNetworkLayer.cpp
 )
 
 include_directories( ../.. )

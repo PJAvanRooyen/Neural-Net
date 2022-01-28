@@ -17,6 +17,10 @@ public:
   NodeConnection(Node *sourceNode, Node *destNode,
                  AbstractGraphicsItemController *parent = Q_NULLPTR);
 
+  // used to pre-initialize derived class. derived class must handle setting the
+  // members.
+  NodeConnection();
+
 protected:
   QGraphicsItem *createViewBase(QGraphicsItem *parentView) override;
 };

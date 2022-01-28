@@ -12,7 +12,7 @@ NodeView::NodeView(QGraphicsItem *parent) : QGraphicsItem(parent) {
   setFlag(ItemIsMovable);
   setFlag(ItemSendsGeometryChanges);
   setCacheMode(DeviceCoordinateCache);
-  setZValue(-1);
+  setZValue(3);
 }
 
 QRectF NodeView::boundingRect() const {

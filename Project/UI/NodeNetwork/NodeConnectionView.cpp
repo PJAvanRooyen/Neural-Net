@@ -18,6 +18,7 @@ NodeConnectionView::NodeConnectionView(NodeView *sourceNodeView,
   sourceNode()->addInputNodeConnection(this);
   destinationNode()->addOutputNodeConnection(this);
   adjust();
+  setZValue(3);
 }
 
 void NodeConnectionView::adjust() {
@@ -85,15 +86,16 @@ void NodeConnectionView::paint(QPainter *painter,
 
   // source arrow
   {
-    //  QPointF sourceArrowP1 =
-    //      sourcePoint + QPointF(sin(angle + M_PI / 3) * kArrowSize,
-    //                            cos(angle + M_PI / 3) * kArrowSize);
-    //  QPointF sourceArrowP2 =
-    //      sourcePoint + QPointF(sin(angle + M_PI - M_PI / 3) * kArrowSize,
-    //                            cos(angle + M_PI - M_PI / 3) * kArrowSize);
+      //  QPointF sourceArrowP1 =
+      //      sourcePoint + QPointF(sin(angle + M_PI / 3) * kArrowSize,
+      //                            cos(angle + M_PI / 3) * kArrowSize);
+      //  QPointF sourceArrowP2 =
+      //      sourcePoint + QPointF(sin(angle + M_PI - M_PI / 3) * kArrowSize,
+      //                            cos(angle + M_PI - M_PI / 3) * kArrowSize);
 
-    painter->drawPolygon(QPolygonF()
-                         << line.p1() /*<< sourceArrowP1 << sourceArrowP2*/);
+      //    painter->drawPolygon(QPolygonF()
+      //                         << line.p1() /*<< sourceArrowP1 <<
+      //                         sourceArrowP2*/);
   }
 
   // destination arrow

@@ -116,7 +116,7 @@ public:
 
     Iris iris = inputSet[randomInputSetIndex];
     auto data = iris.information();
-    for (unsigned long long nodeIdx = 0; nodeIdx < inputNodeCount; ++nodeIdx) {
+    for (unsigned long nodeIdx = 0; nodeIdx < inputNodeCount; ++nodeIdx) {
       datapoint.first.push_back(data[nodeIdx]);
     }
 
@@ -131,9 +131,9 @@ public:
       std::vector<std::pair<std::vector<double> /*inputs*/,
                             std::vector<double> /*desiredOutputs*/>>
           &testingSet,
-      const unsigned long long inputNodeCount,
-      const unsigned long long learningIterations,
-      const unsigned long long testingIterations) {
+      const unsigned long inputNodeCount,
+      const unsigned long learningIterations,
+      const unsigned long testingIterations) {
 
     //
     // amount of learning relative to testing data.
@@ -169,7 +169,7 @@ public:
                     virginica.cbegin() +
                         std::round(virginica.size() * learnFraction));
 
-    for (unsigned long long idx = 0; idx < learningIterations; ++idx) {
+    for (unsigned long idx = 0; idx < learningIterations; ++idx) {
       std::pair<std::vector<double> /*inputs*/,
                 std::vector<double> /*desiredOutputs*/>
           datapoint = getRandomDatapoint(learnSet, inputNodeCount);
@@ -190,7 +190,7 @@ public:
                        std::round(virginica.size() * learnFraction),
                    virginica.cend());
 
-    for (unsigned long long idx = 0; idx < testingIterations; ++idx) {
+    for (unsigned long idx = 0; idx < testingIterations; ++idx) {
       std::pair<std::vector<double> /*inputs*/,
                 std::vector<double> /*desiredOutputs*/>
           datapoint = getRandomDatapoint(testSet, inputNodeCount);

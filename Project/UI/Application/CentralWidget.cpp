@@ -1,8 +1,10 @@
 #include "CentralWidget.h"
 #include "CentralWidgetView.h"
 
-#include "NodeNetwork/NodeNetwork.h"
 #include "NodeNetwork/NodeNetworkView.h"
+#include "UI/NodeNetwork/NeuralNetwork.h"
+#include "UI/NodeNetwork/NeuralNetworkLayer.h"
+#include "UI/NodeNetwork/Neuron.h"
 
 namespace UI {
 namespace Application {
@@ -14,7 +16,7 @@ CentralWidget::CentralWidget(QObject *parent)
 
 bool CentralWidget::createMeshNetwork(
     const std::vector<unsigned long> &layerSizes) {
-  using NeuralNetwork = UI::NodeNetwork::NodeNetwork;
+  using NeuralNetwork = UI::NodeNetwork::NeuralNetwork;
 
   auto *neuralNet =
       mNetworkManager.createMeshNetwork<NeuralNetwork>(layerSizes);

@@ -74,14 +74,14 @@ void NeuralNetworkManager::test(
   const unsigned long long poll =
       (learningSet.size() + testingSet.size()) / valuePollingRate;
 
-  unsigned long long correctCount = 0;
+  unsigned long correctCount = 0;
   std::vector<double> learningSetAccuracies;
   std::vector<double> testingSetAccuracies;
 
   if (debug) {
     std::cout << "learning set:\n";
   }
-  for (unsigned long long i = 0; i < learningSet.size(); ++i) {
+  for (unsigned long i = 0; i < learningSet.size(); ++i) {
     std::vector<double> inputs = learningSet[i].first;
     std::vector<double> desiredOutputs = learningSet[i].second;
 
@@ -109,7 +109,7 @@ void NeuralNetworkManager::test(
   if (debug) {
     std::cout << "testing set:\n";
   }
-  for (unsigned long long i = 0; i < testingSet.size(); ++i) {
+  for (unsigned long i = 0; i < testingSet.size(); ++i) {
     std::vector<double> inputs = testingSet[i].first;
     std::vector<double> desiredOutputs = testingSet[i].second;
 

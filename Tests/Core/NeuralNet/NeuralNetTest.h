@@ -57,8 +57,8 @@ public:
 
 void NeuralNetTest::logicGateTest() {
   // setup test
-  const unsigned long long learningIterations = 50000;
-  const unsigned long long testingIterations = 10000;
+  const unsigned long learningIterations = 50000;
+  const unsigned long testingIterations = 10000;
   const double valuesToPoll = 100;
   std::srand(unsigned(std::time(0)));
 
@@ -91,13 +91,11 @@ void NeuralNetTest::logicGateTest() {
           std::vector<std::pair<std::vector<double> /*inputs*/,
                                 std::vector<double> /*desiredOutputs*/>>
               &dataset,
-          const unsigned long long inputNodeCount,
-          const unsigned long long iterations) {
-        for (unsigned long long idx = 0; idx < iterations; ++idx) {
+          const unsigned long inputNodeCount, const unsigned long iterations) {
+        for (unsigned long idx = 0; idx < iterations; ++idx) {
           std::vector<double> inputs;
           inputs.reserve(inputNodeCount);
-          for (unsigned long long nodeIdx = 0; nodeIdx < inputNodeCount;
-               ++nodeIdx) {
+          for (unsigned long nodeIdx = 0; nodeIdx < inputNodeCount; ++nodeIdx) {
             inputs[nodeIdx] = static_cast<double>(rand()) / RAND_MAX;
           }
           dataset[idx] = std::make_pair(inputs, desiredOutputs(inputs));
@@ -151,8 +149,8 @@ void NeuralNetTest::irisDataToNetworkInputs(
         &testingSet,
     const unsigned long outputNodeCount) {
   // setup test
-  const unsigned long long learningIterations = 5000;
-  const unsigned long long testingIterations = 1000;
+  const unsigned long learningIterations = 5000;
+  const unsigned long testingIterations = 1000;
   std::srand(unsigned(std::time(0)));
 
   learningSet.reserve(learningIterations);
@@ -184,17 +182,17 @@ void NeuralNetTest::test(
     Core::NodeNetwork::NeuralNetwork<double> &neuralNetwork,
     const double valuePollingRate, const bool debug) {
 
-  const unsigned long long poll =
+  const unsigned long poll =
       (learningSet.size() + testingSet.size()) / valuePollingRate;
 
-  unsigned long long correctCount = 0;
+  unsigned long correctCount = 0;
   std::vector<double> learningSetAccuracies;
   std::vector<double> testingSetAccuracies;
 
   if (debug) {
     std::cout << "learning set:\n";
   }
-  for (unsigned long long i = 0; i < learningSet.size(); ++i) {
+  for (unsigned long i = 0; i < learningSet.size(); ++i) {
     std::vector<double> inputs = learningSet[i].first;
     std::vector<double> desiredOutputs = learningSet[i].second;
 
@@ -222,7 +220,7 @@ void NeuralNetTest::test(
   if (debug) {
     std::cout << "testing set:\n";
   }
-  for (unsigned long long i = 0; i < testingSet.size(); ++i) {
+  for (unsigned long i = 0; i < testingSet.size(); ++i) {
     std::vector<double> inputs = testingSet[i].first;
     std::vector<double> desiredOutputs = testingSet[i].second;
 

@@ -3,9 +3,12 @@
 
 #include "Shared/NodeNetwork/AbstractNodeNetwork.h"
 #include "UI/GraphicsItem/AbstractGraphicsItemController.h"
+#include "UI/NodeNetwork/NodeConnection.h"
 
 namespace UI {
 namespace NodeNetwork {
+
+class NodeNetworkLayer;
 
 /*
  * A node network can also be a node in a larger node network.
@@ -17,19 +20,16 @@ class NodeNetwork : public AbstractGraphicsItemController,
 public:
   NodeNetwork(QObject *parent = Q_NULLPTR);
 
-  void addLayer(Shared::NodeNetwork::AbstractNodeNetworkLayer *layer) override;
+  virtual Shared::NodeNetwork::AbstractNodeNetworkLayer *addLayer() override;
+
+  void addLayer(NodeNetworkLayer *layer);
 
   void addLayers(std::vector<Shared::NodeNetwork::AbstractNodeNetworkLayer *>
                      &layers) override;
 
-  Shared::NodeNetwork::AbstractNodeNetworkLayer *addLayer() override;
-
-  Shared::NodeNetwork::AbstractNodeConnection *
+  virtual Shared::NodeNetwork::AbstractNodeConnection *
   addConnection(AbstractNode *sourceNode,
                 AbstractNode *destinationNode) override;
-
-  void addConnection(
-      Shared::NodeNetwork::AbstractNodeConnection *connection) override;
 
 protected:
   QGraphicsItem *createViewBase(QGraphicsItem *parentView) override;

@@ -17,13 +17,22 @@ NodeConnection::NodeConnection(Node *sourceNode, Node *destNode,
   mSource = sourceNode;
   mDestination = destNode;
 
+  // WARNING!
+  // For all derived node connection types, it must first initialize
+  // its base as empty, then create its own view.
+  // This is necessary so that the correct derived view is created instead of
+  // the base view.
   auto *nodeConnectionView = view<NodeConnectionView>();
   sourceNode->view<NodeView>()->addOutputNodeConnection(nodeConnectionView);
   destNode->view<NodeView>()->addInputNodeConnection(nodeConnectionView);
 
   mSource->addOutputNodeConnection(this);
   mDestination->addInputNodeConnection(this);
-};
+}
+
+NodeConnection::NodeConnection()
+    : AbstractGraphicsItemController(),
+      Shared::NodeNetwork::AbstractNodeConnection(){};
 
 QGraphicsItem *NodeConnection::createViewBase(QGraphicsItem *parentView) {
   return new NodeConnectionView(

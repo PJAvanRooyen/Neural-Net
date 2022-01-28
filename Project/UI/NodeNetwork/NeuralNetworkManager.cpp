@@ -1,4 +1,5 @@
 #include "NeuralNetworkManager.h"
+#include "NeuralNetwork.h"
 
 namespace UI {
 namespace NodeNetwork {
@@ -30,7 +31,11 @@ void NeuralNetworkManager::customEvent(QEvent *event) {
 
   } else if (type == Shared::Communicator::EvNeuralNetRunInfo::staticType()) {
     // populate the corresponding UI network with the values.
-    qt_noop();
+    auto *ev = static_cast<Shared::Communicator::EvNeuralNetRunInfo *>(event);
+
+    auto &netId = ev->mNetId;
+    auto &network = networkAt<NeuralNetwork>(netId);
+    network.setData(ev->mNetData);
   }
 }
 

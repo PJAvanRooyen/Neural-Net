@@ -10,7 +10,7 @@ AbstractNodeNetwork::AbstractNodeNetwork() : AbstractNode() {}
 AbstractNodeNetwork::~AbstractNodeNetwork() {}
 
 const AbstractNodeNetworkLayer *
-AbstractNodeNetwork::layerAt(const unsigned long long layerIndex) const {
+AbstractNodeNetwork::layerAt(const unsigned long layerIndex) const {
   if (layerIndex > mLayers.size() - 1) {
     return nullptr;
   } else {
@@ -41,7 +41,7 @@ AbstractNodeNetwork::layers() const {
 
 const std::vector<AbstractNodeConnection *> &
 AbstractNodeNetwork::layerInputConnections(
-    const unsigned long long layerIndex) const {
+    const unsigned long layerIndex) const {
   static const std::vector<AbstractNodeConnection *> kEmpty = {};
 
   if (layerIndex > mLayers.size() - 1) {
@@ -53,7 +53,7 @@ AbstractNodeNetwork::layerInputConnections(
 
 const std::vector<AbstractNodeConnection *> &
 AbstractNodeNetwork::layerOutputConnections(
-    const unsigned long long layerIndex) const {
+    const unsigned long layerIndex) const {
   static const std::vector<AbstractNodeConnection *> kEmpty = {};
 
   if (layerIndex > mLayers.size() - 1) {
@@ -64,7 +64,6 @@ AbstractNodeNetwork::layerOutputConnections(
 }
 
 void AbstractNodeNetwork::addLayer(AbstractNodeNetworkLayer *layer) {
-
   const int layersCount = mLayers.size();
 
   if (layersCount == 0) {
@@ -94,22 +93,7 @@ void AbstractNodeNetwork::addLayers(
   mLayers.insert(mLayers.end(), layers.begin(), layers.end());
 }
 
-void AbstractNodeNetwork::addConnection(AbstractNodeConnection *connection) {
-
-  auto *connectionSourceNode = connection->sourceNode();
-  auto nodeIt = mNodeOutputConnections.find(connectionSourceNode);
-  if (nodeIt != mNodeOutputConnections.end()) {
-    mNodeOutputConnections[connectionSourceNode].push_back(connection);
-  } else {
-    std::vector<AbstractNodeConnection *> nodeConnections = {connection};
-    mNodeOutputConnections.insert(
-        std::make_pair(connectionSourceNode, nodeConnections));
-  }
-}
-
-unsigned long long AbstractNodeNetwork::layerCount() const {
-  return mLayers.size();
-}
+unsigned long AbstractNodeNetwork::layerCount() const { return mLayers.size(); }
 
 } // namespace NodeNetwork
 } // namespace Shared

@@ -10,7 +10,9 @@
 namespace UI {
 namespace NodeNetwork {
 
-Node::Node(QObject *parent) : AbstractGraphicsItemController(parent) {}
+Node::Node(QObject *parent)
+    : AbstractGraphicsItemController(parent),
+      Shared::NodeNetwork::AbstractNode() {}
 
 void Node::addInputNodeConnection(
     Shared::NodeNetwork::AbstractNodeConnection *nodeConnection) {

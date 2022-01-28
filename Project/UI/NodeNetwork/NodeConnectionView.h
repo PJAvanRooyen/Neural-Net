@@ -18,14 +18,14 @@ public:
   NodeConnectionView(NodeView *sourceNodeView, NodeView *destinationNodeView,
                      QGraphicsItem *parent = Q_NULLPTR);
 
-  void adjust();
+  virtual void adjust();
 
 protected:
   QRectF boundingRect() const override;
+
   void paint(QPainter *painter, const QStyleOptionGraphicsItem *option,
              QWidget *widget) override;
 
-private:
   QPointF mSourcePoint;
   QPointF mDestinationPoint;
 };

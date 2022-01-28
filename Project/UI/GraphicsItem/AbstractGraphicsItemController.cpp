@@ -1,11 +1,7 @@
 #include "AbstractGraphicsItemController.h"
 
 namespace UI {
-AbstractGraphicsItemController::~AbstractGraphicsItemController() {
-  if (mView) {
-    delete mView;
-  }
-}
+AbstractGraphicsItemController::~AbstractGraphicsItemController() {}
 
 AbstractGraphicsItemController::AbstractGraphicsItemController(QObject *parent)
     : QObject(parent), mView(Q_NULLPTR) {}
