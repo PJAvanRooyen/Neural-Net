@@ -7,6 +7,8 @@ AbstractNode::AbstractNode() {}
 
 AbstractNode::~AbstractNode() {}
 
+void AbstractNode::init() {}
+
 void AbstractNode::addInputNodeConnection(
     AbstractNodeConnection *nodeConnection) {
   mInputNodeConnections.push_back(nodeConnection);

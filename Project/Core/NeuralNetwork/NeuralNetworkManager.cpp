@@ -26,10 +26,6 @@ NeuralNetwork<double> *NeuralNetworkManager::createMeshNetwork(
       Shared::NodeNetwork::NodeNetworkManager::createMeshNetwork<
           NeuralNetwork<double>>(layerSizes, networkId);
 
-  auto &communicator = Shared::Communicator::Communicator::instance();
-  communicator.postEvent(
-      new Shared::Communicator::EvNeuralNetCreateResponse(networkId));
-
   return nodeNetwork;
 }
 
@@ -56,7 +52,7 @@ void NeuralNetworkManager::customEvent(QEvent *event) {
         learningSet;
     std::vector<std::pair<std::vector<double>, std::vector<double>>> testingSet;
     Tests::NeuralNetTest::irisDataToNetworkInputs(learningSet, testingSet, 5);
-    test(learningSet, testingSet, networkAt<NeuralNetwork<double>>(ev->mNetId),
+    test(learningSet, testingSet, network<NeuralNetwork<double>>(ev->mNetId),
          100, true);
   }
 }
@@ -85,7 +81,7 @@ void NeuralNetworkManager::test(
     std::vector<double> inputs = learningSet[i].first;
     std::vector<double> desiredOutputs = learningSet[i].second;
 
-    if (i != 0 && i % poll == 0) {
+    if (i != 0 && poll != 0 && i % poll == 0) {
       double accuracy = 100.0 * correctCount / poll;
       learningSetAccuracies.push_back(accuracy);
       correctCount = 0;

@@ -1,22 +1,37 @@
 #include "NeuronView.h"
 
-#include "Shared/NeuralNetwork/Defines.h"
-
 #include <QLabel>
 #include <QVBoxLayout>
 
 namespace UI {
 namespace NodeNetwork {
-NeuronView::NeuronInfoProxyWidget::NeuronInfoWidget::NeuronInfoWidget()
-    : QWidget(), mActivation(new QLabel(this)), mBias(new QLabel(this)),
-      mSensitivity(new QLabel(this)) {
-  setLayout(new QVBoxLayout(this));
+const QString NeuronView::NeuronInfoProxyWidget::NeuronInfoWidget::
+    kDesiredActivationTitle = "D";
+const QString
+    NeuronView::NeuronInfoProxyWidget::NeuronInfoWidget::kActivationTitle = "A";
+const QString NeuronView::NeuronInfoProxyWidget::NeuronInfoWidget::kBiasTitle =
+    "B";
+const QString
+    NeuronView::NeuronInfoProxyWidget::NeuronInfoWidget::kSensitivityTitle =
+        "S";
 
-  mActivation->setFont(QFont("NeuralNetworkData", 5));
-  mBias->setFont(QFont("NeuralNetworkData", 5));
-  mSensitivity->setFont(QFont("NeuralNetworkData", 5));
+const int NeuronView::NeuronInfoProxyWidget::NeuronInfoWidget::kPrecision = 4;
+const int NeuronView::NeuronInfoProxyWidget::NeuronInfoWidget::kFont = 8;
+
+NeuronView::NeuronInfoProxyWidget::NeuronInfoWidget::NeuronInfoWidget()
+    : QWidget(), mDesiredActivation(new QLabel(this)),
+      mActivation(new QLabel(this)), mBias(new QLabel(this)),
+      mSensitivity(new QLabel(this)), mPreviousData(std::nullopt) {
+  setLayout(new QVBoxLayout(this));
+  layout()->setContentsMargins(0, 0, 0, 0);
+
+  mDesiredActivation->setFont(QFont("NeuralNetworkData", kFont));
+  mActivation->setFont(QFont("NeuralNetworkData", kFont));
+  mBias->setFont(QFont("NeuralNetworkData", kFont));
+  mSensitivity->setFont(QFont("NeuralNetworkData", kFont));
 
   auto *layout = this->layout();
+  layout->addWidget(mDesiredActivation);
   layout->addWidget(mActivation);
   layout->addWidget(mBias);
   layout->addWidget(mSensitivity);
@@ -24,23 +39,63 @@ NeuronView::NeuronInfoProxyWidget::NeuronInfoWidget::NeuronInfoWidget()
 
 void NeuronView::NeuronInfoProxyWidget::NeuronInfoWidget::setData(
     const Shared::NodeNetwork::NeuronData<double> &neuronData) {
+
+  if (neuronData.desiredActivation.has_value()) {
+    mDesiredActivation->setText(
+        textForValue(kDesiredActivationTitle, std::nullopt,
+                     neuronData.desiredActivation.value()));
+    mDesiredActivation->show();
+  } else {
+    mDesiredActivation->hide();
+  }
+
   if (neuronData.activation.has_value()) {
-    mActivation->setText(QString("A: %1").arg(
-        QString::number(neuronData.activation.value(), 'g', 4)));
+    mActivation->setText(textForValue(kActivationTitle, std::nullopt,
+                                      neuronData.activation.value()));
     mActivation->show();
   } else {
     mActivation->hide();
   }
 
-  mBias->setText(
-      QString("B: %1").arg(QString::number(neuronData.bias, 'g', 4)));
+  if (neuronData.bias.has_value()) {
+    mBias->setText(textForValue(
+        kBiasTitle,
+        mPreviousData.has_value() ? mPreviousData.value().bias : std::nullopt,
+        neuronData.bias.value()));
+    mBias->show();
+  } else {
+    mBias->hide();
+  }
 
   if (neuronData.sensitivity.has_value()) {
-    mSensitivity->setText(QString("S: %1").arg(
-        QString::number(neuronData.sensitivity.value(), 'g', 4)));
+    mSensitivity->setText(textForValue(kSensitivityTitle, std::nullopt,
+                                       neuronData.sensitivity.value()));
     mSensitivity->show();
   } else {
     mSensitivity->hide();
+  }
+
+  // test
+  if (mPreviousData.has_value()) {
+    qt_noop();
+  }
+  // test
+
+  mPreviousData.emplace(neuronData);
+}
+
+QString NeuronView::NeuronInfoProxyWidget::NeuronInfoWidget::textForValue(
+    const QString &title, const std::optional<double> previousValue,
+    const double value) const {
+  const bool hasPreviousVal = previousValue.has_value();
+
+  if (!hasPreviousVal) {
+    return QString("%1: %2").arg(title,
+                                 QString::number(value, 'g', kPrecision));
+  } else {
+    return QString("%1: %2\n-> %3")
+        .arg(title, QString::number(previousValue.value(), 'g', kPrecision),
+             QString::number(value, 'g', kPrecision));
   }
 }
 

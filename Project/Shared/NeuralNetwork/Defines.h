@@ -8,13 +8,10 @@ namespace Shared {
 namespace NodeNetwork {
 
 template <typename DataType> struct NeuronData {
-  DataType bias;
+  std::optional<DataType> bias;
 
   std::optional<DataType> activation;
 
-  /*
-   * \brief sensitivity = dC/dA * dA/dB for current activation value.
-   */
   std::optional<DataType> sensitivity;
 
   std::optional<DataType> desiredActivation;

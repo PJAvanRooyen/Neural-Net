@@ -23,15 +23,15 @@ public:
   ~NodeNetworkManager();
 
   template <class DerivedNetwork>
-  DerivedNetwork *
-  createMeshNetwork(const std::vector<unsigned long> &layerSizes) {
+  QUuid createMeshNetwork(const std::vector<unsigned long> &layerSizes) {
     auto *nodeNetwork =
         Shared::NodeNetwork::NodeNetworkFactory::createMeshNetwork<
             DerivedNetwork>(layerSizes);
 
-    mNetworks.insert(QUuid::createUuid(), nodeNetwork);
+    const QUuid networkId = QUuid::createUuid();
+    mNetworks.insert(networkId, nodeNetwork);
 
-    return nodeNetwork;
+    return networkId;
   }
 
   template <class DerivedNetwork>
@@ -48,7 +48,7 @@ public:
   }
 
   template <class DerivedNetwork>
-  DerivedNetwork &networkAt(const QUuid networkId) {
+  DerivedNetwork &network(const QUuid networkId) {
     return static_cast<DerivedNetwork &>(*mNetworks[networkId]);
   }
 

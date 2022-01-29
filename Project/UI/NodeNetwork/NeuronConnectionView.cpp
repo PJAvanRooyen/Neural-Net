@@ -8,13 +8,25 @@
 
 namespace UI {
 namespace NodeNetwork {
+const QString NeuronConnectionView::NeuronConnectionInfoProxyWidget::
+    NeuronConnectionInfoWidget::kActivationTitle = "A";
+const QString NeuronConnectionView::NeuronConnectionInfoProxyWidget::
+    NeuronConnectionInfoWidget::kWeightTitle = "W";
+
+const int NeuronConnectionView::NeuronConnectionInfoProxyWidget::
+    NeuronConnectionInfoWidget::kPrecision = 4;
+const int NeuronConnectionView::NeuronConnectionInfoProxyWidget::
+    NeuronConnectionInfoWidget::kFont = 8;
+
 NeuronConnectionView::NeuronConnectionInfoProxyWidget::
     NeuronConnectionInfoWidget::NeuronConnectionInfoWidget()
-    : QWidget(), mActivation(new QLabel(this)), mWeight(new QLabel(this)) {
+    : QWidget(), mActivation(new QLabel(this)), mWeight(new QLabel(this)),
+      mPreviousData(std::nullopt) {
   setLayout(new QVBoxLayout(this));
+  layout()->setContentsMargins(0, 0, 0, 0);
 
-  mActivation->setFont(QFont("NeuralNetworkData", 5));
-  mWeight->setFont(QFont("NeuralNetworkData", 5));
+  mActivation->setFont(QFont("NeuralNetworkData", kFont));
+  mWeight->setFont(QFont("NeuralNetworkData", kFont));
 
   auto *layout = this->layout();
   layout->addWidget(mActivation);
@@ -25,26 +37,47 @@ void NeuronConnectionView::NeuronConnectionInfoProxyWidget::
     NeuronConnectionInfoWidget::setData(
         const Shared::NodeNetwork::NeuronConnectionData<double>
             &connectionData) {
-  if (connectionData.activation.has_value()) {
-    mActivation->setText(QString("A: %1").arg(
-        QString::number(connectionData.activation.value(), 'g', 4)));
-    mActivation->show();
+
+  if (mPreviousData.has_value()) {
+    const auto &previousData = mPreviousData.value();
+    if (connectionData.activation.has_value()) {
+      mActivation->setText(textForValue(kActivationTitle,
+                                        previousData.activation,
+                                        connectionData.activation.value()));
+      mActivation->show();
+    } else {
+      mActivation->hide();
+    }
+    mWeight->setText(
+        textForValue(kWeightTitle, previousData.weight, connectionData.weight));
   } else {
-    mActivation->hide();
+    if (connectionData.activation.has_value()) {
+      mActivation->setText(textForValue(kActivationTitle, std::nullopt,
+                                        connectionData.activation.value()));
+      mActivation->show();
+    } else {
+      mActivation->hide();
+    }
+    mWeight->setText(
+        textForValue(kWeightTitle, std::nullopt, connectionData.weight));
   }
 
-  mWeight->setText(
-      QString("W: %1").arg(QString::number(connectionData.weight, 'g', 4)));
-  mWeight->show();
+  mPreviousData.emplace(connectionData);
+}
 
-  if (connectionData.activation.has_value()) {
-    setToolTip(
-        QString("A: %1\nW: %2")
-            .arg(QString::number(connectionData.activation.value(), 'g', 4),
-                 QString::number(connectionData.weight, 'g', 4)));
+QString NeuronConnectionView::NeuronConnectionInfoProxyWidget::
+    NeuronConnectionInfoWidget::textForValue(
+        const QString &title, const std::optional<double> previousValue,
+        const double value) const {
+  const bool hasPreviousVal = previousValue.has_value();
+
+  if (!hasPreviousVal) {
+    return QString("%1: %2").arg(title,
+                                 QString::number(value, 'g', kPrecision));
   } else {
-    setToolTip(
-        QString("W: %1").arg(QString::number(connectionData.weight, 'g', 4)));
+    return QString("%1: %2\n-> %3")
+        .arg(title, QString::number(previousValue.value(), 'g', kPrecision),
+             QString::number(value, 'g', kPrecision));
   }
 }
 

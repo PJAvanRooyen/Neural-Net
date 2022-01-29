@@ -3,8 +3,6 @@
 
 #include "NodeNetwork/NodeNetworkView.h"
 #include "UI/NodeNetwork/NeuralNetwork.h"
-#include "UI/NodeNetwork/NeuralNetworkLayer.h"
-#include "UI/NodeNetwork/Neuron.h"
 
 namespace UI {
 namespace Application {
@@ -12,20 +10,19 @@ namespace Application {
 CentralWidget::CentralWidget(QObject *parent)
     : QObject(parent), mScene(new QGraphicsScene(parent)),
       mView(new CentralWidgetView(mScene)),
-      mNetworkManager(UI::NodeNetwork::NeuralNetworkManager(this)) {}
+      mNetworkManager(UI::NodeNetwork::NeuralNetworkManager(this)) {
 
-bool CentralWidget::createMeshNetwork(
-    const std::vector<unsigned long> &layerSizes) {
   using NeuralNetwork = UI::NodeNetwork::NeuralNetwork;
 
-  auto *neuralNet =
+  const std::vector<unsigned long> layerSizes = {5, 5, 3, 3};
+
+  const QUuid &networkId =
       mNetworkManager.createMeshNetwork<NeuralNetwork>(layerSizes);
+  NeuralNetwork &neuralNet = mNetworkManager.network<NeuralNetwork>(networkId);
 
-  neuralNet->setParent(this);
-  mScene->addItem(neuralNet->view<UI::NodeNetwork::NodeNetworkView>());
-
-  mScene->update();
-  return true;
+  neuralNet.setParent(this);
+  auto *neuralNetView = neuralNet.view<UI::NodeNetwork::NodeNetworkView>();
+  mScene->addItem(neuralNetView);
 }
 
 CentralWidgetView *CentralWidget::view() const { return mView; }

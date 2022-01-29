@@ -7,6 +7,10 @@
 #include <QGraphicsScene>
 
 namespace UI {
+namespace NodeNetwork {
+class NeuralNetwork;
+}
+
 namespace Application {
 
 class CentralWidget : public QObject {
@@ -16,8 +20,6 @@ public:
   CentralWidget(QObject *parent = nullptr);
 
   CentralWidgetView *view() const;
-
-  bool createMeshNetwork(const std::vector<unsigned long> &layerSizes);
 
 private:
   QGraphicsScene *mScene;

@@ -34,7 +34,7 @@ void NeuralNetworkManager::customEvent(QEvent *event) {
     auto *ev = static_cast<Shared::Communicator::EvNeuralNetRunInfo *>(event);
 
     auto &netId = ev->mNetId;
-    auto &network = networkAt<NeuralNetwork>(netId);
+    auto &network = this->network<NeuralNetwork>(netId);
     network.setData(ev->mNetData);
   }
 }

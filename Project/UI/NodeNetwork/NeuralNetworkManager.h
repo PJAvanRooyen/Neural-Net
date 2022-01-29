@@ -16,21 +16,16 @@ public:
   ~NeuralNetworkManager();
 
   template <class DerivedNetwork>
-  DerivedNetwork *
-  createMeshNetwork(const std::vector<unsigned long> &layerSizes) {
-    auto *nodeNetwork =
+  QUuid createMeshNetwork(const std::vector<unsigned long> &layerSizes) {
+    const QUuid &networkId =
         Shared::NodeNetwork::NodeNetworkManager::createMeshNetwork<
             DerivedNetwork>(layerSizes);
 
-    if (!nodeNetwork) {
-      return nullptr;
-    }
-
     auto &communicator = Shared::Communicator::Communicator::instance();
-    communicator.postEvent(new Shared::Communicator::EvNeuralNetCreate(
-        layerSizes, mNetworks.key(nodeNetwork)));
+    communicator.postEvent(
+        new Shared::Communicator::EvNeuralNetCreate(layerSizes, networkId));
 
-    return nodeNetwork;
+    return networkId;
   }
 
 private:

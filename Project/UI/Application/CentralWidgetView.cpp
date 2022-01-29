@@ -8,7 +8,6 @@ CentralWidgetView::CentralWidgetView(QGraphicsScene *scene, QWidget *parent)
   setRenderHint(QPainter::Antialiasing);
   setViewportUpdateMode(QGraphicsView::BoundingRectViewportUpdate);
   setBackgroundBrush(QColor(230, 200, 167));
-  show();
 }
 
 } // namespace Application

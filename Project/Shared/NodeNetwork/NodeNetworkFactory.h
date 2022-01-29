@@ -43,6 +43,14 @@ public:
       }
     }
 
+    const auto &layers = nodeNetwork->layers();
+    for (const auto *layer : layers) {
+      const auto &nodes = layer->nodes();
+      for (AbstractNode *node : nodes) {
+        node->init();
+      }
+    }
+
     return nodeNetwork;
   }
 };
