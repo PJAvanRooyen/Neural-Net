@@ -3,7 +3,7 @@
 
 #include "UI/NodeNetwork/NeuralNetworkManager.h"
 
-#include <QWidget>
+#include <QObject>
 
 class QGraphicsScene;
 
@@ -16,11 +16,11 @@ namespace Application {
 
 class CentralWidgetView;
 
-class CentralWidget : public QWidget {
+class CentralWidget : public QObject {
   Q_OBJECT
 
 public:
-  CentralWidget(QWidget *parent = nullptr);
+  CentralWidget(QObject *parent = nullptr);
 
   CentralWidgetView *view() const;
 

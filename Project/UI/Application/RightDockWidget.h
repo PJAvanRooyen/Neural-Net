@@ -1,21 +1,26 @@
 #ifndef RightDockWidget_H
 #define RightDockWidget_H
 
-#include <QWidget>
+#include "UI/ViewController/AbstractViewController.h"
 
 namespace UI {
 namespace Application {
 
 class RightDockWidgetView;
+class NeuralNetworkRunWidget;
 
-class RightDockWidget : public QWidget {
+class RightDockWidget : public AbstractWidgetController {
+  Q_OBJECT
+
 public:
-  RightDockWidget(QWidget *parent = nullptr);
+  RightDockWidget(QObject *parent, QWidget *parentView);
 
-  RightDockWidgetView *view() const;
+  // AbstractViewController interface
+protected:
+  QWidget *createView(QWidget *parentView);
 
 private:
-  RightDockWidgetView *mView;
+  NeuralNetworkRunWidget *mNeuralNetworkRunWidget;
 };
 
 } // namespace Application

@@ -16,7 +16,7 @@ class ApplicationView : public QMainWindow {
   Q_OBJECT
 
 public:
-  ApplicationView(QWidget *parent = nullptr);
+  ApplicationView();
   ~ApplicationView();
 
 private:

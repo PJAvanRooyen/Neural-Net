@@ -4,8 +4,7 @@
 namespace UI {
 namespace Application {
 
-ApplicationView::ApplicationView(QWidget *parent)
-    : QMainWindow(parent), ui(new Ui::MainWindow) {
+ApplicationView::ApplicationView() : QMainWindow(), ui(new Ui::MainWindow) {
   ui->setupUi(this);
 }
 

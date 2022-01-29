@@ -1,7 +1,7 @@
 #ifndef Application_H
 #define Application_H
 
-#include <QWidget>
+#include <QObject>
 
 namespace UI {
 namespace Application {
@@ -11,9 +11,11 @@ class RightDockWidget;
 
 class ApplicationView;
 
-class Application : public QWidget {
+class Application : public QObject {
+  Q_OBJECT
+
 public:
-  Application(QWidget *parent = Q_NULLPTR);
+  Application();
   ~Application();
 
   ApplicationView *view() const;

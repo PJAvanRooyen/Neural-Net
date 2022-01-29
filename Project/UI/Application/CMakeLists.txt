@@ -11,6 +11,8 @@ set( HEADERS
     CentralWidgetView.h
     RightDockWidget.h
     RightDockWidgetView.h
+    NeuralNetworkRunWidget.h
+    NeuralNetworkRunWidgetView.h
 )
 
 set( SOURCES
@@ -20,6 +22,8 @@ set( SOURCES
     CentralWidgetView.cpp
     RightDockWidget.cpp
     RightDockWidgetView.cpp
+    NeuralNetworkRunWidget.cpp
+    NeuralNetworkRunWidgetView.cpp
 )
 
 include_directories( .. ../.. ../../..)

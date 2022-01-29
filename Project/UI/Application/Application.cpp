@@ -9,16 +9,16 @@
 namespace UI {
 namespace Application {
 
-Application::Application(QWidget *parent)
-    : QWidget(parent), mView(new ApplicationView(this)),
+Application::Application()
+    : QObject(), mView(new ApplicationView()),
       mCentralWidget(new CentralWidget(this)),
-      mRightDockWidget(new RightDockWidget(this)) {
+      mRightDockWidget(new RightDockWidget(this, this->view())) {
   mView->setCentralWidget(mCentralWidget->view());
   mView->addDockWidget(Qt::DockWidgetArea::RightDockWidgetArea,
-                       mRightDockWidget->view());
+                       mRightDockWidget->view<RightDockWidgetView>());
 }
 
-Application::~Application() {}
+Application::~Application() { mView->deleteLater(); }
 
 ApplicationView *Application::view() const { return mView; }
 

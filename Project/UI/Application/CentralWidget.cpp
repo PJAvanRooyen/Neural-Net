@@ -7,8 +7,8 @@
 namespace UI {
 namespace Application {
 
-CentralWidget::CentralWidget(QWidget *parent)
-    : QWidget(parent), mScene(new QGraphicsScene(parent)),
+CentralWidget::CentralWidget(QObject *parent)
+    : QObject(parent), mScene(new QGraphicsScene(parent)),
       mView(new CentralWidgetView(mScene)),
       mNetworkManager(UI::NodeNetwork::NeuralNetworkManager(this)) {
 
