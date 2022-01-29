@@ -2,11 +2,6 @@
 #include "NeuralNetworkLayer.h"
 #include "Neuron.h"
 #include "NeuronConnection.h"
-
-// test
-#include "NodeNetworkLayerView.h"
-// test
-
 #include "NodeNetworkView.h"
 
 namespace UI {

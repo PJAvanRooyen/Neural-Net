@@ -1,8 +1,6 @@
 #include "NeuronConnectionView.h"
 #include "NeuronView.h"
 
-#include "Shared/NeuralNetwork/Defines.h"
-
 #include <QLabel>
 #include <QVBoxLayout>
 

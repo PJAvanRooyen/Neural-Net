@@ -1,10 +1,11 @@
 #ifndef CentralWidget_H
 #define CentralWidget_H
 
-#include "CentralWidgetView.h"
 #include "UI/NodeNetwork/NeuralNetworkManager.h"
 
-#include <QGraphicsScene>
+#include <QWidget>
+
+class QGraphicsScene;
 
 namespace UI {
 namespace NodeNetwork {
@@ -13,11 +14,13 @@ class NeuralNetwork;
 
 namespace Application {
 
-class CentralWidget : public QObject {
+class CentralWidgetView;
+
+class CentralWidget : public QWidget {
   Q_OBJECT
 
 public:
-  CentralWidget(QObject *parent = nullptr);
+  CentralWidget(QWidget *parent = nullptr);
 
   CentralWidgetView *view() const;
 

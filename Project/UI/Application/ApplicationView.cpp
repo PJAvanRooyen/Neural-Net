@@ -1,9 +1,6 @@
 #include "ApplicationView.h"
 #include "./ui_mainwindow.h"
 
-#include <QComboBox>
-#include <QVBoxLayout>
-
 namespace UI {
 namespace Application {
 

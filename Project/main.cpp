@@ -1,16 +1,11 @@
 #include "Core/ModuleManager/ModuleManager.h"
 #include "Core/NeuralNetwork/NeuralNetworkManager.h"
 #include "UI/Application/Application.h"
-
-// test
-// #include "../Tests/Core/NeuralNet/NeuralNetTest.h"
-// test
+#include "UI/Application/ApplicationView.h"
 
 #include <QApplication>
 
 int main(int argc, char *argv[]) {
-
-  // Tests::NeuralNetTest::irisTest();
 
   // CORE
   //=========================================================================

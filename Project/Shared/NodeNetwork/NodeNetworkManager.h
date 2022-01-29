@@ -7,10 +7,6 @@
 #include <QObject>
 #include <QUuid>
 
-#include <memory>
-#include <optional>
-#include <unordered_map>
-
 namespace Shared {
 namespace NodeNetwork {
 

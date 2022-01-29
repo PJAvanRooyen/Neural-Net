@@ -1,23 +1,27 @@
 #ifndef Application_H
 #define Application_H
 
-#include "UI/Application/CentralWidget.h"
-#include "UI/Widget/AbstractWidget.h"
+#include <QWidget>
 
 namespace UI {
 namespace Application {
 
-class Application : public AbstractWidget {
-  Q_OBJECT
+class CentralWidget;
+class RightDockWidget;
+
+class ApplicationView;
+
+class Application : public QWidget {
 public:
-  Application(QObject *parent = Q_NULLPTR);
+  Application(QWidget *parent = Q_NULLPTR);
   ~Application();
 
-protected:
-  QWidget *createView(QWidget *parentView) override;
+  ApplicationView *view() const;
 
 private:
+  ApplicationView *mView;
   CentralWidget *mCentralWidget;
+  RightDockWidget *mRightDockWidget;
 };
 
 } // namespace Application

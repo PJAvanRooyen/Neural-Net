@@ -9,6 +9,8 @@ set( HEADERS
     ApplicationView.h
     CentralWidget.h
     CentralWidgetView.h
+    RightDockWidget.h
+    RightDockWidgetView.h
 )
 
 set( SOURCES
@@ -16,6 +18,8 @@ set( SOURCES
     ApplicationView.cpp
     CentralWidget.cpp
     CentralWidgetView.cpp
+    RightDockWidget.cpp
+    RightDockWidgetView.cpp
 )
 
 include_directories( .. ../.. ../../..)
