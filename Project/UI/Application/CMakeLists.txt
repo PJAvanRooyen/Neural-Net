@@ -2,6 +2,7 @@ set( TARGET_NAME Application )
 
 set( UI
     mainwindow.ui
+    NeuralNetworkRunWidget.ui
 )
 
 set( HEADERS
