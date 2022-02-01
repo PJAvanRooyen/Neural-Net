@@ -56,7 +56,7 @@ void Node::addOutputNodeConnections(
   }
 }
 
-QGraphicsItem *Node::createViewBase(QGraphicsItem *parentView) {
+QGraphicsItem *Node::createView(QGraphicsItem *parentView) {
   return new NodeView(parentView);
 }
 

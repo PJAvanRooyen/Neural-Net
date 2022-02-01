@@ -17,7 +17,7 @@ Shared::NodeNetwork::AbstractNode *NodeNetworkLayer::addNode() {
   return node;
 }
 
-QGraphicsItem *NodeNetworkLayer::createViewBase(QGraphicsItem *parentView) {
+QGraphicsItem *NodeNetworkLayer::createView(QGraphicsItem *parentView) {
   return new NodeNetworkLayerView(parentView);
 }
 } // namespace NodeNetwork

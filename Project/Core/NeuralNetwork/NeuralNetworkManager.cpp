@@ -1,5 +1,6 @@
 #include "NeuralNetworkManager.h"
 #include "Core/NeuralNetwork/NeuralNetwork.h"
+#include "Core/NeuralNetwork/NeuralNetworkFactory.h"
 #include "Shared/Communicator/Communicator.h"
 
 // test
@@ -20,13 +21,15 @@ NeuralNetworkManager::NeuralNetworkManager(QObject *parent)
 NeuralNetworkManager::~NeuralNetworkManager() {}
 
 NeuralNetwork<double> *NeuralNetworkManager::createMeshNetwork(
-    const std::vector<unsigned long> &layerSizes, const QUuid &networkId) {
+    const std::vector<unsigned long> &layerSizes, const double learningRate,
+    const std::optional<unsigned> seed, const QUuid &networkId) {
 
-  auto *nodeNetwork =
-      Shared::NodeNetwork::NodeNetworkManager::createMeshNetwork<
-          NeuralNetwork<double>>(layerSizes, networkId);
+  auto *neuralNetwork = NeuralNetworkFactory::createMeshNetwork<double>(
+      layerSizes, learningRate, seed);
 
-  return nodeNetwork;
+  addNetwork(networkId, neuralNetwork);
+
+  return neuralNetwork;
 }
 
 void NeuralNetworkManager::customEvent(QEvent *event) {
@@ -35,7 +38,8 @@ void NeuralNetworkManager::customEvent(QEvent *event) {
   if (type == Shared::Communicator::EvNeuralNetCreate::staticType()) {
     auto *ev = static_cast<Shared::Communicator::EvNeuralNetCreate *>(event);
 
-    auto *netualNet = createMeshNetwork(ev->mLayerSizes, ev->mNetId);
+    auto *netualNet = createMeshNetwork(ev->layerSizes, ev->learningRate,
+                                        ev->seed, ev->networkId);
 
     if (!netualNet) {
       return;
@@ -43,7 +47,7 @@ void NeuralNetworkManager::customEvent(QEvent *event) {
 
     auto &communicator = Shared::Communicator::Communicator::instance();
     communicator.postEvent(
-        new Shared::Communicator::EvNeuralNetCreateResponse(ev->mNetId));
+        new Shared::Communicator::EvNeuralNetCreateResponse(ev->networkId));
 
   } else if (type == Shared::Communicator::EvNeuralNetRun::staticType()) {
     auto *ev = static_cast<Shared::Communicator::EvNeuralNetRun *>(event);
@@ -71,8 +75,37 @@ void NeuralNetworkManager::test(
       (learningSet.size() + testingSet.size()) / valuePollingRate;
 
   unsigned long correctCount = 0;
+  std::vector<double> preTestingSetAccuracies;
   std::vector<double> learningSetAccuracies;
   std::vector<double> testingSetAccuracies;
+
+  correctCount = 0;
+
+  if (debug) {
+    std::cout << "pre testing set:\n";
+  }
+  for (unsigned long i = 0; i < testingSet.size(); ++i) {
+    std::vector<double> inputs = testingSet[i].first;
+    std::vector<double> desiredOutputs = testingSet[i].second;
+
+    if (i != 0 && i % poll == 0) {
+      double accuracy = 100.0 * correctCount / poll;
+      preTestingSetAccuracies.push_back(accuracy);
+      correctCount = 0;
+      bool correct =
+          testIteration(inputs, desiredOutputs, neuralNetwork, false, true);
+      if (correct) {
+        ++correctCount;
+      }
+    } else {
+      // teach the network
+      bool correct =
+          testIteration(inputs, desiredOutputs, neuralNetwork, false, false);
+      if (correct) {
+        ++correctCount;
+      }
+    }
+  }
 
   if (debug) {
     std::cout << "learning set:\n";
@@ -129,6 +162,11 @@ void NeuralNetworkManager::test(
   }
 
   if (debug) {
+    std::cout << "pre-testing set accuracies:\n";
+    for (auto accuracy : preTestingSetAccuracies) {
+      std::cout << accuracy << ", ";
+    }
+    std::cout << "\n\n";
     std::cout << "learning set accuracies:\n";
     for (auto accuracy : learningSetAccuracies) {
       std::cout << accuracy << ", ";

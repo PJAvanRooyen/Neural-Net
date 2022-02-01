@@ -149,9 +149,9 @@ void NeuralNetTest::irisDataToNetworkInputs(
         &testingSet,
     const unsigned long outputNodeCount) {
   // setup test
-  const unsigned long learningIterations = /*5000*/ 100;
-  const unsigned long testingIterations = /*1000*/ 0;
-  std::srand(unsigned(/*std::time(0)*/ 1));
+  const unsigned long learningIterations = 50000;
+  const unsigned long testingIterations = 10000;
+  std::srand(unsigned(std::time(0)));
 
   learningSet.reserve(learningIterations);
   testingSet.reserve(testingIterations);
@@ -168,7 +168,7 @@ void NeuralNetTest::irisTest(
                           std::vector<double> /*desiredOutputs*/>> &testingSet,
     Core::NodeNetwork::NeuralNetwork<double> &neuralNet) {
   // teach the network
-  const double valuesToPoll = 1;
+  const double valuesToPoll = 100;
   test(learningSet, testingSet, neuralNet, valuesToPoll);
 }
 

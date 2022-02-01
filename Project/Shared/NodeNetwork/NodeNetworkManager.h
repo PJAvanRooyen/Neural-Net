@@ -18,6 +18,9 @@ public:
 
   ~NodeNetworkManager();
 
+  QUuid buildMeshNetwork(Shared::NodeNetwork::AbstractNodeNetwork *nodeNetwork,
+                         const std::vector<unsigned long> &layerSizes);
+
   template <class DerivedNetwork>
   QUuid createMeshNetwork(const std::vector<unsigned long> &layerSizes) {
     auto *nodeNetwork =
@@ -42,6 +45,8 @@ public:
 
     return nodeNetwork;
   }
+
+  void addNetwork(const QUuid &networkId, AbstractNodeNetwork *nodeNetwork);
 
   template <class DerivedNetwork>
   DerivedNetwork &network(const QUuid networkId) {

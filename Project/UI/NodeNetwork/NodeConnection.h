@@ -2,7 +2,7 @@
 #define NodeConnectionController_H
 
 #include "Shared/NodeNetwork/AbstractNodeConnection.h"
-#include "UI/GraphicsItem/AbstractGraphicsItemController.h"
+#include "UI/ViewController/AbstractViewController.h"
 
 namespace UI {
 namespace NodeNetwork {
@@ -22,7 +22,7 @@ public:
   NodeConnection();
 
 protected:
-  QGraphicsItem *createViewBase(QGraphicsItem *parentView) override;
+  QGraphicsItem *createView(QGraphicsItem *parentView) override;
 };
 
 } // namespace NodeNetwork

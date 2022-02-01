@@ -118,7 +118,7 @@ struct Print {
 
           std::cout << "(" << connection->weight() << " = "
                     << prevWeights[layerIdx][nodeIdx][connectionIdx] << " + "
-                    << Core::NodeNetwork::kLearningRate << "*"
+                    << Core::NodeNetwork::sLearningRate << "*"
                     << static_cast<Core::NodeNetwork::Neuron<double> *>(
                            connection->destinationNode())
                            ->sensitivity()

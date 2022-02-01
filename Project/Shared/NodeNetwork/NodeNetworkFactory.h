@@ -16,11 +16,8 @@ public:
 
   ~NodeNetworkFactory();
 
-  template <class DerivedNetwork>
-  static DerivedNetwork *
-  createMeshNetwork(const std::vector<unsigned long> &layerSizes) {
-    auto *nodeNetwork = new DerivedNetwork();
-
+  static bool buildMeshNetwork(AbstractNodeNetwork *nodeNetwork,
+                               const std::vector<unsigned long> &layerSizes) {
     for (unsigned long layerIdx = 0; layerIdx < layerSizes.size(); ++layerIdx) {
       const unsigned long nodeCount = layerSizes[layerIdx];
       AbstractNodeNetworkLayer *layer = nodeNetwork->addLayer();
@@ -43,13 +40,15 @@ public:
       }
     }
 
-    const auto &layers = nodeNetwork->layers();
-    for (const auto *layer : layers) {
-      const auto &nodes = layer->nodes();
-      for (AbstractNode *node : nodes) {
-        node->init();
-      }
-    }
+    return true;
+  }
+
+  template <class DerivedNetwork>
+  static DerivedNetwork *
+  createMeshNetwork(const std::vector<unsigned long> &layerSizes) {
+    auto *nodeNetwork = new DerivedNetwork();
+
+    buildMeshNetwork(nodeNetwork, layerSizes);
 
     return nodeNetwork;
   }

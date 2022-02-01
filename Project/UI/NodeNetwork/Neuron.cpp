@@ -14,7 +14,7 @@ void Neuron::setData(
   view->setData(neuronData);
 };
 
-QGraphicsItem *Neuron::createViewBase(QGraphicsItem *parentView) {
+QGraphicsItem *Neuron::createView(QGraphicsItem *parentView) {
   return new NeuronView(parentView);
 }
 

@@ -7,7 +7,7 @@ namespace UI {
 namespace Application {
 
 class RightDockWidgetView;
-class NeuralNetworkRunWidget;
+class NeuralNetworkTestWidget;
 
 class RightDockWidget : public AbstractWidgetController {
   Q_OBJECT
@@ -20,7 +20,7 @@ protected:
   QWidget *createView(QWidget *parentView);
 
 private:
-  NeuralNetworkRunWidget *mNeuralNetworkRunWidget;
+  NeuralNetworkTestWidget *mNeuralNetworkTestWidget;
 };
 
 } // namespace Application

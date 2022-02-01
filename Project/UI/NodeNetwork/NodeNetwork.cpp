@@ -44,7 +44,7 @@ NodeNetwork::addConnection(NodeNetwork::AbstractNode *sourceNode,
   return nodeConnection;
 }
 
-QGraphicsItem *NodeNetwork::createViewBase(QGraphicsItem *parentView) {
+QGraphicsItem *NodeNetwork::createView(QGraphicsItem *parentView) {
   return new NodeNetworkView(parentView);
 }
 

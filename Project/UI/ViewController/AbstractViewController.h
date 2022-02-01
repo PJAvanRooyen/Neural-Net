@@ -1,6 +1,7 @@
 #ifndef AbstractWidgetController_H
 #define AbstractWidgetController_H
 
+#include <QGraphicsItem>
 #include <QWidget>
 
 namespace UI {
@@ -58,7 +59,7 @@ public:
   }
 
 protected:
-  AbstractWidgetController(AbstractWidgetController *parent = Q_NULLPTR);
+  AbstractWidgetController(AbstractWidgetController *parent);
 
   // Only use this ctor when the parent is not an AbstractWidgetController.
   // This should be reserved for the highest level items or if the child has a
@@ -68,6 +69,30 @@ protected:
   // Init is only required if parent is not an AbstractWidgetController.
   // This initialization MUST take place before the view is ever requested.
   void initView(QWidget *parentView);
+};
+
+class AbstractGraphicsItemController : public QObject,
+                                       AbstractViewController<QGraphicsItem> {
+  Q_OBJECT
+public:
+  ~AbstractGraphicsItemController();
+
+  template <class DerivedView> DerivedView *view() {
+    return AbstractViewController::view<AbstractGraphicsItemController,
+                                        DerivedView>(this);
+  }
+
+  // Init is only required if parent is not an AbstractWidgetController.
+  // This initialization MUST take place before the view is ever requested.
+  void initView(QGraphicsItem *parentView = Q_NULLPTR);
+
+protected:
+  AbstractGraphicsItemController(AbstractGraphicsItemController *parent);
+
+  // Only use this ctor when the parent is not an AbstractWidgetController.
+  // This should be reserved for the highest level items or if the child has a
+  // different view type.
+  AbstractGraphicsItemController(QObject *parent = Q_NULLPTR);
 };
 } // namespace UI
 #endif // AbstractWidgetController_H

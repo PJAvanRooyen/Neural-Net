@@ -1,14 +1,12 @@
 set( TARGET_NAME UI )
 
 add_subdirectory( ViewController )
-add_subdirectory( GraphicsItem )
 add_subdirectory( Application )
 add_subdirectory( WidgetManager )
 add_subdirectory( NodeNetwork )
 
 set( OBJ_FILES
     $<TARGET_OBJECTS:ViewController>
-    $<TARGET_OBJECTS:GraphicsItem>
     $<TARGET_OBJECTS:Application>
     $<TARGET_OBJECTS:WidgetManager>
     )

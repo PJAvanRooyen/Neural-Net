@@ -18,7 +18,8 @@ public:
 
   NeuralNetwork<double> *
   createMeshNetwork(const std::vector<unsigned long> &layerSizes,
-                    const QUuid &networkId);
+                    const double learningRate,
+                    const std::optional<unsigned> seed, const QUuid &networkId);
 
 private:
   void customEvent(QEvent *event) override;

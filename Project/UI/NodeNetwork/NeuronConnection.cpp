@@ -34,7 +34,7 @@ void NeuronConnection::setData(
   view->setData(connectionData);
 };
 
-QGraphicsItem *NeuronConnection::createViewBase(QGraphicsItem *parentView) {
+QGraphicsItem *NeuronConnection::createView(QGraphicsItem *parentView) {
   return new NeuronConnectionView(
       static_cast<Neuron *>(sourceNode())->view<NeuronView>(),
       static_cast<Neuron *>(destinationNode())->view<NeuronView>(), parentView);

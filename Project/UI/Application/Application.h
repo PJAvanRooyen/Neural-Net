@@ -18,6 +18,8 @@ public:
   Application();
   ~Application();
 
+  void runTest();
+
   ApplicationView *view() const;
 
 private:

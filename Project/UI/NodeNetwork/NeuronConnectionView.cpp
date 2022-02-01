@@ -101,6 +101,7 @@ NeuronConnectionView::NeuronConnectionView(NeuronView *sourceNodeView,
                                            QGraphicsItem *parent)
     : NodeConnectionView(sourceNodeView, destinationNodeView, parent),
       mNeuronConnectionInfoProxyWidget(this) {
+  mNeuronConnectionInfoProxyWidget.resize(QSizeF(75, 0));
   adjust();
   setZValue(3);
 }

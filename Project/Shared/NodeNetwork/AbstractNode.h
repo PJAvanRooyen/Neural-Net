@@ -12,8 +12,6 @@ class AbstractNode {
 public:
   ~AbstractNode();
 
-  virtual void init();
-
   virtual void addInputNodeConnection(AbstractNodeConnection *nodeConnection);
 
   virtual void addInputNodeConnections(

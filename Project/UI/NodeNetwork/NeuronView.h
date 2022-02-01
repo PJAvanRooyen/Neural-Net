@@ -28,6 +28,8 @@ class NeuronView : public NodeView {
     public:
       NeuronInfoWidget();
 
+      void initLable(QLabel *label);
+
       void setData(const Shared::NodeNetwork::NeuronData<double> &neuronData);
 
       QString textForValue(const QString &title,

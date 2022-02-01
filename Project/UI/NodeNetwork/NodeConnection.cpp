@@ -34,7 +34,7 @@ NodeConnection::NodeConnection()
     : AbstractGraphicsItemController(),
       Shared::NodeNetwork::AbstractNodeConnection(){};
 
-QGraphicsItem *NodeConnection::createViewBase(QGraphicsItem *parentView) {
+QGraphicsItem *NodeConnection::createView(QGraphicsItem *parentView) {
   return new NodeConnectionView(
       static_cast<Node *>(sourceNode())->view<NodeView>(),
       static_cast<Node *>(destinationNode())->view<NodeView>(), parentView);

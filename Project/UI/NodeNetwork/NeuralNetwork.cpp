@@ -4,6 +4,10 @@
 #include "NeuronConnection.h"
 #include "NodeNetworkView.h"
 
+// test
+#include <QApplication>
+// test
+
 namespace UI {
 namespace NodeNetwork {
 
@@ -28,6 +32,7 @@ NeuralNetwork::addConnection(NodeNetwork::AbstractNode *sourceNode,
 
 void NeuralNetwork::setData(
     const Shared::NodeNetwork::NeuralNetworkData<double> &neuralNetData) {
+
   const auto &layers = this->layers();
   const auto layerCount = this->layerCount();
 
@@ -57,6 +62,12 @@ void NeuralNetwork::setData(
       }
     }
   }
+
+  // test
+  view<NodeNetworkView>()->update();
+  QApplication::processEvents();
+  qt_noop();
+  // test
 }
 } // namespace NodeNetwork
 } // namespace UI

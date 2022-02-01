@@ -1,21 +1,21 @@
 #include "RightDockWidget.h"
 #include "RightDockWidgetView.h"
 
-#include "UI/Application/NeuralNetworkRunWidget.h"
-#include "UI/Application/NeuralNetworkRunWidgetView.h"
+#include "UI/Application/NeuralNetworkTestWidget.h"
+#include "UI/Application/NeuralNetworkTestWidgetView.h"
 
 namespace UI {
 namespace Application {
 
 RightDockWidget::RightDockWidget(QObject *parent, QWidget *parentView)
     : AbstractWidgetController(parent),
-      mNeuralNetworkRunWidget(new NeuralNetworkRunWidget(this)) {
+      mNeuralNetworkTestWidget(new NeuralNetworkTestWidget(this)) {
 
   // create view manually when parent is not an AbstractWidgetController
   initView(parentView);
 
   view<RightDockWidgetView>()->setWidget(
-      mNeuralNetworkRunWidget->view<NeuralNetworkRunWidgetView>());
+      mNeuralNetworkTestWidget->view<NeuralNetworkTestWidgetView>());
 }
 
 QWidget *RightDockWidget::createView(QWidget *parentView) {

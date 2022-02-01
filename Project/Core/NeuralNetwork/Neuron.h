@@ -7,6 +7,7 @@
 
 #include <algorithm>
 #include <cmath>
+#include <ctime>
 #include <numeric>
 #include <optional>
 #include <qlogging.h>
@@ -188,7 +189,7 @@ template <typename DataType> DataType reLu(const DataType input) {
 //----------------------------------------------------------------------------
 template <typename DataType> DataType sigmoidDerivative(const DataType input) {
   DataType sigmoidResult = sigmoid(input);
-  return input * sigmoidResult * (DataType(1) - sigmoidResult);
+  return sigmoidResult * (DataType(1) - sigmoidResult);
 }
 
 template <typename DataType> DataType reLuDerivative(const DataType) {
@@ -211,20 +212,14 @@ DataType meanSquareErrorDerivative(const DataType output,
   return (desiredOutput - output);
 }
 //----------------------------------------------------------------------------
-
-// ___LEARNING RATE___
 //----------------------------------------------------------------------------
-double kLearningRate = 0.1;
-//----------------------------------------------------------------------------
-
-// ___RANDOMIZATION FUNCTIONS___
-//----------------------------------------------------------------------------
-std::default_random_engine randomizer(1);
+static double sLearningRate;
 
 template <typename DataType>
 std::normal_distribution<DataType>
-    kNormalDist = std::normal_distribution<DataType>(DataType(0), DataType(1));
-//----------------------------------------------------------------------------
+    sNormalDist = std::normal_distribution<DataType>(DataType(0), DataType(1));
+
+static std::default_random_engine sRandomizer;
 
 template <typename DataType> class Neuron : public Node {
 
@@ -245,9 +240,9 @@ public:
 
   ~Neuron();
 
-  void init() override {
+  void init() {
     if (!mInputNodeConnections.empty() && !mOutputNodeConnections.empty()) {
-      mData.bias.emplace(kNormalDist<DataType>(randomizer));
+      mData.bias.emplace(sNormalDist<DataType>(sRandomizer));
     }
   }
 
@@ -282,7 +277,7 @@ public:
     Q_ASSERT(mData.sensitivity.has_value());
     Q_ASSERT(mData.bias.has_value());
     mData.bias.emplace(mData.bias.value() +
-                       kLearningRate * mData.sensitivity.value());
+                       sLearningRate * mData.sensitivity.value());
   }
 
   DataType activate();
@@ -327,7 +322,7 @@ template <typename DataType> class NeuronConnection : public NodeConnection {
 public:
   NeuronConnection(Neuron<DataType> *sourceNeuron, Neuron<DataType> *destNeuron)
       : NodeConnection(sourceNeuron, destNeuron), mWeightFunction(LinearScale),
-        mData({kNormalDist<DataType>(randomizer), std::nullopt}) {}
+        mData({sNormalDist<DataType>(sRandomizer), std::nullopt}) {}
 
   DataType weight() const { return mData.weight; }
 
@@ -354,7 +349,7 @@ public:
     Neuron<DataType> *destinationNeuron =
         static_cast<Neuron<DataType> *>(mDestination);
 
-    mData.weight += kLearningRate * destinationNeuron->sensitivity() *
+    mData.weight += sLearningRate * destinationNeuron->sensitivity() *
                     sourceNeuron->value();
   }
 

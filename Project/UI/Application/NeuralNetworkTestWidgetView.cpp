@@ -1,19 +1,19 @@
-#include "NeuralNetworkRunWidgetView.h"
-#include "./ui_NeuralNetworkRunWidget.h"
+#include "NeuralNetworkTestWidgetView.h"
+#include "./ui_NeuralNetworkTestWidget.h"
 
 namespace UI {
 namespace Application {
 
-NeuralNetworkRunWidgetView::NeuralNetworkRunWidgetView(QWidget *parent)
-    : QWidget(parent), ui(new Ui::NeuralNetworkRunWidget) {
+NeuralNetworkTestWidgetView::NeuralNetworkTestWidgetView(QWidget *parent)
+    : QWidget(parent), ui(new Ui::NeuralNetworkTestWidget) {
   ui->setupUi(this);
 }
 
-NeuralNetworkRunWidgetView::~NeuralNetworkRunWidgetView() { delete ui; };
+NeuralNetworkTestWidgetView::~NeuralNetworkTestWidgetView() { delete ui; };
 } // namespace Application
 } // namespace UI
 
-void UI::Application::NeuralNetworkRunWidgetView::
+void UI::Application::NeuralNetworkTestWidgetView::
     on_mLearningIterationButton_released() {
   // TODO:
   // -move neural network manager to application
@@ -23,5 +23,5 @@ void UI::Application::NeuralNetworkRunWidgetView::
   // -let connection send event to run a test iteration
 }
 
-void UI::Application::NeuralNetworkRunWidgetView::
+void UI::Application::NeuralNetworkTestWidgetView::
     on_mTestIterationButton_released() {}

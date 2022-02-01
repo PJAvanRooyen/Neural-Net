@@ -7,6 +7,8 @@
 namespace UI {
 namespace NodeNetwork {
 
+class NeuralNetwork;
+
 class NeuralNetworkManager : public Shared::NodeNetwork::NodeNetworkManager {
   Q_OBJECT
 
@@ -15,18 +17,11 @@ public:
 
   ~NeuralNetworkManager();
 
-  template <class DerivedNetwork>
-  QUuid createMeshNetwork(const std::vector<unsigned long> &layerSizes) {
-    const QUuid &networkId =
-        Shared::NodeNetwork::NodeNetworkManager::createMeshNetwork<
-            DerivedNetwork>(layerSizes);
+  QUuid createMeshNetwork(const std::vector<unsigned long> &layerSizes,
+                          const double learningRate,
+                          const std::optional<unsigned> seed);
 
-    auto &communicator = Shared::Communicator::Communicator::instance();
-    communicator.postEvent(
-        new Shared::Communicator::EvNeuralNetCreate(layerSizes, networkId));
-
-    return networkId;
-  }
+  void runTest(const QUuid &networkId);
 
 private:
   void customEvent(QEvent *event) override;

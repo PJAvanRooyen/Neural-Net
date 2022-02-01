@@ -4,6 +4,7 @@ set( HEADERS
   Neuron.h
   NeuralNetworkLayer.h
   NeuralNetwork.h
+  NeuralNetworkFactory.h
   NeuralNetworkManager.h
 )
 
@@ -11,6 +12,7 @@ set( SOURCES
   Neuron.cpp
   NeuralNetworkLayer.cpp
   NeuralNetwork.cpp
+  NeuralNetworkFactory.cpp
   NeuralNetworkManager.cpp
 )
 

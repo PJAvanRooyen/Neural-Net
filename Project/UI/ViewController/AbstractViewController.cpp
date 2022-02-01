@@ -25,4 +25,17 @@ void AbstractWidgetController::initView(QWidget *parentView) {
   setView(createView(parentView));
 }
 
+AbstractGraphicsItemController::~AbstractGraphicsItemController() {}
+
+AbstractGraphicsItemController::AbstractGraphicsItemController(
+    AbstractGraphicsItemController *parent)
+    : QObject(parent), AbstractViewController<QGraphicsItem>() {}
+
+AbstractGraphicsItemController::AbstractGraphicsItemController(QObject *parent)
+    : QObject(parent), AbstractViewController<QGraphicsItem>() {}
+
+void AbstractGraphicsItemController::initView(QGraphicsItem *parentView) {
+  setView(createView(parentView));
+}
+
 } // namespace UI

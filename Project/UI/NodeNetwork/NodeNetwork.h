@@ -2,8 +2,8 @@
 #define NodeNetworkController_H
 
 #include "Shared/NodeNetwork/AbstractNodeNetwork.h"
-#include "UI/GraphicsItem/AbstractGraphicsItemController.h"
 #include "UI/NodeNetwork/NodeConnection.h"
+#include "UI/ViewController/AbstractViewController.h"
 
 namespace UI {
 namespace NodeNetwork {
@@ -32,7 +32,7 @@ public:
                 AbstractNode *destinationNode) override;
 
 protected:
-  QGraphicsItem *createViewBase(QGraphicsItem *parentView) override;
+  QGraphicsItem *createView(QGraphicsItem *parentView) override;
 };
 
 } // namespace NodeNetwork

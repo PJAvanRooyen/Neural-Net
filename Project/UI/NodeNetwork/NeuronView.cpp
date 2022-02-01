@@ -25,20 +25,24 @@ NeuronView::NeuronInfoProxyWidget::NeuronInfoWidget::NeuronInfoWidget()
   setLayout(new QVBoxLayout(this));
   layout()->setContentsMargins(0, 0, 0, 0);
 
-  mDesiredActivation->setFont(QFont("NeuralNetworkData", kFont));
-  mActivation->setFont(QFont("NeuralNetworkData", kFont));
-  mBias->setFont(QFont("NeuralNetworkData", kFont));
-  mSensitivity->setFont(QFont("NeuralNetworkData", kFont));
+  initLable(mDesiredActivation);
+  initLable(mActivation);
+  initLable(mBias);
+  initLable(mSensitivity);
+}
 
+void NeuronView::NeuronInfoProxyWidget::NeuronInfoWidget::initLable(
+    QLabel *label) {
+  label->setFont(QFont("NeuralNetworkData", kFont));
+  label->setSizePolicy(QSizePolicy::Preferred, QSizePolicy::Minimum);
   auto *layout = this->layout();
-  layout->addWidget(mDesiredActivation);
-  layout->addWidget(mActivation);
-  layout->addWidget(mBias);
-  layout->addWidget(mSensitivity);
+  layout->addWidget(label);
 }
 
 void NeuronView::NeuronInfoProxyWidget::NeuronInfoWidget::setData(
     const Shared::NodeNetwork::NeuronData<double> &neuronData) {
+  setBackgroundRole(QPalette::Dark);
+  repaint();
 
   if (neuronData.desiredActivation.has_value()) {
     mDesiredActivation->setText(
@@ -50,8 +54,9 @@ void NeuronView::NeuronInfoProxyWidget::NeuronInfoWidget::setData(
   }
 
   if (neuronData.activation.has_value()) {
-    mActivation->setText(textForValue(kActivationTitle, std::nullopt,
-                                      neuronData.activation.value()));
+    const auto text = textForValue(kActivationTitle, std::nullopt,
+                                   neuronData.activation.value());
+    mActivation->setText(text);
     mActivation->show();
   } else {
     mActivation->hide();
@@ -62,6 +67,7 @@ void NeuronView::NeuronInfoProxyWidget::NeuronInfoWidget::setData(
         kBiasTitle,
         mPreviousData.has_value() ? mPreviousData.value().bias : std::nullopt,
         neuronData.bias.value()));
+    mBias->repaint();
     mBias->show();
   } else {
     mBias->hide();
@@ -75,12 +81,8 @@ void NeuronView::NeuronInfoProxyWidget::NeuronInfoWidget::setData(
     mSensitivity->hide();
   }
 
-  // test
-  if (mPreviousData.has_value()) {
-    qt_noop();
-  }
-  // test
-
+  setBackgroundRole(QPalette::Light);
+  repaint();
   mPreviousData.emplace(neuronData);
 }
 
@@ -112,16 +114,18 @@ NeuronView::NeuronInfoProxyWidget::~NeuronInfoProxyWidget() {
 void NeuronView::NeuronInfoProxyWidget::setData(
     const Shared::NodeNetwork::NeuronData<double> &neuronData) {
   static_cast<NeuronInfoWidget *>(widget())->setData(neuronData);
+  update();
 }
 
 NeuronView::NeuronView(QGraphicsItem *parent)
     : NodeView(parent), mNeuronInfoProxyWidget(this) {
-  setZValue(3);
+  mNeuronInfoProxyWidget.resize(QSizeF(75, 0));
 }
 
 void NeuronView::setData(
     const Shared::NodeNetwork::NeuronData<double> &neuronData) {
   mNeuronInfoProxyWidget.setData(neuronData);
+  update();
 }
 
 void NeuronView::paint(QPainter *painter,

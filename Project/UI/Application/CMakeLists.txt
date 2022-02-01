@@ -2,7 +2,7 @@ set( TARGET_NAME Application )
 
 set( UI
     mainwindow.ui
-    NeuralNetworkRunWidget.ui
+    NeuralNetworkTestWidget.ui
 )
 
 set( HEADERS
@@ -12,8 +12,8 @@ set( HEADERS
     CentralWidgetView.h
     RightDockWidget.h
     RightDockWidgetView.h
-    NeuralNetworkRunWidget.h
-    NeuralNetworkRunWidgetView.h
+    NeuralNetworkTestWidget.h
+    NeuralNetworkTestWidgetView.h
 )
 
 set( SOURCES
@@ -23,8 +23,8 @@ set( SOURCES
     CentralWidgetView.cpp
     RightDockWidget.cpp
     RightDockWidgetView.cpp
-    NeuralNetworkRunWidget.cpp
-    NeuralNetworkRunWidgetView.cpp
+    NeuralNetworkTestWidget.cpp
+    NeuralNetworkTestWidgetView.cpp
 )
 
 include_directories( .. ../.. ../../..)

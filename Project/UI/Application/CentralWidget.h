@@ -22,6 +22,10 @@ class CentralWidget : public QObject {
 public:
   CentralWidget(QObject *parent = nullptr);
 
+  QUuid createTestNetwork();
+
+  void runTest(const QUuid &networkId);
+
   CentralWidgetView *view() const;
 
 private:

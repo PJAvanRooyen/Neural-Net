@@ -25,7 +25,7 @@ public:
   void setData(const Shared::NodeNetwork::NeuronData<double> &neuronData);
 
 protected:
-  QGraphicsItem *createViewBase(QGraphicsItem *parentView) override;
+  QGraphicsItem *createView(QGraphicsItem *parentView) override;
 };
 
 } // namespace NodeNetwork

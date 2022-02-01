@@ -27,7 +27,7 @@ public:
       const Shared::NodeNetwork::NeuronConnectionData<double> &connectionData);
 
 protected:
-  QGraphicsItem *createViewBase(QGraphicsItem *parentView) override;
+  QGraphicsItem *createView(QGraphicsItem *parentView) override;
 };
 
 } // namespace NodeNetwork
