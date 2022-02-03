@@ -9,7 +9,11 @@ NeuralNetworkTestWidget::NeuralNetworkTestWidget(
     : AbstractWidgetController(parent) {}
 
 QWidget *NeuralNetworkTestWidget::createView(QWidget *parentView) {
-  return new NeuralNetworkTestWidgetView(parentView);
+  auto *view = new NeuralNetworkTestWidgetView(parentView);
+  connect(view, &NeuralNetworkTestWidgetView::runTestButton_released, this,
+          &NeuralNetworkTestWidget::runTestButton_released);
+
+  return view;
 }
 
 } // namespace Application

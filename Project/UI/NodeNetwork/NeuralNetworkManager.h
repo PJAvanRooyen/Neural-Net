@@ -21,7 +21,9 @@ public:
                           const double learningRate,
                           const std::optional<unsigned> seed);
 
-  void runTest(const QUuid &networkId);
+  void runTest(const QUuid &networkId, const ulong learningIterations,
+               const ulong testingIterations,
+               const std::optional<ulong> dataSeed = std::nullopt);
 
 private:
   void customEvent(QEvent *event) override;

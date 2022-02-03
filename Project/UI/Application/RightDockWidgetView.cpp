@@ -2,7 +2,6 @@
 
 namespace UI {
 namespace Application {
-
 RightDockWidgetView::RightDockWidgetView(QWidget *parent)
     : QDockWidget(parent) {}
 

@@ -22,9 +22,13 @@ class CentralWidget : public QObject {
 public:
   CentralWidget(QObject *parent = nullptr);
 
-  QUuid createTestNetwork();
+  QUuid createTestNetwork(const std::vector<unsigned long> &layerSizes,
+                          const std::optional<unsigned> seed = std::nullopt,
+                          const double learningRate = 0.01);
 
-  void runTest(const QUuid &networkId);
+  void runTest(const QUuid &networkId, const ulong learningIterations,
+               const ulong testingIterations,
+               const std::optional<ulong> dataSeed = std::nullopt);
 
   CentralWidgetView *view() const;
 

@@ -14,8 +14,13 @@ RightDockWidget::RightDockWidget(QObject *parent, QWidget *parentView)
   // create view manually when parent is not an AbstractWidgetController
   initView(parentView);
 
-  view<RightDockWidgetView>()->setWidget(
-      mNeuralNetworkTestWidget->view<NeuralNetworkTestWidgetView>());
+  auto *netTestWidgetView =
+      mNeuralNetworkTestWidget->view<NeuralNetworkTestWidgetView>();
+  view<RightDockWidgetView>()->setWidget(netTestWidgetView);
+
+  connect(mNeuralNetworkTestWidget,
+          &NeuralNetworkTestWidget::runTestButton_released, this,
+          &RightDockWidget::runTestButton_released);
 }
 
 QWidget *RightDockWidget::createView(QWidget *parentView) {

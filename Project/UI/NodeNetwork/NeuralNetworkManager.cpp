@@ -39,9 +39,13 @@ QUuid NeuralNetworkManager::createMeshNetwork(
   return networkId;
 }
 
-void NeuralNetworkManager::runTest(const QUuid &networkId) {
+void NeuralNetworkManager::runTest(const QUuid &networkId,
+                                   const ulong learningIterations,
+                                   const ulong testingIterations,
+                                   const std::optional<ulong> dataSeed) {
   auto &communicator = Shared::Communicator::Communicator::instance();
-  communicator.postEvent(new Shared::Communicator::EvNeuralNetRun(networkId));
+  communicator.postEvent(new Shared::Communicator::EvNeuralNetRun(
+      networkId, learningIterations, testingIterations, dataSeed));
 }
 
 void NeuralNetworkManager::customEvent(QEvent *event) {
@@ -51,7 +55,7 @@ void NeuralNetworkManager::customEvent(QEvent *event) {
     auto *ev =
         static_cast<Shared::Communicator::EvNeuralNetCreateResponse *>(event);
 
-    if (!ev->mNetId.has_value()) {
+    if (!ev->networkId.has_value()) {
       return;
     }
 
@@ -61,9 +65,9 @@ void NeuralNetworkManager::customEvent(QEvent *event) {
     // populate the corresponding UI network with the values.
     auto *ev = static_cast<Shared::Communicator::EvNeuralNetRunInfo *>(event);
 
-    auto &netId = ev->mNetId;
+    auto &netId = ev->networkId;
     auto &network = this->network<NeuralNetwork>(netId);
-    network.setData(ev->mNetData);
+    network.setData(ev->networkData);
 
     // test
     static_cast<UI::Application::CentralWidget *>(parent())

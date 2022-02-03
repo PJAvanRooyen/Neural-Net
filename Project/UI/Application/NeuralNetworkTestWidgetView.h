@@ -9,19 +9,33 @@ class NeuralNetworkTestWidget;
 }
 QT_END_NAMESPACE
 
+namespace Shared {
+namespace NodeNetwork {
+struct TestConfiguration;
+}
+} // namespace Shared
+
 namespace UI {
 namespace Application {
 
 class NeuralNetworkTestWidgetView : public QWidget {
+  Q_OBJECT
+
+Q_SIGNALS:
+  void runTestButton_released(
+      const Shared::NodeNetwork::TestConfiguration &testConfig);
+
 public:
   NeuralNetworkTestWidgetView(QWidget *parent = nullptr);
 
   ~NeuralNetworkTestWidgetView();
 
 private slots:
-  void on_mLearningIterationButton_released();
+  void on_RunTestButton_released();
 
-  void on_mTestIterationButton_released();
+  void on_WeightsSeedRandomizeButton_released();
+
+  void on_TestDataSeedRandomizeButton_released();
 
 private:
   Ui::NeuralNetworkTestWidget *ui;

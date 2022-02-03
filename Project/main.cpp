@@ -27,9 +27,5 @@ int main(int argc, char *argv[]) {
   QApplication a(argc, argv);
   UI::Application::Application application = UI::Application::Application();
 
-  // TEST
-  //=========================================================================
-  application.runTest();
-
   return a.exec();
 }

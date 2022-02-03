@@ -24,7 +24,7 @@
    </property>
    <layout class="QVBoxLayout" name="verticalLayout">
     <item>
-     <widget class="QLabel" name="mTitle">
+     <widget class="QLabel" name="Title">
       <property name="text">
        <string>Neural Network Test Controller</string>
       </property>
@@ -33,21 +33,21 @@
     <item>
      <layout class="QFormLayout" name="formLayout">
       <item row="0" column="0">
-       <widget class="QLabel" name="label_5">
+       <widget class="QLabel" name="LearningIterationsLabel">
         <property name="text">
          <string>Learning Iterations</string>
         </property>
        </widget>
       </item>
       <item row="1" column="0">
-       <widget class="QLabel" name="label_4">
+       <widget class="QLabel" name="TestIterationsLabel">
         <property name="text">
          <string>Test Iterations</string>
         </property>
        </widget>
       </item>
       <item row="0" column="1">
-       <widget class="QLineEdit" name="lineEdit_2">
+       <widget class="QLineEdit" name="LearningIterationsLineEdit">
         <property name="sizePolicy">
          <sizepolicy hsizetype="Ignored" vsizetype="Fixed">
           <horstretch>0</horstretch>
@@ -60,7 +60,7 @@
        </widget>
       </item>
       <item row="1" column="1">
-       <widget class="QLineEdit" name="lineEdit_5">
+       <widget class="QLineEdit" name="TestIterationsLineEdit">
         <property name="sizePolicy">
          <sizepolicy hsizetype="Ignored" vsizetype="Fixed">
           <horstretch>0</horstretch>
@@ -77,7 +77,7 @@
     <item>
      <layout class="QGridLayout" name="gridLayout">
       <item row="1" column="2">
-       <widget class="QRadioButton" name="radioButton_3">
+       <widget class="QRadioButton" name="TestDataSeedRandomizeButton">
         <property name="text">
          <string>Randomize</string>
         </property>
@@ -90,7 +90,7 @@
        </widget>
       </item>
       <item row="1" column="1">
-       <widget class="QLineEdit" name="lineEdit_4">
+       <widget class="QLineEdit" name="TestDataSeedLineEdit">
         <property name="enabled">
          <bool>false</bool>
         </property>
@@ -100,7 +100,7 @@
        </widget>
       </item>
       <item row="0" column="1">
-       <widget class="QLineEdit" name="lineEdit_3">
+       <widget class="QLineEdit" name="WeightsSeedLineEdit">
         <property name="enabled">
          <bool>false</bool>
         </property>
@@ -110,7 +110,7 @@
        </widget>
       </item>
       <item row="2" column="0">
-       <widget class="QLabel" name="label_2">
+       <widget class="QLabel" name="LearningRateLabel">
         <property name="enabled">
          <bool>true</bool>
         </property>
@@ -132,7 +132,7 @@
        </widget>
       </item>
       <item row="0" column="2">
-       <widget class="QRadioButton" name="radioButton">
+       <widget class="QRadioButton" name="WeightsSeedRandomizeButton">
         <property name="text">
          <string>Randomize</string>
         </property>
@@ -144,21 +144,8 @@
         </property>
        </widget>
       </item>
-      <item row="2" column="2">
-       <widget class="QRadioButton" name="radioButton_4">
-        <property name="text">
-         <string>auto find</string>
-        </property>
-        <property name="checked">
-         <bool>false</bool>
-        </property>
-        <property name="autoExclusive">
-         <bool>false</bool>
-        </property>
-       </widget>
-      </item>
       <item row="2" column="1">
-       <widget class="QLineEdit" name="lineEdit">
+       <widget class="QLineEdit" name="LearningRateLineEdit">
         <property name="sizePolicy">
          <sizepolicy hsizetype="Ignored" vsizetype="Fixed">
           <horstretch>0</horstretch>
@@ -171,14 +158,14 @@
        </widget>
       </item>
       <item row="0" column="0">
-       <widget class="QLabel" name="label_3">
+       <widget class="QLabel" name="WeightsSeedLabel">
         <property name="text">
          <string>Weights and Biases Seed</string>
         </property>
        </widget>
       </item>
       <item row="1" column="0">
-       <widget class="QLabel" name="label_6">
+       <widget class="QLabel" name="TestDataSeedLabel">
         <property name="text">
          <string>Test Data Seed</string>
         </property>
@@ -187,7 +174,7 @@
      </layout>
     </item>
     <item>
-     <widget class="QPushButton" name="mTestButton">
+     <widget class="QPushButton" name="RunTestButton">
       <property name="text">
        <string>Run Test</string>
       </property>

@@ -9,6 +9,11 @@
 namespace UI {
 namespace Application {
 
+void Application::on_runTestButton_released(
+    const Shared::NodeNetwork::TestConfiguration &testConfig) {
+  runTest(testConfig);
+}
+
 Application::Application()
     : QObject(), mView(new ApplicationView()),
       mCentralWidget(new CentralWidget(this)),
@@ -18,14 +23,25 @@ Application::Application()
   mView->addDockWidget(Qt::DockWidgetArea::RightDockWidgetArea,
                        mRightDockWidget->view<RightDockWidgetView>());
   mView->show();
+
+  connect(mRightDockWidget, &RightDockWidget::runTestButton_released, this,
+          &Application::on_runTestButton_released);
 }
 
 Application::~Application() { mView->deleteLater(); }
 
-void Application::runTest() {
-  const QUuid &networkId = mCentralWidget->createTestNetwork();
+void Application::runTest(
+    const Shared::NodeNetwork::TestConfiguration &testConfig) {
+
+  const std::vector<unsigned long> layerSizes = {5, 30, 30, 30, 30, 3};
+
+  const QUuid &networkId = mCentralWidget->createTestNetwork(
+      layerSizes, testConfig.weightsAndBiasSeed, testConfig.learningRate);
+
   mView->repaint();
-  mCentralWidget->runTest(networkId);
+
+  mCentralWidget->runTest(networkId, testConfig.learningIterations,
+                          testConfig.testingIterations, testConfig.dataSeed);
 }
 
 ApplicationView *Application::view() const { return mView; }

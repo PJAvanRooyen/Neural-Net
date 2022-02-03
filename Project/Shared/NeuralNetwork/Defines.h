@@ -31,6 +31,14 @@ using NeuralNetworkLayerData =
 template <typename DataType>
 using NeuralNetworkData = std::vector<NeuralNetworkLayerData<DataType>>;
 
+struct TestConfiguration {
+  ulong learningIterations;
+  ulong testingIterations;
+  std::optional<ulong> weightsAndBiasSeed;
+  std::optional<ulong> dataSeed;
+  double learningRate;
+};
+
 } // namespace NodeNetwork
 } // namespace Shared
 

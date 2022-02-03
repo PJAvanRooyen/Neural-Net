@@ -9,6 +9,9 @@ namespace Application {
 class RightDockWidgetView : public QDockWidget {
   Q_OBJECT
 
+Q_SIGNALS:
+  void runTestButton_released();
+
 public:
   RightDockWidgetView(QWidget *parent = nullptr);
 };

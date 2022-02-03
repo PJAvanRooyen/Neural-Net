@@ -12,13 +12,10 @@ CentralWidget::CentralWidget(QObject *parent)
       mView(new CentralWidgetView(mScene)),
       mNetworkManager(UI::NodeNetwork::NeuralNetworkManager(this)) {}
 
-QUuid CentralWidget::createTestNetwork() {
+QUuid CentralWidget::createTestNetwork(
+    const std::vector<unsigned long> &layerSizes,
+    const std::optional<unsigned> seed, const double learningRate) {
   using NeuralNetwork = UI::NodeNetwork::NeuralNetwork;
-
-  const std::vector<unsigned long> layerSizes = {5, 30, 30, 30, 30, 3};
-  const double learningRate = 0.01;
-  // nullopt means the seed is randomized
-  const std::optional<unsigned> seed = std::nullopt;
 
   const QUuid &networkId =
       mNetworkManager.createMeshNetwork(layerSizes, learningRate, seed);
@@ -34,8 +31,12 @@ QUuid CentralWidget::createTestNetwork() {
   return networkId;
 }
 
-void CentralWidget::runTest(const QUuid &networkId) {
-  mNetworkManager.runTest(networkId);
+void CentralWidget::runTest(const QUuid &networkId,
+                            const ulong learningIterations,
+                            const ulong testingIterations,
+                            const std::optional<ulong> dataSeed) {
+  mNetworkManager.runTest(networkId, learningIterations, testingIterations,
+                          dataSeed);
 }
 
 CentralWidgetView *CentralWidget::view() const { return mView; }

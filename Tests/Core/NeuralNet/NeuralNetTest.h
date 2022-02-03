@@ -29,7 +29,10 @@ public:
           &learningSet,
       std::vector<std::pair<std::vector<double>, std::vector<double>>>
           &testingSet,
-      const unsigned long outputNodeCount = 3);
+      const unsigned long outputNodeCount,
+      const unsigned long learningIterations,
+      const unsigned long testingIterations,
+      const std::optional<unsigned long> dataSeed);
 
   static void
   irisTest(std::vector<std::pair<std::vector<double>, std::vector<double>>>
@@ -125,10 +128,14 @@ void NeuralNetTest::irisTest() {
   const unsigned long outputNodeCount = 3;
   const std::vector<unsigned long> shape = {inputNodeCount, 4, 4, 4,
                                             outputNodeCount};
+  const ulong learningIterations = 5000;
+  const ulong testingIterations = 1000;
+  const std::optional<ulong> dataSeed = std::nullopt;
 
   std::vector<std::pair<std::vector<double>, std::vector<double>>> learningSet;
   std::vector<std::pair<std::vector<double>, std::vector<double>>> testingSet;
-  irisDataToNetworkInputs(learningSet, testingSet, outputNodeCount);
+  irisDataToNetworkInputs(learningSet, testingSet, outputNodeCount,
+                          learningIterations, testingIterations, dataSeed);
 
   // create the network
   Shared::NodeNetwork::NodeNetworkFactory factory =
@@ -147,11 +154,11 @@ void NeuralNetTest::irisDataToNetworkInputs(
         &learningSet,
     std::vector<std::pair<std::vector<double>, std::vector<double>>>
         &testingSet,
-    const unsigned long outputNodeCount) {
+    const unsigned long outputNodeCount, const unsigned long learningIterations,
+    const unsigned long testingIterations,
+    const std::optional<unsigned long> dataSeed = std::nullopt) {
   // setup test
-  const unsigned long learningIterations = 50000;
-  const unsigned long testingIterations = 10000;
-  std::srand(unsigned(std::time(0)));
+  std::srand(dataSeed.has_value() ? dataSeed.value() : ulong(std::time(0)));
 
   learningSet.reserve(learningIterations);
   testingSet.reserve(testingIterations);

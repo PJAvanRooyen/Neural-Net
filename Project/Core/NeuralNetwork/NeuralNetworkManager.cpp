@@ -55,8 +55,12 @@ void NeuralNetworkManager::customEvent(QEvent *event) {
     std::vector<std::pair<std::vector<double>, std::vector<double>>>
         learningSet;
     std::vector<std::pair<std::vector<double>, std::vector<double>>> testingSet;
-    Tests::NeuralNetTest::irisDataToNetworkInputs(learningSet, testingSet, 5);
-    test(learningSet, testingSet, network<NeuralNetwork<double>>(ev->mNetId),
+
+    Tests::NeuralNetTest::irisDataToNetworkInputs(
+        learningSet, testingSet, 5, ev->learningIterations,
+        ev->testingIterations, ev->dataSeed);
+
+    test(learningSet, testingSet, network<NeuralNetwork<double>>(ev->networkId),
          100, true);
   }
 }
@@ -81,9 +85,6 @@ void NeuralNetworkManager::test(
 
   correctCount = 0;
 
-  if (debug) {
-    std::cout << "pre testing set:\n";
-  }
   for (unsigned long i = 0; i < testingSet.size(); ++i) {
     std::vector<double> inputs = testingSet[i].first;
     std::vector<double> desiredOutputs = testingSet[i].second;
@@ -107,9 +108,6 @@ void NeuralNetworkManager::test(
     }
   }
 
-  if (debug) {
-    std::cout << "learning set:\n";
-  }
   for (unsigned long i = 0; i < learningSet.size(); ++i) {
     std::vector<double> inputs = learningSet[i].first;
     std::vector<double> desiredOutputs = learningSet[i].second;
@@ -135,9 +133,6 @@ void NeuralNetworkManager::test(
 
   correctCount = 0;
 
-  if (debug) {
-    std::cout << "testing set:\n";
-  }
   for (unsigned long i = 0; i < testingSet.size(); ++i) {
     std::vector<double> inputs = testingSet[i].first;
     std::vector<double> desiredOutputs = testingSet[i].second;
@@ -162,17 +157,17 @@ void NeuralNetworkManager::test(
   }
 
   if (debug) {
-    std::cout << "pre-testing set accuracies:\n";
+    std::cout << "accuracy before learning:\n";
     for (auto accuracy : preTestingSetAccuracies) {
       std::cout << accuracy << ", ";
     }
     std::cout << "\n\n";
-    std::cout << "learning set accuracies:\n";
+    std::cout << "accuracy while learning:\n";
     for (auto accuracy : learningSetAccuracies) {
       std::cout << accuracy << ", ";
     }
     std::cout << "\n\n";
-    std::cout << "testing set accuracies:\n";
+    std::cout << "accuracy after learning:\n";
     for (auto accuracy : testingSetAccuracies) {
       std::cout << accuracy << ", ";
     }

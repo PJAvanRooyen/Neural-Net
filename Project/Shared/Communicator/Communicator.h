@@ -55,27 +55,35 @@ struct EvNeuralNetCreate : public Event<EvNeuralNetCreate> {
 
 struct EvNeuralNetCreateResponse : public Event<EvNeuralNetCreateResponse> {
   EvNeuralNetCreateResponse(const std::optional<QUuid> &neuralNetId)
-      : Event<EvNeuralNetCreateResponse>(), mNetId(neuralNetId) {}
+      : Event<EvNeuralNetCreateResponse>(), networkId(neuralNetId) {}
 
-  const std::optional<const QUuid> mNetId;
+  const std::optional<const QUuid> networkId;
 };
 
 struct EvNeuralNetRun : public Event<EvNeuralNetRun> {
-  EvNeuralNetRun(const QUuid &neuralNetId)
-      : Event<EvNeuralNetRun>(), mNetId(neuralNetId) {}
+  EvNeuralNetRun(const QUuid &neuralNetId, const ulong learningIterations,
+                 const ulong testingIterations,
+                 const std::optional<ulong> dataSeed = std::nullopt)
+      : Event<EvNeuralNetRun>(), networkId(neuralNetId),
+        learningIterations(learningIterations),
+        testingIterations(testingIterations), dataSeed(dataSeed) {}
 
-  const QUuid mNetId;
+  const QUuid networkId;
+  const ulong learningIterations;
+  const ulong testingIterations;
+  const std::optional<ulong> dataSeed;
 };
 
 class EvNeuralNetRunInfo : public Event<EvNeuralNetRunInfo> {
 public:
   EvNeuralNetRunInfo(const QUuid &neuralNetId,
                      const Shared::NodeNetwork::NeuralNetworkData<double> &data)
-      : Event<EvNeuralNetRunInfo>(), mNetId(neuralNetId), mNetData(data) {}
+      : Event<EvNeuralNetRunInfo>(), networkId(neuralNetId), networkData(data) {
+  }
 
-  const QUuid mNetId;
+  const QUuid networkId;
 
-  const Shared::NodeNetwork::NeuralNetworkData<double> mNetData;
+  const Shared::NodeNetwork::NeuralNetworkData<double> networkData;
 };
 
 class Communicator : public QObject {
