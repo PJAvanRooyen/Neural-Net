@@ -32,10 +32,10 @@ template <typename DataType>
 using NeuralNetworkData = std::vector<NeuralNetworkLayerData<DataType>>;
 
 struct TestConfiguration {
-  ulong learningIterations;
-  ulong testingIterations;
-  std::optional<ulong> weightsAndBiasSeed;
-  std::optional<ulong> dataSeed;
+  unsigned long learningIterations;
+  unsigned long testingIterations;
+  std::optional<unsigned long> weightsAndBiasSeed;
+  std::optional<unsigned long> dataSeed;
   double learningRate;
 };
 

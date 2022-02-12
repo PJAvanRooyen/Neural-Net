@@ -6,6 +6,7 @@ set( HEADERS
   NeuralNetwork.h
   NeuralNetworkFactory.h
   NeuralNetworkManager.h
+  IrisDataExtractor.h
 )
 
 set( SOURCES

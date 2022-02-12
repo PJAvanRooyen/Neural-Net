@@ -17,7 +17,7 @@ public:
   static NeuralNetwork<DataType> *
   createMeshNetwork(const std::vector<unsigned long> &layerSizes,
                     const double learningRate, std::optional<unsigned> seed) {
-    sLearningRate = learningRate;
+    gLearningRate = learningRate;
     sRandomizer.seed(seed.has_value() ? seed.value() : std::time(0));
 
     auto *neuralNetwork = new NeuralNetwork<DataType>();

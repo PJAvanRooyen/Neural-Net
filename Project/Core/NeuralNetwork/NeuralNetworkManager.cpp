@@ -4,7 +4,8 @@
 #include "Shared/Communicator/Communicator.h"
 
 // test
-#include "../Tests/Core/NeuralNet/NeuralNetTest.h"
+#include "IrisDataExtractor.h"
+#include <iostream>
 // test
 
 namespace Core {
@@ -56,12 +57,20 @@ void NeuralNetworkManager::customEvent(QEvent *event) {
         learningSet;
     std::vector<std::pair<std::vector<double>, std::vector<double>>> testingSet;
 
-    Tests::NeuralNetTest::irisDataToNetworkInputs(
-        learningSet, testingSet, 5, ev->learningIterations,
-        ev->testingIterations, ev->dataSeed);
+    // setup test
+    std::srand(ev->dataSeed.has_value() ? ev->dataSeed.value()
+                                        : ulong(std::time(0)));
 
-    test(learningSet, testingSet, network<NeuralNetwork<double>>(ev->networkId),
-         100, true);
+    learningSet.reserve(ev->learningIterations);
+    testingSet.reserve(ev->testingIterations);
+
+    Tests::DataExtractor::DataExtractor extractor;
+    extractor.generateLearningAndTestingSets(learningSet, testingSet, 4,
+                                             ev->learningIterations,
+                                             ev->testingIterations);
+
+    test(learningSet, testingSet, ev->networkId,
+         network<NeuralNetwork<double>>(ev->networkId), 100, true);
   }
 }
 
@@ -72,8 +81,9 @@ void NeuralNetworkManager::test(
     std::vector<std::pair<std::vector<double> /*inputs*/,
                           std::vector<double> /*desiredOutputs*/>>
         testingSet,
+    const QUuid &networkId,
     Core::NodeNetwork::NeuralNetwork<double> &neuralNetwork,
-    const double valuePollingRate, const bool debug) {
+    const double valuePollingRate, const bool debug = true) {
 
   const unsigned long long poll =
       (learningSet.size() + testingSet.size()) / valuePollingRate;
@@ -93,15 +103,15 @@ void NeuralNetworkManager::test(
       double accuracy = 100.0 * correctCount / poll;
       preTestingSetAccuracies.push_back(accuracy);
       correctCount = 0;
-      bool correct =
-          testIteration(inputs, desiredOutputs, neuralNetwork, false, true);
+      bool correct = testIteration(inputs, desiredOutputs, networkId,
+                                   neuralNetwork, false, true);
       if (correct) {
         ++correctCount;
       }
     } else {
       // teach the network
-      bool correct =
-          testIteration(inputs, desiredOutputs, neuralNetwork, false, false);
+      bool correct = testIteration(inputs, desiredOutputs, networkId,
+                                   neuralNetwork, false, false);
       if (correct) {
         ++correctCount;
       }
@@ -116,15 +126,15 @@ void NeuralNetworkManager::test(
       double accuracy = 100.0 * correctCount / poll;
       learningSetAccuracies.push_back(accuracy);
       correctCount = 0;
-      bool correct =
-          testIteration(inputs, desiredOutputs, neuralNetwork, true, true);
+      bool correct = testIteration(inputs, desiredOutputs, networkId,
+                                   neuralNetwork, true, true);
       if (correct) {
         ++correctCount;
       }
     } else {
       // teach the network
-      bool correct =
-          testIteration(inputs, desiredOutputs, neuralNetwork, true, false);
+      bool correct = testIteration(inputs, desiredOutputs, networkId,
+                                   neuralNetwork, true, false);
       if (correct) {
         ++correctCount;
       }
@@ -141,15 +151,15 @@ void NeuralNetworkManager::test(
       double accuracy = 100.0 * correctCount / poll;
       testingSetAccuracies.push_back(accuracy);
       correctCount = 0;
-      bool correct =
-          testIteration(inputs, desiredOutputs, neuralNetwork, false, true);
+      bool correct = testIteration(inputs, desiredOutputs, networkId,
+                                   neuralNetwork, false, true);
       if (correct) {
         ++correctCount;
       }
     } else {
       // teach the network
-      bool correct =
-          testIteration(inputs, desiredOutputs, neuralNetwork, false, false);
+      bool correct = testIteration(inputs, desiredOutputs, networkId,
+                                   neuralNetwork, false, false);
       if (correct) {
         ++correctCount;
       }
@@ -177,6 +187,7 @@ void NeuralNetworkManager::test(
 
 bool NeuralNetworkManager::testIteration(
     std::vector<double> &inputValues, std::vector<double> &desiredOutputs,
+    const QUuid &networkId,
     Core::NodeNetwork::NeuralNetwork<double> &neuralNetwork, const bool learn,
     const bool debug) {
 
@@ -207,8 +218,54 @@ bool NeuralNetworkManager::testIteration(
     if (debug) {
       const auto dataAfter = neuralNetwork.getData();
 
-      communicator.postEvent(new Shared::Communicator::EvNeuralNetRunInfo(
-          mNetworks.key(&neuralNetwork), dataAfter));
+      communicator.postEvent(
+          new Shared::Communicator::EvNeuralNetRunInfo(networkId, dataAfter));
+
+      // activate again with new weights and biases, but same inputs.
+      // don't learn this time, just observe the change in output as a result of
+      // the change in weights and biases.
+      neuralNetwork.activate(inputValues);
+    }
+  }
+
+  return pass;
+}
+
+bool NeuralNetworkManager::testIteration(
+    std::vector<double> &inputValues, std::vector<double> &desiredOutputs,
+    const QUuid &networkId,
+    Core::NodeNetwork::NeuralNetwork<double> &neuralNetwork, const bool learn,
+    const bool debug, Shared::NodeNetwork::NeuralNetworkData<double> &result) {
+
+  auto &communicator = Shared::Communicator::Communicator::instance();
+
+  // activate
+  neuralNetwork.activate(inputValues);
+
+  // compare to desired outputs
+  std::vector<double> obtainedValues = neuralNetwork.outputValues();
+
+  bool pass = !obtainedValues.empty();
+  for (unsigned long obtainedValIdx = 0; obtainedValIdx < obtainedValues.size();
+       ++obtainedValIdx) {
+    if (std::round(obtainedValues[obtainedValIdx]) !=
+        std::round(desiredOutputs[obtainedValIdx])) {
+      pass = false;
+      break;
+    }
+  }
+
+  // teach the network
+  if (learn) {
+    if (debug) {
+      const auto dataBefore = neuralNetwork.getData();
+    }
+    neuralNetwork.backPropagete(desiredOutputs);
+    if (debug) {
+      result = neuralNetwork.getData();
+
+      communicator.postEvent(
+          new Shared::Communicator::EvNeuralNetRunInfo(networkId, result));
 
       // activate again with new weights and biases, but same inputs.
       // don't learn this time, just observe the change in output as a result of

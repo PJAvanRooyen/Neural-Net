@@ -1,6 +1,8 @@
 #ifndef Communicator_H
 #define Communicator_H
 
+#include <QCoreApplication>
+
 #include <QEvent>
 #include <QObject>
 #include <QUuid>

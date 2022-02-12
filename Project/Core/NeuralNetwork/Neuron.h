@@ -213,13 +213,12 @@ DataType meanSquareErrorDerivative(const DataType output,
 }
 //----------------------------------------------------------------------------
 //----------------------------------------------------------------------------
-static double sLearningRate;
-
 template <typename DataType>
 std::normal_distribution<DataType>
     sNormalDist = std::normal_distribution<DataType>(DataType(0), DataType(1));
-
 static std::default_random_engine sRandomizer;
+
+extern double gLearningRate;
 
 template <typename DataType> class Neuron : public Node {
 
@@ -277,7 +276,7 @@ public:
     Q_ASSERT(mData.sensitivity.has_value());
     Q_ASSERT(mData.bias.has_value());
     mData.bias.emplace(mData.bias.value() +
-                       sLearningRate * mData.sensitivity.value());
+                       gLearningRate * mData.sensitivity.value());
   }
 
   DataType activate();
@@ -349,7 +348,7 @@ public:
     Neuron<DataType> *destinationNeuron =
         static_cast<Neuron<DataType> *>(mDestination);
 
-    mData.weight += sLearningRate * destinationNeuron->sensitivity() *
+    mData.weight += gLearningRate * destinationNeuron->sensitivity() *
                     sourceNeuron->value();
   }
 

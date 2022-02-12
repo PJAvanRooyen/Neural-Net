@@ -1,5 +1,8 @@
 #include "Neuron.h"
 
 namespace Core {
-namespace NodeNetwork {} // namespace NodeNetwork
+namespace NodeNetwork {
+double gLearningRate = 0.01;
+
+} // namespace NodeNetwork
 } // namespace Core

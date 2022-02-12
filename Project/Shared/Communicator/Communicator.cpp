@@ -26,6 +26,10 @@ void Communicator::postEvent(const IEvent *const event) const {
     return;
   }
 
+  if (mReceivers.find(eventType) == mReceivers.end()) {
+    return;
+  }
+
   const std::set<QObject *> &eventReceivers = mReceivers.at(eventType);
   for (QObject *const receiver : eventReceivers) {
     QCoreApplication::postEvent(receiver, event->copy());

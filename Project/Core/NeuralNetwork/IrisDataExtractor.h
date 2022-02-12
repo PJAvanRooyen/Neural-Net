@@ -18,7 +18,20 @@ public:
   Iris(const Type type, const double sepalLength, const double sepalWidth,
        const double pedalLength, const double pedalWidth)
       : mType(type), mSepalLength(sepalLength), mSepalWidth(sepalWidth),
-        mPedalLength(pedalLength), mPedalWidth(pedalWidth){};
+        mPedalLength(pedalLength), mPedalWidth(pedalWidth) {}
+
+  Iris()
+      : mType(Setosa), mSepalLength(0), mSepalWidth(0), mPedalLength(0),
+        mPedalWidth(0) {
+    Q_ASSERT(false);
+  }
+
+  //  Iris(const Iris &other)
+  //      : mType(other.mType), mSepalLength(other.mSepalLength),
+  //        mSepalWidth(other.mSepalWidth), mPedalLength(other.mPedalLength),
+  //        mPedalWidth(other.mPedalWidth) {
+  //    qt_noop();
+  //  }
 
   std::vector<double> information() const {
     return {mSepalLength, mSepalWidth, mPedalLength, mPedalWidth};
@@ -41,11 +54,9 @@ public:
 
 class DataExtractor {
 public:
-  DataExtractor();
+  DataExtractor() {}
 
-  ~DataExtractor();
-
-  static std::vector<Iris> extract() {
+  void extract(std::vector<Iris> &irisData) {
     QDir proj = QDir::current();
     proj.cdUp();
     proj.cd("Thirdparty/Imports/Datasets/Iris");
@@ -62,10 +73,9 @@ public:
 
     std::ifstream ifs(kIrisDataFile.toStdString(), std::ios_base::in);
     if (!ifs.good()) {
-      return {};
+      return;
     }
 
-    std::vector<Iris> irises;
     for (std::string line; std::getline(ifs, line);) {
       if (line.empty()) {
         break;
@@ -93,10 +103,9 @@ public:
         type = Iris::Type::Virginica;
       }
 
-      irises.push_back(
+      irisData.push_back(
           Iris(type, sepalLength, sepalWidth, pedalLength, pedalWidth));
     }
-    return irises;
   }
 
   std::pair<
@@ -114,6 +123,7 @@ public:
     auto randomInputSetIndex = std::round(
         (static_cast<double>(rand()) / RAND_MAX) * (inputSet.size() - 1));
 
+    Q_ASSERT(inputSet.size() > randomInputSetIndex);
     Iris iris = inputSet[randomInputSetIndex];
     auto data = iris.information();
     for (unsigned long nodeIdx = 0; nodeIdx < inputNodeCount; ++nodeIdx) {
@@ -124,7 +134,7 @@ public:
     return datapoint;
   };
 
-  static void generateLearningAndTestingSets(
+  void generateLearningAndTestingSets(
       std::vector<std::pair<std::vector<double> /*inputs*/,
                             std::vector<double> /*desiredOutputs*/>>
           &learningSet,
@@ -135,22 +145,28 @@ public:
       const unsigned long learningIterations,
       const unsigned long testingIterations) {
 
-    //
-    // amount of learning relative to testing data.
-    double learnFraction = static_cast<double>(learningIterations) /
-                           (learningIterations + testingIterations);
-
     // get the data
-    auto irisData = DataExtractor::DataExtractor::extract();
+    std::vector<Iris> irisData;
+    extract(irisData);
+
+    // test
+    //    std::vector<Iris> a;
+    //    std::vector<Iris> b;
+    //    a.push_back(Iris(Iris ::Type::Setosa, 0, 0, 0, 0));
+    //    a.push_back(Iris(Iris ::Type::Setosa, 0, 0, 0, 0));
+    //    b.assign(a.cbegin(), a.cbegin() + 1);
+    // test
+
     // split into sets for each output type
     std::vector<Iris> setosa;
     std::vector<Iris> versicolour;
     std::vector<Iris> virginica;
-    setosa.insert(setosa.begin(), irisData.cbegin(), irisData.cbegin() + 50);
-    versicolour.insert(versicolour.begin(), irisData.cbegin() + 50,
-                       irisData.cbegin() + 100);
-    virginica.insert(virginica.begin(), irisData.cbegin() + 100,
-                     irisData.cbegin() + 150);
+    setosa.reserve(50);
+    versicolour.reserve(50);
+    virginica.reserve(50);
+    setosa.assign(irisData.cbegin(), irisData.cbegin() + 50);
+    versicolour.assign(irisData.cbegin() + 50, irisData.cbegin() + 100);
+    virginica.assign(irisData.cbegin() + 100, irisData.cbegin() + 150);
 
     // randomly shuffle the data
     std::random_shuffle(setosa.begin(), setosa.end());
@@ -158,16 +174,13 @@ public:
     std::random_shuffle(virginica.begin(), virginica.end());
 
     // create the learning set
+    ulong learnSubsetEnd = std::round(setosa.size() * 0.75);
     std::vector<Iris> learnSet;
-    learnSet.insert(learnSet.begin(), setosa.cbegin(),
-                    setosa.cbegin() +
-                        std::round(setosa.size() * learnFraction));
-    learnSet.insert(learnSet.end(), versicolour.cbegin(),
-                    versicolour.cbegin() +
-                        std::round(versicolour.size() * learnFraction));
-    learnSet.insert(learnSet.end(), virginica.cbegin(),
-                    virginica.cbegin() +
-                        std::round(virginica.size() * learnFraction));
+    learnSet.reserve(learnSubsetEnd * 3);
+    learnSet.assign(setosa.cbegin(), setosa.cbegin() + learnSubsetEnd);
+    learnSet.assign(versicolour.cbegin(),
+                    versicolour.cbegin() + learnSubsetEnd);
+    learnSet.assign(virginica.cbegin(), virginica.cbegin() + learnSubsetEnd);
 
     for (unsigned long idx = 0; idx < learningIterations; ++idx) {
       std::pair<std::vector<double> /*inputs*/,
@@ -178,17 +191,10 @@ public:
 
     // create the testing set
     std::vector<Iris> testSet;
-    testSet.insert(testSet.begin(),
-                   setosa.cbegin() + std::round(setosa.size() * learnFraction),
-                   setosa.cend());
-    testSet.insert(testSet.end(),
-                   versicolour.cbegin() +
-                       std::round(versicolour.size() * learnFraction),
-                   versicolour.cend());
-    testSet.insert(testSet.end(),
-                   virginica.cbegin() +
-                       std::round(virginica.size() * learnFraction),
-                   virginica.cend());
+    testSet.reserve((setosa.size() - learnSubsetEnd) * 3);
+    testSet.assign(setosa.cbegin() + learnSubsetEnd, setosa.cend());
+    testSet.assign(versicolour.cbegin() + learnSubsetEnd, versicolour.cend());
+    testSet.assign(virginica.cbegin() + learnSubsetEnd, virginica.cend());
 
     for (unsigned long idx = 0; idx < testingIterations; ++idx) {
       std::pair<std::vector<double> /*inputs*/,
