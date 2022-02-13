@@ -8,7 +8,7 @@
 #include <random>
 #include <vector>
 
-namespace Tests {
+namespace Core {
 namespace DataExtractor {
 
 class Iris {
@@ -25,13 +25,6 @@ public:
         mPedalWidth(0) {
     Q_ASSERT(false);
   }
-
-  //  Iris(const Iris &other)
-  //      : mType(other.mType), mSepalLength(other.mSepalLength),
-  //        mSepalWidth(other.mSepalWidth), mPedalLength(other.mPedalLength),
-  //        mPedalWidth(other.mPedalWidth) {
-  //    qt_noop();
-  //  }
 
   std::vector<double> information() const {
     return {mSepalLength, mSepalWidth, mPedalLength, mPedalWidth};
@@ -149,14 +142,6 @@ public:
     std::vector<Iris> irisData;
     extract(irisData);
 
-    // test
-    //    std::vector<Iris> a;
-    //    std::vector<Iris> b;
-    //    a.push_back(Iris(Iris ::Type::Setosa, 0, 0, 0, 0));
-    //    a.push_back(Iris(Iris ::Type::Setosa, 0, 0, 0, 0));
-    //    b.assign(a.cbegin(), a.cbegin() + 1);
-    // test
-
     // split into sets for each output type
     std::vector<Iris> setosa;
     std::vector<Iris> versicolour;
@@ -177,10 +162,12 @@ public:
     ulong learnSubsetEnd = std::round(setosa.size() * 0.75);
     std::vector<Iris> learnSet;
     learnSet.reserve(learnSubsetEnd * 3);
-    learnSet.assign(setosa.cbegin(), setosa.cbegin() + learnSubsetEnd);
-    learnSet.assign(versicolour.cbegin(),
+    learnSet.insert(learnSet.begin(), setosa.cbegin(),
+                    setosa.cbegin() + learnSubsetEnd);
+    learnSet.insert(learnSet.end(), versicolour.cbegin(),
                     versicolour.cbegin() + learnSubsetEnd);
-    learnSet.assign(virginica.cbegin(), virginica.cbegin() + learnSubsetEnd);
+    learnSet.insert(learnSet.end(), virginica.cbegin(),
+                    virginica.cbegin() + learnSubsetEnd);
 
     for (unsigned long idx = 0; idx < learningIterations; ++idx) {
       std::pair<std::vector<double> /*inputs*/,
@@ -192,9 +179,12 @@ public:
     // create the testing set
     std::vector<Iris> testSet;
     testSet.reserve((setosa.size() - learnSubsetEnd) * 3);
-    testSet.assign(setosa.cbegin() + learnSubsetEnd, setosa.cend());
-    testSet.assign(versicolour.cbegin() + learnSubsetEnd, versicolour.cend());
-    testSet.assign(virginica.cbegin() + learnSubsetEnd, virginica.cend());
+    testSet.insert(testSet.begin(), setosa.cbegin() + learnSubsetEnd,
+                   setosa.cend());
+    testSet.insert(testSet.end(), versicolour.cbegin() + learnSubsetEnd,
+                   versicolour.cend());
+    testSet.insert(testSet.end(), virginica.cbegin() + learnSubsetEnd,
+                   virginica.cend());
 
     for (unsigned long idx = 0; idx < testingIterations; ++idx) {
       std::pair<std::vector<double> /*inputs*/,
@@ -206,6 +196,6 @@ public:
 };
 
 } // namespace DataExtractor
-} // namespace Tests
+} // namespace Core
 
 #endif // DataExtractor_H

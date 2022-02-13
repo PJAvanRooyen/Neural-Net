@@ -7,6 +7,7 @@
 #include "Core/NeuralNetwork/NeuralNetworkManager.h"
 
 #include "Core/NeuralNetwork/IrisDataExtractor.h"
+#include "Core/NeuralNetwork/NeuralNetworkTester.h"
 
 #include <algorithm>
 #include <iostream>
@@ -48,7 +49,6 @@ void NeuralNetTest::logicGateTest() {
   // setup test
   const unsigned long learningIterations = 50000;
   const unsigned long testingIterations = 10000;
-  const double valuesToPoll = 100;
   std::srand(unsigned(std::time(0)));
 
   // setup network
@@ -105,8 +105,8 @@ void NeuralNetTest::logicGateTest() {
       static_cast<Core::NodeNetwork::NeuralNetwork<double> &>(*abstractNet);
 
   // teach the network
-  Core::NodeNetwork::NeuralNetworkManager::test(
-      learningSet, testingSet, QUuid(), neuralNet, valuesToPoll, true);
+  Core::NodeNetwork::NeuralNetworkTester::test(learningSet, testingSet, QUuid(),
+                                               neuralNet, true);
 }
 
 void NeuralNetTest::singleIterationTest() {
@@ -136,10 +136,12 @@ void NeuralNetTest::singleIterationTest() {
   Shared::NodeNetwork::NeuralNetworkData<double> initialData =
       neuralNetwork->getData();
 
-  Shared::NodeNetwork::NeuralNetworkData<double> updatedData;
-  Core::NodeNetwork::NeuralNetworkManager::testIteration(
-      learningSet.front().first, learningSet.front().second, QUuid(),
-      *neuralNetwork, true, true, updatedData);
+  Core::NodeNetwork::NeuralNetworkTester::testIteration(
+      learningSet.front().first, learningSet.front().second, *neuralNetwork,
+      true);
+
+  Shared::NodeNetwork::NeuralNetworkData<double> updatedData =
+      neuralNetwork->getData();
 
   // ___output layer___
   const auto &updatedOutputLayer = updatedData[initialData.size() - 1];
@@ -263,7 +265,7 @@ void NeuralNetTest::irisDataToNetworkInputs(
   learningSet.reserve(learningIterations);
   testingSet.reserve(testingIterations);
 
-  DataExtractor::DataExtractor extractor;
+  Core::DataExtractor::DataExtractor extractor;
   extractor.generateLearningAndTestingSets(learningSet, testingSet,
                                            inputNodeCount, learningIterations,
                                            testingIterations);
@@ -275,10 +277,8 @@ void NeuralNetTest::irisTest(
     std::vector<std::pair<std::vector<double> /*inputs*/,
                           std::vector<double> /*desiredOutputs*/>> &testingSet,
     Core::NodeNetwork::NeuralNetwork<double> &neuralNet) {
-  // teach the network
-  const double valuesToPoll = 100;
-  Core::NodeNetwork::NeuralNetworkManager::test(
-      learningSet, testingSet, QUuid(), neuralNet, valuesToPoll, true);
+  Core::NodeNetwork::NeuralNetworkTester::test(learningSet, testingSet, QUuid(),
+                                               neuralNet, true);
 }
 } // namespace Tests
 

@@ -5,10 +5,6 @@
 
 #include <optional>
 
-// test
-#include "Shared/NeuralNetwork/Defines.h"
-// test
-
 namespace Tests {
 class NeuralNetTest;
 }
@@ -35,29 +31,6 @@ public:
 
 private:
   void customEvent(QEvent *event) override;
-
-  static void
-  test(std::vector<std::pair<std::vector<double>, std::vector<double>>>
-           learningSet,
-       std::vector<std::pair<std::vector<double>, std::vector<double>>>
-           testingSet,
-       const QUuid &networkId,
-       Core::NodeNetwork::NeuralNetwork<double> &neuralNetwork,
-       const double valuePollingRate, const bool debug);
-
-  static bool
-  testIteration(std::vector<double> &inputValues,
-                std::vector<double> &desiredOutputs, const QUuid &networkId,
-                Core::NodeNetwork::NeuralNetwork<double> &neuralNetwork,
-                const bool learn, const bool debug);
-
-private:
-  static bool
-  testIteration(std::vector<double> &inputValues,
-                std::vector<double> &desiredOutputs, const QUuid &networkId,
-                Core::NodeNetwork::NeuralNetwork<double> &neuralNetwork,
-                const bool learn, const bool debug,
-                Shared::NodeNetwork::NeuralNetworkData<double> &result);
 }; // namespace NodeNetwork
 
 } // namespace NodeNetwork

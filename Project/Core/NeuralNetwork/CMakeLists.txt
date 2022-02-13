@@ -7,6 +7,7 @@ set( HEADERS
   NeuralNetworkFactory.h
   NeuralNetworkManager.h
   IrisDataExtractor.h
+  NeuralNetworkTester.h
 )
 
 set( SOURCES
@@ -15,6 +16,7 @@ set( SOURCES
   NeuralNetwork.cpp
   NeuralNetworkFactory.cpp
   NeuralNetworkManager.cpp
+  NeuralNetworkTester.cpp
 )
 
 # needed to find WidgetManager

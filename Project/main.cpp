@@ -7,7 +7,7 @@
 #include <QApplication>
 #include <QThread>
 
-//#define RUN_UNIT_TESTS
+// #define RUN_UNIT_TESTS
 
 #ifdef RUN_UNIT_TESTS
 #include "../Tests/Core/NeuralNetwork/NeuralNetworkTest.h"
