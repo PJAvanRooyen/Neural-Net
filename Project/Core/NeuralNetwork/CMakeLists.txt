@@ -16,6 +16,7 @@ set( SOURCES
   NeuralNetwork.cpp
   NeuralNetworkFactory.cpp
   NeuralNetworkManager.cpp
+  IrisDataExtractor.cpp
   NeuralNetworkTester.cpp
 )
 
