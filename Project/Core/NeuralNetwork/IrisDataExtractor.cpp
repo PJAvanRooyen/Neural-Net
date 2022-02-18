@@ -48,7 +48,6 @@ void DataExtractor::extract(std::vector<Iris> &irisData) {
     return;
   }
 
-  irisData.reserve(150);
   for (std::string line; std::getline(ifs, line);) {
     if (line.empty()) {
       break;
@@ -80,6 +79,8 @@ void DataExtractor::extract(std::vector<Iris> &irisData) {
         Iris(type, sepalLength, sepalWidth, pedalLength, pedalWidth);
     irisData.push_back(iris);
   }
+
+  Q_ASSERT(irisData.size() == 150);
 }
 
 std::pair<std::vector<double>, std::vector<double>>
@@ -114,6 +115,7 @@ void DataExtractor::generateLearningAndTestingSets(
 
   // get the data
   std::vector<Iris> irisData;
+  irisData.reserve(150);
   extract(irisData);
 
   // split into sets for each output type

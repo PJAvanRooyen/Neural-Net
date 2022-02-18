@@ -33,7 +33,7 @@ Application::~Application() { mView->deleteLater(); }
 void Application::runTest(
     const Shared::NodeNetwork::TestConfiguration &testConfig) {
 
-  const std::vector<unsigned long> layerSizes = {4, /*30, 30, 30, 30,*/ 3, 3};
+  const std::vector<unsigned long> layerSizes = {4, 30, 30, 30, 3};
 
   const QUuid &networkId = mCentralWidget->createTestNetwork(
       layerSizes, testConfig.weightsAndBiasSeed, testConfig.learningRate);

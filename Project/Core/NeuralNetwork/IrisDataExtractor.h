@@ -36,18 +36,14 @@ class DataExtractor {
 public:
   DataExtractor();
 
-  void extract(std::vector<Iris> &irisData);
+  static void extract(std::vector<Iris> &irisData);
 
-  std::pair<
-      std::vector<double> /*inputs*/,
-      std::vector<
-          double> /*desiredOutputs*/> static getRandomDatapoint(std::vector<Iris>
-                                                                    &inputSet,
-                                                                const unsigned long
-                                                                    inputNodeCount);
-  ;
+  static std::pair<std::vector<double> /*inputs*/,
+                   std::vector<double> /*desiredOutputs*/>
+  getRandomDatapoint(std::vector<Iris> &inputSet,
+                     const unsigned long inputNodeCount);
 
-  void generateLearningAndTestingSets(
+  static void generateLearningAndTestingSets(
       std::vector<std::pair<std::vector<double> /*inputs*/,
                             std::vector<double> /*desiredOutputs*/>>
           &learningSet,
