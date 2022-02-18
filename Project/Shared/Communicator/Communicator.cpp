@@ -34,6 +34,7 @@ void Communicator::postEvent(const IEvent *const event) const {
   for (QObject *const receiver : eventReceivers) {
     QCoreApplication::postEvent(receiver, event->copy());
   }
+  delete event;
 }
 
 Communicator::Communicator() : mReceivers() {}

@@ -20,9 +20,9 @@ public:
 
   Iris();
 
-  std::vector<double> information() const;
+  void information(std::vector<double> &inputs) const;
 
-  std::vector<double> classification() const;
+  void classification(std::vector<double> &outputs) const;
 
   Type mType;
 
@@ -38,10 +38,9 @@ public:
 
   static void extract(std::vector<Iris> &irisData);
 
-  static std::pair<std::vector<double> /*inputs*/,
-                   std::vector<double> /*desiredOutputs*/>
-  getRandomDatapoint(std::vector<Iris> &inputSet,
-                     const unsigned long inputNodeCount);
+  static void getRandomDatapoint(
+      std::vector<Iris> &inputSet, const unsigned long inputNodeCount,
+      std::pair<std::vector<double>, std::vector<double>> &datapoint);
 
   static void generateLearningAndTestingSets(
       std::vector<std::pair<std::vector<double> /*inputs*/,
@@ -50,7 +49,7 @@ public:
       std::vector<std::pair<std::vector<double> /*inputs*/,
                             std::vector<double> /*desiredOutputs*/>>
           &testingSet,
-      const unsigned long inputNodeCount,
+      const unsigned long inputNodeCount, const unsigned long outputNodeCount,
       const unsigned long learningIterations,
       const unsigned long testingIterations);
 };

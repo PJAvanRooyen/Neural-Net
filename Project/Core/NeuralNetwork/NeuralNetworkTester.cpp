@@ -30,7 +30,7 @@ void NeuralNetworkTester::irisTest(
 
   Core::DataExtractor::DataExtractor extractor;
   extractor.generateLearningAndTestingSets(
-      learningSet, testingSet, 4, learningIterations, testingIterations);
+      learningSet, testingSet, 4, 3, learningIterations, testingIterations);
 
   test(learningSet, testingSet, networkId, neuralNetwork, debug);
 }

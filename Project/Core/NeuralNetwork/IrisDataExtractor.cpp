@@ -15,15 +15,17 @@ Iris::Iris()
   Q_ASSERT(false);
 }
 
-std::vector<double> Iris::information() const {
-  return {mSepalLength, mSepalWidth, mPedalLength, mPedalWidth};
+void Iris::information(std::vector<double> &inputs) const {
+  inputs = {mSepalLength, mSepalWidth, mPedalLength, mPedalWidth};
 }
 
-std::vector<double> Iris::classification() const {
-  std::vector<double> typeToBools(3, 0.0);
+void Iris::classification(std::vector<double> &outputs) const {
+  outputs.assign({0, 0, 0});
 
-  typeToBools[mType] = 1.0;
-  return typeToBools;
+  if (mType > outputs.size()) {
+    Q_ASSERT(false);
+  }
+  outputs[mType] = 1.0;
 }
 
 DataExtractor::DataExtractor() {}
@@ -83,26 +85,22 @@ void DataExtractor::extract(std::vector<Iris> &irisData) {
   Q_ASSERT(irisData.size() == 150);
 }
 
-std::pair<std::vector<double>, std::vector<double>>
-DataExtractor::getRandomDatapoint(std::vector<Iris> &inputSet,
-                                  const unsigned long inputNodeCount) {
-  std::pair<std::vector<double> /*inputs*/,
-            std::vector<double> /*desiredOutputs*/>
-      datapoint;
-  datapoint.first.reserve(inputNodeCount);
-
+void DataExtractor::getRandomDatapoint(
+    std::vector<Iris> &inputSet, const unsigned long inputNodeCount,
+    std::pair<std::vector<double>, std::vector<double>> &datapoint) {
   auto randomInputSetIndex = std::round(
       (static_cast<double>(rand()) / RAND_MAX) * (inputSet.size() - 1));
 
   Q_ASSERT(inputSet.size() > randomInputSetIndex);
   Iris iris = inputSet[randomInputSetIndex];
-  auto data = iris.information();
+  std::vector<double> inputs;
+  inputs.reserve(inputNodeCount);
+  iris.information(inputs);
   for (unsigned long nodeIdx = 0; nodeIdx < inputNodeCount; ++nodeIdx) {
-    datapoint.first.push_back(data[nodeIdx]);
+    datapoint.first.push_back(inputs[nodeIdx]);
   }
 
-  datapoint.second = iris.classification();
-  return datapoint;
+  iris.classification(datapoint.second);
 }
 
 void DataExtractor::generateLearningAndTestingSets(
@@ -110,7 +108,8 @@ void DataExtractor::generateLearningAndTestingSets(
         &learningSet,
     std::vector<std::pair<std::vector<double>, std::vector<double>>>
         &testingSet,
-    const unsigned long inputNodeCount, const unsigned long learningIterations,
+    const unsigned long inputNodeCount, const unsigned long outputNodeCount,
+    const unsigned long learningIterations,
     const unsigned long testingIterations) {
 
   // get the data
@@ -148,7 +147,10 @@ void DataExtractor::generateLearningAndTestingSets(
   for (unsigned long idx = 0; idx < learningIterations; ++idx) {
     std::pair<std::vector<double> /*inputs*/,
               std::vector<double> /*desiredOutputs*/>
-        datapoint = getRandomDatapoint(learnSet, inputNodeCount);
+        datapoint;
+    datapoint.first.reserve(inputNodeCount);
+    datapoint.second.reserve(outputNodeCount);
+    getRandomDatapoint(learnSet, inputNodeCount, datapoint);
     learningSet.push_back(datapoint);
   }
 
@@ -165,7 +167,10 @@ void DataExtractor::generateLearningAndTestingSets(
   for (unsigned long idx = 0; idx < testingIterations; ++idx) {
     std::pair<std::vector<double> /*inputs*/,
               std::vector<double> /*desiredOutputs*/>
-        datapoint = getRandomDatapoint(testSet, inputNodeCount);
+        datapoint;
+    datapoint.first.reserve(inputNodeCount);
+    datapoint.second.reserve(outputNodeCount);
+    getRandomDatapoint(testSet, inputNodeCount, datapoint);
     testingSet.push_back(datapoint);
   }
 }
