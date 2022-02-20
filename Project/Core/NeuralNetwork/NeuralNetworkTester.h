@@ -24,10 +24,11 @@ public:
 
   static void
   test(const std::vector<std::pair<std::vector<double>, std::vector<double>>>
-           learningSet,
+           &learningSet,
        const std::vector<std::pair<std::vector<double>, std::vector<double>>>
-           testingSet,
-       const QUuid &networkId,
+           &testingSet,
+       const unsigned long learningIterations,
+       const unsigned long testingIterations, const QUuid &networkId,
        Core::NodeNetwork::NeuralNetwork<double> &neuralNetwork,
        const bool debug);
 

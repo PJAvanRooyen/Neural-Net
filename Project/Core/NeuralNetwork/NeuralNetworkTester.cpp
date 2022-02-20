@@ -24,29 +24,27 @@ void NeuralNetworkTester::irisTest(
 
   std::vector<std::pair<std::vector<double>, std::vector<double>>> learningSet;
   std::vector<std::pair<std::vector<double>, std::vector<double>>> testingSet;
+  learningSet.reserve(std::round(150 * 0.75));
+  testingSet.reserve(std::round(150 * 0.75));
 
-  learningSet.reserve(learningIterations);
-  testingSet.reserve(testingIterations);
+  Core::DataExtractor::DataExtractor::generateLearningAndTestingSets(
+      learningSet, testingSet);
 
-  Core::DataExtractor::DataExtractor extractor;
-  extractor.generateLearningAndTestingSets(
-      learningSet, testingSet, 4, 3, learningIterations, testingIterations);
-
-  test(learningSet, testingSet, networkId, neuralNetwork, debug);
+  test(learningSet, testingSet, learningIterations, testingIterations,
+       networkId, neuralNetwork, debug);
 }
 
 void NeuralNetworkTester::test(
     const std::vector<std::pair<std::vector<double>, std::vector<double>>>
-        learningSet,
+        &learningSet,
     const std::vector<std::pair<std::vector<double>, std::vector<double>>>
-        testingSet,
-    const QUuid &networkId,
+        &testingSet,
+    const unsigned long learningIterations,
+    const unsigned long testingIterations, const QUuid &networkId,
     Core::NodeNetwork::NeuralNetwork<double> &neuralNetwork,
     const bool debug = true) {
-  const unsigned long learningSetSize = learningSet.size();
-  const unsigned long testingSetSize = testingSet.size();
 
-  unsigned long long poll = (learningSetSize) / kPollCount;
+  unsigned long long poll = (learningIterations) / kPollCount;
   if (poll < 1) {
     poll = 1;
   }
@@ -55,8 +53,16 @@ void NeuralNetworkTester::test(
   std::vector<double> preLearningSetAccuracies;
   bool learn = false;
   {
-    for (unsigned long i = 0; i < testingSetSize; ++i) {
-      auto &[inputs, desiredOutputs] = testingSet[i];
+    for (unsigned long i = 0; i < testingIterations; ++i) {
+      std::pair<std::vector<double>, std::vector<double>> datapoint;
+      datapoint.first.reserve(4);
+      datapoint.second.reserve(3);
+      Core::DataExtractor::DataExtractor::getRandomDatapoint(testingSet,
+                                                             datapoint);
+      const auto &[inputs, desiredOutputs] = datapoint;
+      Q_ASSERT_X(
+          datapoint.second.size() == 3, Q_FUNC_INFO,
+          QString("Desired count: %1").arg(desiredOutputs.size()).toLatin1());
 
       bool correct =
           testIteration(inputs, desiredOutputs, neuralNetwork, learn);
@@ -64,7 +70,7 @@ void NeuralNetworkTester::test(
         ++correctCount;
       }
     }
-    double accuracy = 100.0 * correctCount / testingSetSize;
+    double accuracy = 100.0 * correctCount / testingIterations;
     preLearningSetAccuracies.push_back(accuracy);
   }
   {
@@ -83,8 +89,16 @@ void NeuralNetworkTester::test(
   {
     auto &communicator = Shared::Communicator::Communicator::instance();
 
-    for (unsigned long i = 0; i < learningSet.size(); ++i) {
-      auto &[inputs, desiredOutputs] = learningSet[i];
+    for (unsigned long i = 0; i < learningIterations; ++i) {
+      std::pair<std::vector<double>, std::vector<double>> datapoint{};
+      datapoint.first.reserve(4);
+      datapoint.second.reserve(3);
+      Core::DataExtractor::DataExtractor::getRandomDatapoint(learningSet,
+                                                             datapoint);
+      auto &[inputs, desiredOutputs] = datapoint;
+      Q_ASSERT_X(
+          datapoint.second.size() == 3, Q_FUNC_INFO,
+          QString("Desired count: %1").arg(desiredOutputs.size()).toLatin1());
 
       if (i != 0 && poll != 0 && i % poll == 0) {
         double accuracy = 100.0 * correctCount / poll;
@@ -129,8 +143,16 @@ void NeuralNetworkTester::test(
   std::vector<double> testingSetAccuracies;
   learn = false;
   {
-    for (unsigned long i = 0; i < testingSetSize; ++i) {
-      auto &[inputs, desiredOutputs] = testingSet[i];
+    for (unsigned long i = 0; i < testingIterations; ++i) {
+      std::pair<std::vector<double>, std::vector<double>> datapoint;
+      datapoint.first.reserve(4);
+      datapoint.second.reserve(3);
+      Core::DataExtractor::DataExtractor::getRandomDatapoint(testingSet,
+                                                             datapoint);
+      auto &[inputs, desiredOutputs] = datapoint;
+      Q_ASSERT_X(
+          datapoint.second.size() == 3, Q_FUNC_INFO,
+          QString("Desired count: %1").arg(desiredOutputs.size()).toLatin1());
 
       bool correct =
           testIteration(inputs, desiredOutputs, neuralNetwork, learn);
@@ -138,7 +160,7 @@ void NeuralNetworkTester::test(
         ++correctCount;
       }
     }
-    double accuracy = 100.0 * correctCount / testingSetSize;
+    double accuracy = 100.0 * correctCount / testingIterations;
     testingSetAccuracies.push_back(accuracy);
   }
   {
@@ -165,6 +187,12 @@ bool NeuralNetworkTester::testIteration(
 
   // compare to desired outputs
   std::vector<double> obtainedValues = neuralNetwork.outputValues();
+  Q_ASSERT_X(obtainedValues.size() == desiredOutputs.size(), Q_FUNC_INFO,
+             QString("Obtained count: %1\n Desired count: %2")
+                 .arg(obtainedValues.size())
+                 .arg(desiredOutputs.size())
+                 .toLatin1());
+
   bool pass = !obtainedValues.empty();
   for (unsigned long obtainedValIdx = 0; obtainedValIdx < obtainedValues.size();
        ++obtainedValIdx) {

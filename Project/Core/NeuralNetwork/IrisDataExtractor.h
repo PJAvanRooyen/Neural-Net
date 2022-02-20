@@ -18,40 +18,29 @@ public:
   Iris(const Type type, const double sepalLength, const double sepalWidth,
        const double pedalLength, const double pedalWidth);
 
-  Iris();
+  const std::pair<std::vector<double>, std::vector<double>> &data() const;
 
-  void information(std::vector<double> &inputs) const;
-
-  void classification(std::vector<double> &outputs) const;
-
-  Type mType;
-
-  double mSepalLength;
-  double mSepalWidth;
-  double mPedalLength;
-  double mPedalWidth;
+  std::pair<std::vector<double>, std::vector<double>> mData;
 };
 
 class DataExtractor {
 public:
   DataExtractor();
 
-  static void extract(std::vector<Iris> &irisData);
+  static void
+  extract(std::vector<std::pair<std::vector<double>, std::vector<double>>>
+              &irisData);
 
   static void getRandomDatapoint(
-      std::vector<Iris> &inputSet, const unsigned long inputNodeCount,
+      const std::vector<std::pair<std::vector<double>, std::vector<double>>>
+          &inputSet,
       std::pair<std::vector<double>, std::vector<double>> &datapoint);
 
   static void generateLearningAndTestingSets(
-      std::vector<std::pair<std::vector<double> /*inputs*/,
-                            std::vector<double> /*desiredOutputs*/>>
+      std::vector<std::pair<std::vector<double>, std::vector<double>>>
           &learningSet,
-      std::vector<std::pair<std::vector<double> /*inputs*/,
-                            std::vector<double> /*desiredOutputs*/>>
-          &testingSet,
-      const unsigned long inputNodeCount, const unsigned long outputNodeCount,
-      const unsigned long learningIterations,
-      const unsigned long testingIterations);
+      std::vector<std::pair<std::vector<double>, std::vector<double>>>
+          &testingSet);
 };
 
 } // namespace DataExtractor

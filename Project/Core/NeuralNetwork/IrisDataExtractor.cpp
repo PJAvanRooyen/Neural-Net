@@ -6,31 +6,21 @@ namespace DataExtractor {
 Iris::Iris(const Iris::Type type, const double sepalLength,
            const double sepalWidth, const double pedalLength,
            const double pedalWidth)
-    : mType(type), mSepalLength(sepalLength), mSepalWidth(sepalWidth),
-      mPedalLength(pedalLength), mPedalWidth(pedalWidth) {}
+    : mData(std::make_pair(
+          std::vector<double>{sepalLength, sepalWidth, pedalLength, pedalWidth},
+          std::vector<double>{type == Type::Setosa ? 1.0 : 0.0,
+                              type == Type::Versicolour ? 1.0 : 0.0,
+                              type == Type::Virginica ? 1.0 : 0.0})) {}
 
-Iris::Iris()
-    : mType(Setosa), mSepalLength(0), mSepalWidth(0), mPedalLength(0),
-      mPedalWidth(0) {
-  Q_ASSERT(false);
-}
-
-void Iris::information(std::vector<double> &inputs) const {
-  inputs = {mSepalLength, mSepalWidth, mPedalLength, mPedalWidth};
-}
-
-void Iris::classification(std::vector<double> &outputs) const {
-  outputs.assign({0, 0, 0});
-
-  if (mType > outputs.size()) {
-    Q_ASSERT(false);
-  }
-  outputs[mType] = 1.0;
+const std::pair<std::vector<double>, std::vector<double>> &Iris::data() const {
+  return mData;
 }
 
 DataExtractor::DataExtractor() {}
 
-void DataExtractor::extract(std::vector<Iris> &irisData) {
+void DataExtractor::extract(
+    std::vector<std::pair<std::vector<double>, std::vector<double>>>
+        &irisData) {
   QDir proj = QDir::current();
   proj.cdUp();
   proj.cd("Thirdparty/Imports/Datasets/Iris");
@@ -79,54 +69,42 @@ void DataExtractor::extract(std::vector<Iris> &irisData) {
 
     const auto iris =
         Iris(type, sepalLength, sepalWidth, pedalLength, pedalWidth);
-    irisData.push_back(iris);
+    irisData.push_back(iris.data());
   }
 
   Q_ASSERT(irisData.size() == 150);
 }
 
 void DataExtractor::getRandomDatapoint(
-    std::vector<Iris> &inputSet, const unsigned long inputNodeCount,
+    const std::vector<std::pair<std::vector<double>, std::vector<double>>>
+        &inputSet,
     std::pair<std::vector<double>, std::vector<double>> &datapoint) {
   auto randomInputSetIndex = std::round(
       (static_cast<double>(rand()) / RAND_MAX) * (inputSet.size() - 1));
 
   Q_ASSERT(inputSet.size() > randomInputSetIndex);
-  Iris iris = inputSet[randomInputSetIndex];
-  std::vector<double> inputs;
-  inputs.reserve(inputNodeCount);
-  iris.information(inputs);
-  for (unsigned long nodeIdx = 0; nodeIdx < inputNodeCount; ++nodeIdx) {
-    datapoint.first.push_back(inputs[nodeIdx]);
-  }
-
-  iris.classification(datapoint.second);
+  auto &iris = inputSet[randomInputSetIndex];
+  datapoint = iris;
 }
 
 void DataExtractor::generateLearningAndTestingSets(
     std::vector<std::pair<std::vector<double>, std::vector<double>>>
         &learningSet,
     std::vector<std::pair<std::vector<double>, std::vector<double>>>
-        &testingSet,
-    const unsigned long inputNodeCount, const unsigned long outputNodeCount,
-    const unsigned long learningIterations,
-    const unsigned long testingIterations) {
+        &testingSet) {
 
   // get the data
-  std::vector<Iris> irisData;
+  std::vector<std::pair<std::vector<double>, std::vector<double>>> irisData;
   irisData.reserve(150);
   extract(irisData);
 
   // split into sets for each output type
-  std::vector<Iris> setosa;
-  std::vector<Iris> versicolour;
-  std::vector<Iris> virginica;
-  setosa.reserve(50);
-  versicolour.reserve(50);
-  virginica.reserve(50);
-  setosa.assign(irisData.cbegin(), irisData.cbegin() + 50);
-  versicolour.assign(irisData.cbegin() + 50, irisData.cbegin() + 100);
-  virginica.assign(irisData.cbegin() + 100, irisData.cbegin() + 150);
+  std::vector<std::pair<std::vector<double>, std::vector<double>>> setosa(
+      irisData.cbegin(), irisData.cbegin() + 50);
+  std::vector<std::pair<std::vector<double>, std::vector<double>>> versicolour(
+      irisData.cbegin() + 50, irisData.cbegin() + 100);
+  std::vector<std::pair<std::vector<double>, std::vector<double>>> virginica(
+      irisData.cbegin() + 100, irisData.cbegin() + 150);
 
   // randomly shuffle the data
   std::random_shuffle(setosa.begin(), setosa.end());
@@ -135,44 +113,22 @@ void DataExtractor::generateLearningAndTestingSets(
 
   // create the learning set
   ulong learnSubsetEnd = std::round(setosa.size() * 0.75);
-  std::vector<Iris> learnSet;
-  learnSet.reserve(learnSubsetEnd * 3);
-  learnSet.insert(learnSet.begin(), setosa.cbegin(),
-                  setosa.cbegin() + learnSubsetEnd);
-  learnSet.insert(learnSet.end(), versicolour.cbegin(),
-                  versicolour.cbegin() + learnSubsetEnd);
-  learnSet.insert(learnSet.end(), virginica.cbegin(),
-                  virginica.cbegin() + learnSubsetEnd);
-
-  for (unsigned long idx = 0; idx < learningIterations; ++idx) {
-    std::pair<std::vector<double> /*inputs*/,
-              std::vector<double> /*desiredOutputs*/>
-        datapoint;
-    datapoint.first.reserve(inputNodeCount);
-    datapoint.second.reserve(outputNodeCount);
-    getRandomDatapoint(learnSet, inputNodeCount, datapoint);
-    learningSet.push_back(datapoint);
-  }
+  learningSet.reserve(learnSubsetEnd * 3);
+  learningSet.insert(learningSet.begin(), setosa.cbegin(),
+                     setosa.cbegin() + learnSubsetEnd);
+  learningSet.insert(learningSet.end(), versicolour.cbegin(),
+                     versicolour.cbegin() + learnSubsetEnd);
+  learningSet.insert(learningSet.end(), virginica.cbegin(),
+                     virginica.cbegin() + learnSubsetEnd);
 
   // create the testing set
-  std::vector<Iris> testSet;
-  testSet.reserve((setosa.size() - learnSubsetEnd) * 3);
-  testSet.insert(testSet.begin(), setosa.cbegin() + learnSubsetEnd,
-                 setosa.cend());
-  testSet.insert(testSet.end(), versicolour.cbegin() + learnSubsetEnd,
-                 versicolour.cend());
-  testSet.insert(testSet.end(), virginica.cbegin() + learnSubsetEnd,
-                 virginica.cend());
-
-  for (unsigned long idx = 0; idx < testingIterations; ++idx) {
-    std::pair<std::vector<double> /*inputs*/,
-              std::vector<double> /*desiredOutputs*/>
-        datapoint;
-    datapoint.first.reserve(inputNodeCount);
-    datapoint.second.reserve(outputNodeCount);
-    getRandomDatapoint(testSet, inputNodeCount, datapoint);
-    testingSet.push_back(datapoint);
-  }
+  testingSet.reserve((setosa.size() - learnSubsetEnd) * 3);
+  testingSet.insert(testingSet.begin(), setosa.cbegin() + learnSubsetEnd,
+                    setosa.cend());
+  testingSet.insert(testingSet.end(), versicolour.cbegin() + learnSubsetEnd,
+                    versicolour.cend());
+  testingSet.insert(testingSet.end(), virginica.cbegin() + learnSubsetEnd,
+                    virginica.cend());
 }
 
 } // namespace DataExtractor
