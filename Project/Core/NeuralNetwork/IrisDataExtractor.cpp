@@ -1,5 +1,13 @@
 #include "IrisDataExtractor.h"
 
+#include <QCoreApplication>
+#include <QDir>
+#include <QRegularExpressionMatch>
+
+#include <algorithm>
+#include <fstream>
+#include <random>
+
 namespace Core {
 namespace DataExtractor {
 
@@ -21,9 +29,12 @@ DataExtractor::DataExtractor() {}
 void DataExtractor::extract(
     std::vector<std::pair<std::vector<double>, std::vector<double>>>
         &irisData) {
-  QDir proj = QDir::current();
-  proj.cdUp();
-  proj.cd("Thirdparty/Imports/Datasets/Iris");
+  QDir proj = QCoreApplication::applicationDirPath();
+  bool ok = proj.cdUp();
+  Q_ASSERT(ok);
+  ok = ok && proj.cd("Thirdparty/Imports/Datasets/Iris");
+  Q_ASSERT_X(ok, Q_FUNC_INFO,
+             QString("current dir: %1").arg(proj.absolutePath()).toLatin1());
   QString fileDir = proj.absolutePath();
   QFileInfo file = QFileInfo(fileDir, "iris.data");
 
@@ -37,6 +48,7 @@ void DataExtractor::extract(
 
   std::ifstream ifs(kIrisDataFile.toStdString(), std::ios_base::in);
   if (!ifs.good()) {
+    Q_ASSERT(false);
     return;
   }
 
@@ -49,6 +61,7 @@ void DataExtractor::extract(
         kIrisMatcher.match(QString::fromStdString(line));
 
     if (!match.hasMatch()) {
+      Q_ASSERT(false);
       continue;
     }
 
@@ -65,6 +78,8 @@ void DataExtractor::extract(
       type = Iris::Type::Versicolour;
     } else if (typeStr == "virginica") {
       type = Iris::Type::Virginica;
+    } else {
+      Q_ASSERT(false);
     }
 
     const auto iris =
@@ -94,17 +109,24 @@ void DataExtractor::generateLearningAndTestingSets(
         &testingSet) {
 
   // get the data
-  std::vector<std::pair<std::vector<double>, std::vector<double>>> irisData;
-  irisData.reserve(150);
+  using Dataset =
+      std::vector<std::pair<std::vector<double>, std::vector<double>>>;
+  Dataset irisData;
+  // irisData.reserve(150);
   extract(irisData);
+  Q_ASSERT_X(irisData.size() == 150, Q_FUNC_INFO,
+             QString("size: %1").arg(irisData.size()).toLatin1());
 
   // split into sets for each output type
-  std::vector<std::pair<std::vector<double>, std::vector<double>>> setosa(
-      irisData.cbegin(), irisData.cbegin() + 50);
-  std::vector<std::pair<std::vector<double>, std::vector<double>>> versicolour(
-      irisData.cbegin() + 50, irisData.cbegin() + 100);
-  std::vector<std::pair<std::vector<double>, std::vector<double>>> virginica(
-      irisData.cbegin() + 100, irisData.cbegin() + 150);
+  auto begin = irisData.begin();
+  auto end = irisData.begin() + 50;
+  Dataset setosa(begin, end);
+  begin = end;
+  end = irisData.begin() + 100;
+  Dataset versicolour(begin, end);
+  begin = end;
+  end = irisData.begin() + 150;
+  Dataset virginica(begin, end);
 
   // randomly shuffle the data
   std::random_shuffle(setosa.begin(), setosa.end());
@@ -112,7 +134,7 @@ void DataExtractor::generateLearningAndTestingSets(
   std::random_shuffle(virginica.begin(), virginica.end());
 
   // create the learning set
-  ulong learnSubsetEnd = std::round(setosa.size() * 0.75);
+  unsigned long learnSubsetEnd = std::round(setosa.size() * 0.75);
   learningSet.reserve(learnSubsetEnd * 3);
   learningSet.insert(learningSet.begin(), setosa.cbegin(),
                      setosa.cbegin() + learnSubsetEnd);

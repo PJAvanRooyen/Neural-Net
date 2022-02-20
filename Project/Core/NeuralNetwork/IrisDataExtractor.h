@@ -1,11 +1,6 @@
 #ifndef DataExtractor_H
 #define DataExtractor_H
 
-#include <QDir>
-#include <QRegularExpressionMatch>
-#include <algorithm>
-#include <fstream>
-#include <random>
 #include <vector>
 
 namespace Core {
