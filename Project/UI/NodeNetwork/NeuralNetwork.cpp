@@ -62,12 +62,6 @@ void NeuralNetwork::setData(
       }
     }
   }
-
-  // test
-  view<NodeNetworkView>()->update();
-  QApplication::processEvents();
-  qt_noop();
-  // test
 }
 } // namespace NodeNetwork
 } // namespace UI

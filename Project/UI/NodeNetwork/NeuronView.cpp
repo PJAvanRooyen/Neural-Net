@@ -42,7 +42,6 @@ void NeuronView::NeuronInfoProxyWidget::NeuronInfoWidget::initLable(
 void NeuronView::NeuronInfoProxyWidget::NeuronInfoWidget::setData(
     const Shared::NodeNetwork::NeuronData<double> &neuronData) {
   setBackgroundRole(QPalette::Dark);
-  repaint();
 
   if (neuronData.desiredActivation.has_value()) {
     mDesiredActivation->setText(
@@ -67,7 +66,6 @@ void NeuronView::NeuronInfoProxyWidget::NeuronInfoWidget::setData(
         kBiasTitle,
         mPreviousData.has_value() ? mPreviousData.value().bias : std::nullopt,
         neuronData.bias.value()));
-    mBias->repaint();
     mBias->show();
   } else {
     mBias->hide();
@@ -82,7 +80,6 @@ void NeuronView::NeuronInfoProxyWidget::NeuronInfoWidget::setData(
   }
 
   setBackgroundRole(QPalette::Light);
-  repaint();
   mPreviousData.emplace(neuronData);
 }
 
@@ -114,7 +111,6 @@ NeuronView::NeuronInfoProxyWidget::~NeuronInfoProxyWidget() {
 void NeuronView::NeuronInfoProxyWidget::setData(
     const Shared::NodeNetwork::NeuronData<double> &neuronData) {
   static_cast<NeuronInfoWidget *>(widget())->setData(neuronData);
-  update();
 }
 
 NeuronView::NeuronView(QGraphicsItem *parent)
@@ -125,7 +121,6 @@ NeuronView::NeuronView(QGraphicsItem *parent)
 void NeuronView::setData(
     const Shared::NodeNetwork::NeuronData<double> &neuronData) {
   mNeuronInfoProxyWidget.setData(neuronData);
-  update();
 }
 
 void NeuronView::paint(QPainter *painter,

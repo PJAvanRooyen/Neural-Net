@@ -67,12 +67,10 @@ QVariant NodeView::itemChange(GraphicsItemChange change,
 }
 
 void NodeView::mousePressEvent(QGraphicsSceneMouseEvent *event) {
-  update();
   QGraphicsItem::mousePressEvent(event);
 }
 
 void NodeView::mouseReleaseEvent(QGraphicsSceneMouseEvent *event) {
-  update();
   QGraphicsItem::mouseReleaseEvent(event);
 }
 } // namespace NodeNetwork

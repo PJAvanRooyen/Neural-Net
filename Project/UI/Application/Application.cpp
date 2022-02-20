@@ -38,8 +38,6 @@ void Application::runTest(
   const QUuid &networkId = mCentralWidget->createTestNetwork(
       layerSizes, testConfig.weightsAndBiasSeed, testConfig.learningRate);
 
-  mView->repaint();
-
   mCentralWidget->runTest(networkId, testConfig.learningIterations,
                           testConfig.testingIterations, testConfig.dataSeed);
 }

@@ -24,9 +24,6 @@ QUuid CentralWidget::createTestNetwork(
   auto *neuralNetView = neuralNet.view<UI::NodeNetwork::NodeNetworkView>();
   mScene->addItem(neuralNetView);
   neuralNetView->show();
-  mScene->update();
-  view()->repaint();
-  view()->show();
 
   return networkId;
 }

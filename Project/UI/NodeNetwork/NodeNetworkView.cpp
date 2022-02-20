@@ -26,7 +26,6 @@ void NodeNetworkView::repositionLayers() {
     auto *layer = static_cast<NodeNetworkLayerView *>(mLayers.at(layerIdx));
     layer->setPos(layerIdx * kLayerOffset + kBorder, kBorder);
   }
-  update();
 }
 
 void NodeNetworkView::addLayer(
@@ -94,10 +93,6 @@ void NodeNetworkView::paint(QPainter *painter,
   painter->setBackgroundMode(Qt::BGMode::TransparentMode);
   painter->setBrush(Qt::darkGray);
   painter->drawRect(boundingRect());
-
-  auto *parentItem = this->parentItem();
-  if (parentItem)
-    parentItem->update();
 }
 
 } // namespace NodeNetwork

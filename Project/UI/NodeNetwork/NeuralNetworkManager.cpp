@@ -68,15 +68,6 @@ void NeuralNetworkManager::customEvent(QEvent *event) {
     auto &netId = ev->networkId;
     auto &network = this->network<NeuralNetwork>(netId);
     network.setData(ev->networkData);
-
-    // test
-    static_cast<UI::Application::CentralWidget *>(parent())
-        ->view()
-        ->scene()
-        ->update();
-    static_cast<UI::Application::CentralWidget *>(parent())->view()->repaint();
-    qt_noop();
-    // test
   }
 }
 

@@ -34,7 +34,6 @@ void NodeNetworkLayerView::repositionNodes() {
     node->setPos(nodeRect.width() / 2 + kBorder,
                  nodeRect.height() / 2 + nodeIdx * kNodeOffset + kBorder);
   }
-  update();
 }
 
 Shared::NodeNetwork::AbstractNode *NodeNetworkLayerView::addNode() {
@@ -82,10 +81,6 @@ void NodeNetworkLayerView::paint(QPainter *painter,
   painter->setBackgroundMode(Qt::BGMode::TransparentMode);
   painter->setBrush(Qt::darkGray);
   painter->drawRect(boundingRect());
-
-  auto *parentItem = this->parentItem();
-  if (parentItem)
-    parentItem->update();
 }
 
 } // namespace NodeNetwork
