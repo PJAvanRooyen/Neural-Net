@@ -2,7 +2,6 @@
 #define ApplicationView_H
 
 #include <QMainWindow>
-#include <QPointer>
 
 QT_BEGIN_NAMESPACE
 namespace Ui {
@@ -17,7 +16,7 @@ class ApplicationView : public QMainWindow {
   Q_OBJECT
 
 public:
-  ApplicationView(QWidget *parent = nullptr);
+  ApplicationView();
   ~ApplicationView();
 
 private:

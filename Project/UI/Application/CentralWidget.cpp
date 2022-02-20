@@ -1,8 +1,8 @@
 #include "CentralWidget.h"
 #include "CentralWidgetView.h"
 
-#include "NodeNetwork/NodeNetwork.h"
 #include "NodeNetwork/NodeNetworkView.h"
+#include "UI/NodeNetwork/NeuralNetwork.h"
 
 namespace UI {
 namespace Application {
@@ -12,18 +12,28 @@ CentralWidget::CentralWidget(QObject *parent)
       mView(new CentralWidgetView(mScene)),
       mNetworkManager(UI::NodeNetwork::NeuralNetworkManager(this)) {}
 
-bool CentralWidget::createMeshNetwork(
-    const std::vector<unsigned long> &layerSizes) {
-  using NeuralNetwork = UI::NodeNetwork::NodeNetwork;
+QUuid CentralWidget::createTestNetwork(
+    const std::vector<unsigned long> &layerSizes,
+    const std::optional<unsigned> seed, const double learningRate) {
+  using NeuralNetwork = UI::NodeNetwork::NeuralNetwork;
 
-  auto *neuralNet =
-      mNetworkManager.createMeshNetwork<NeuralNetwork>(layerSizes);
+  const QUuid &networkId =
+      mNetworkManager.createMeshNetwork(layerSizes, learningRate, seed);
+  NeuralNetwork &neuralNet = mNetworkManager.network<NeuralNetwork>(networkId);
 
-  neuralNet->setParent(this);
-  mScene->addItem(neuralNet->view<UI::NodeNetwork::NodeNetworkView>());
+  auto *neuralNetView = neuralNet.view<UI::NodeNetwork::NodeNetworkView>();
+  mScene->addItem(neuralNetView);
+  neuralNetView->show();
 
-  mScene->update();
-  return true;
+  return networkId;
+}
+
+void CentralWidget::runTest(const QUuid &networkId,
+                            const ulong learningIterations,
+                            const ulong testingIterations,
+                            const std::optional<ulong> dataSeed) {
+  mNetworkManager.runTest(networkId, learningIterations, testingIterations,
+                          dataSeed);
 }
 
 CentralWidgetView *CentralWidget::view() const { return mView; }

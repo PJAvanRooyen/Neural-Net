@@ -1,13 +1,20 @@
 #ifndef CentralWidget_H
 #define CentralWidget_H
 
-#include "CentralWidgetView.h"
 #include "UI/NodeNetwork/NeuralNetworkManager.h"
 
-#include <QGraphicsScene>
+#include <QObject>
+
+class QGraphicsScene;
 
 namespace UI {
+namespace NodeNetwork {
+class NeuralNetwork;
+}
+
 namespace Application {
+
+class CentralWidgetView;
 
 class CentralWidget : public QObject {
   Q_OBJECT
@@ -15,9 +22,15 @@ class CentralWidget : public QObject {
 public:
   CentralWidget(QObject *parent = nullptr);
 
-  CentralWidgetView *view() const;
+  QUuid createTestNetwork(const std::vector<unsigned long> &layerSizes,
+                          const std::optional<unsigned> seed = std::nullopt,
+                          const double learningRate = 0.01);
 
-  bool createMeshNetwork(const std::vector<unsigned long> &layerSizes);
+  void runTest(const QUuid &networkId, const ulong learningIterations,
+               const ulong testingIterations,
+               const std::optional<ulong> dataSeed = std::nullopt);
+
+  CentralWidgetView *view() const;
 
 private:
   QGraphicsScene *mScene;

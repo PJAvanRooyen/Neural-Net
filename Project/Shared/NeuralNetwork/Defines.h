@@ -8,13 +8,10 @@ namespace Shared {
 namespace NodeNetwork {
 
 template <typename DataType> struct NeuronData {
-  DataType bias;
+  std::optional<DataType> bias;
 
   std::optional<DataType> activation;
 
-  /*
-   * \brief sensitivity = dC/dA * dA/dB for current activation value.
-   */
   std::optional<DataType> sensitivity;
 
   std::optional<DataType> desiredActivation;
@@ -33,6 +30,14 @@ using NeuralNetworkLayerData =
 
 template <typename DataType>
 using NeuralNetworkData = std::vector<NeuralNetworkLayerData<DataType>>;
+
+struct TestConfiguration {
+  unsigned long learningIterations;
+  unsigned long testingIterations;
+  std::optional<unsigned long> weightsAndBiasSeed;
+  std::optional<unsigned long> dataSeed;
+  double learningRate;
+};
 
 } // namespace NodeNetwork
 } // namespace Shared

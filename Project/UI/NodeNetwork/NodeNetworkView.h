@@ -26,7 +26,7 @@ protected:
 
   // AbstractNodeNetwork interface
 public:
-  void addLayer(Shared::NodeNetwork::AbstractNodeNetworkLayer *layer) override;
+  void addLayer(Shared::NodeNetwork::AbstractNodeNetworkLayer *layer);
   void addLayers(std::vector<Shared::NodeNetwork::AbstractNodeNetworkLayer *>
                      &layers) override;
 
@@ -35,9 +35,6 @@ public:
   Shared::NodeNetwork::AbstractNodeConnection *
   addConnection(AbstractNode *sourceNode,
                 AbstractNode *destinationNode) override;
-
-  void addConnection(
-      Shared::NodeNetwork::AbstractNodeConnection *connection) override;
 
   // QGraphicsItem interface
 public:

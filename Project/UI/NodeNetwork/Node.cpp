@@ -10,7 +10,9 @@
 namespace UI {
 namespace NodeNetwork {
 
-Node::Node(QObject *parent) : AbstractGraphicsItemController(parent) {}
+Node::Node(QObject *parent)
+    : AbstractGraphicsItemController(parent),
+      Shared::NodeNetwork::AbstractNode() {}
 
 void Node::addInputNodeConnection(
     Shared::NodeNetwork::AbstractNodeConnection *nodeConnection) {
@@ -54,7 +56,7 @@ void Node::addOutputNodeConnections(
   }
 }
 
-QGraphicsItem *Node::createViewBase(QGraphicsItem *parentView) {
+QGraphicsItem *Node::createView(QGraphicsItem *parentView) {
   return new NodeView(parentView);
 }
 

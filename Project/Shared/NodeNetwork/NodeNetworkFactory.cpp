@@ -1,6 +1,4 @@
 #include "NodeNetworkFactory.h"
-#include "AbstractNodeNetwork.h"
-#include "AbstractNodeNetworkLayer.h"
 
 namespace Shared {
 namespace NodeNetwork {

@@ -3,8 +3,16 @@
 
 #include "UI/NodeNetwork/Node.h"
 
+namespace Shared {
+namespace NodeNetwork {
+template <typename DataType> class NeuronData;
+}
+} // namespace Shared
+
 namespace UI {
 namespace NodeNetwork {
+
+class NeuronConnection;
 
 class Neuron : public Node {
   Q_OBJECT
@@ -14,8 +22,10 @@ public:
 
   ~Neuron();
 
+  void setData(const Shared::NodeNetwork::NeuronData<double> &neuronData);
+
 protected:
-  QGraphicsItem *createViewBase(QGraphicsItem *parentView) override;
+  QGraphicsItem *createView(QGraphicsItem *parentView) override;
 };
 
 } // namespace NodeNetwork

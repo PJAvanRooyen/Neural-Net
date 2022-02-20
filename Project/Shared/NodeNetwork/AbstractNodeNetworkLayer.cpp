@@ -12,16 +12,21 @@ const std::vector<AbstractNode *> &AbstractNodeNetworkLayer::nodes() const {
 }
 
 void AbstractNodeNetworkLayer::addNode(AbstractNode *node) {
-  mNodes.push_back(node);
   const auto &nodeInputConnections = node->inputNodeConnections();
-  const auto &nodeOutputConnections = node->outputNodeConnections();
+  if (!nodeInputConnections.empty()) {
+    mInputNodeConnections.insert(mInputNodeConnections.end(),
+                                 nodeInputConnections.begin(),
+                                 nodeInputConnections.end());
+  }
 
-  mInputNodeConnections.insert(mInputNodeConnections.end(),
-                               nodeInputConnections.begin(),
-                               nodeInputConnections.end());
-  mOutputNodeConnections.insert(mOutputNodeConnections.end(),
-                                nodeOutputConnections.begin(),
-                                nodeOutputConnections.end());
+  const auto &nodeOutputConnections = node->outputNodeConnections();
+  if (!nodeOutputConnections.empty()) {
+    mOutputNodeConnections.insert(mOutputNodeConnections.end(),
+                                  nodeOutputConnections.begin(),
+                                  nodeOutputConnections.end());
+  }
+
+  mNodes.push_back(node);
 }
 
 void AbstractNodeNetworkLayer::addNodes(std::vector<AbstractNode *> &nodes) {
@@ -30,8 +35,6 @@ void AbstractNodeNetworkLayer::addNodes(std::vector<AbstractNode *> &nodes) {
   }
 }
 
-unsigned long long AbstractNodeNetworkLayer::size() const {
-  return mNodes.size();
-}
+unsigned long AbstractNodeNetworkLayer::size() const { return mNodes.size(); }
 } // namespace NodeNetwork
 } // namespace Shared

@@ -2,7 +2,7 @@
 #define NodeConnectionController_H
 
 #include "Shared/NodeNetwork/AbstractNodeConnection.h"
-#include "UI/GraphicsItem/AbstractGraphicsItemController.h"
+#include "UI/ViewController/AbstractViewController.h"
 
 namespace UI {
 namespace NodeNetwork {
@@ -17,8 +17,12 @@ public:
   NodeConnection(Node *sourceNode, Node *destNode,
                  AbstractGraphicsItemController *parent = Q_NULLPTR);
 
+  // used to pre-initialize derived class. derived class must handle setting the
+  // members.
+  NodeConnection();
+
 protected:
-  QGraphicsItem *createViewBase(QGraphicsItem *parentView) override;
+  QGraphicsItem *createView(QGraphicsItem *parentView) override;
 };
 
 } // namespace NodeNetwork

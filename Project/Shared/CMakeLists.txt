@@ -5,6 +5,7 @@ add_subdirectory( NodeNetwork )
 add_subdirectory( NeuralNetwork )
 
 set( OBJ_FILES
+    $<TARGET_OBJECTS:Communicator>
     $<TARGET_OBJECTS:NodeNetwork>
     $<TARGET_OBJECTS:NeuralNetwork>
     )

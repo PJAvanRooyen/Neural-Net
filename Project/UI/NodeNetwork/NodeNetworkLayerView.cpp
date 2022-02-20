@@ -7,10 +7,12 @@ namespace UI {
 namespace NodeNetwork {
 
 const qreal NodeNetworkLayerView::kBorder = 10;
-const qreal NodeNetworkLayerView::kNodeOffset = 100;
+const qreal NodeNetworkLayerView::kNodeOffset = 300;
 
 NodeNetworkLayerView::NodeNetworkLayerView(QGraphicsItem *parent)
-    : QGraphicsItem(parent), Shared::NodeNetwork::AbstractNodeNetworkLayer() {}
+    : QGraphicsItem(parent), Shared::NodeNetwork::AbstractNodeNetworkLayer() {
+  setZValue(2);
+}
 
 void NodeNetworkLayerView::repositionNodes() {
   if (mNodes.empty()) {
@@ -32,7 +34,6 @@ void NodeNetworkLayerView::repositionNodes() {
     node->setPos(nodeRect.width() / 2 + kBorder,
                  nodeRect.height() / 2 + nodeIdx * kNodeOffset + kBorder);
   }
-  update();
 }
 
 Shared::NodeNetwork::AbstractNode *NodeNetworkLayerView::addNode() {
@@ -80,10 +81,6 @@ void NodeNetworkLayerView::paint(QPainter *painter,
   painter->setBackgroundMode(Qt::BGMode::TransparentMode);
   painter->setBrush(Qt::darkGray);
   painter->drawRect(boundingRect());
-
-  auto *parentItem = this->parentItem();
-  if (parentItem)
-    parentItem->update();
 }
 
 } // namespace NodeNetwork

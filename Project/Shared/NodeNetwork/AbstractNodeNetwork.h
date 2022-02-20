@@ -4,6 +4,7 @@
 #include "AbstractNode.h"
 
 #include <map>
+#include <vector>
 
 namespace Shared {
 namespace NodeNetwork {
@@ -21,8 +22,7 @@ class AbstractNodeNetwork : public AbstractNode {
 public:
   ~AbstractNodeNetwork();
 
-  const AbstractNodeNetworkLayer *
-  layerAt(const unsigned long long layerIndex) const;
+  const AbstractNodeNetworkLayer *layerAt(const unsigned long layerIndex) const;
 
   const AbstractNodeNetworkLayer *inputLayer() const;
 
@@ -31,10 +31,10 @@ public:
   const std::vector<AbstractNodeNetworkLayer *> &layers() const;
 
   const std::vector<AbstractNodeConnection *> &
-  layerInputConnections(const unsigned long long layerIndex) const;
+  layerInputConnections(const unsigned long layerIndex) const;
 
   const std::vector<AbstractNodeConnection *> &
-  layerOutputConnections(const unsigned long long layerIndex) const;
+  layerOutputConnections(const unsigned long layerIndex) const;
 
   virtual Shared::NodeNetwork::AbstractNodeNetworkLayer *addLayer() = 0;
 
@@ -42,20 +42,15 @@ public:
 
   virtual void addLayers(std::vector<AbstractNodeNetworkLayer *> &layers);
 
-  virtual void addConnection(AbstractNodeConnection *connection);
-
   virtual AbstractNodeConnection *
   addConnection(AbstractNode *sourceNode, AbstractNode *destinationNode) = 0;
 
-  unsigned long long layerCount() const;
+  unsigned long layerCount() const;
 
 protected:
   AbstractNodeNetwork();
 
   std::vector<AbstractNodeNetworkLayer *> mLayers;
-
-  std::map<AbstractNode *, std::vector<AbstractNodeConnection *>>
-      mNodeOutputConnections;
 };
 
 } // namespace NodeNetwork

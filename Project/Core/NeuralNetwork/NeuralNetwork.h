@@ -22,7 +22,7 @@ public:
   ~NeuralNetwork() {}
 
   const NeuralNetworkLayer<DataType> *
-  layerAt(const unsigned long long layerIndex) const {
+  layerAt(const unsigned long layerIndex) const {
     return static_cast<const NeuralNetworkLayer<DataType> *>(
         NodeNetwork::layerAt(layerIndex));
   }
@@ -45,12 +45,8 @@ public:
 
   Shared::NodeNetwork::AbstractNodeNetworkLayer *addLayer() override {
     auto *layer = new NeuralNetworkLayer<DataType>();
-    this->addLayer(layer);
+    NodeNetwork::addLayer(layer);
     return layer;
-  }
-
-  void addLayer(Shared::NodeNetwork::AbstractNodeNetworkLayer *layer) override {
-    AbstractNodeNetwork::addLayer(layer);
   }
 
   Shared::NodeNetwork::AbstractNodeConnection *
@@ -60,13 +56,7 @@ public:
     auto *destination = static_cast<Neuron<DataType> *>(destinationNode);
 
     auto *connection = new NeuronConnection<DataType>(source, destination);
-    this->addConnection(connection);
     return connection;
-  }
-
-  void addConnection(
-      Shared::NodeNetwork::AbstractNodeConnection *connection) override {
-    AbstractNodeNetwork::addConnection(connection);
   }
 
   bool activate(const std::vector<DataType> &values) {

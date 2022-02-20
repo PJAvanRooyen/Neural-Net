@@ -7,10 +7,6 @@
 #include <QObject>
 #include <QUuid>
 
-#include <memory>
-#include <optional>
-#include <unordered_map>
-
 namespace Shared {
 namespace NodeNetwork {
 
@@ -22,16 +18,19 @@ public:
 
   ~NodeNetworkManager();
 
+  QUuid buildMeshNetwork(Shared::NodeNetwork::AbstractNodeNetwork *nodeNetwork,
+                         const std::vector<unsigned long> &layerSizes);
+
   template <class DerivedNetwork>
-  DerivedNetwork *
-  createMeshNetwork(const std::vector<unsigned long> &layerSizes) {
+  QUuid createMeshNetwork(const std::vector<unsigned long> &layerSizes) {
     auto *nodeNetwork =
         Shared::NodeNetwork::NodeNetworkFactory::createMeshNetwork<
             DerivedNetwork>(layerSizes);
 
-    mNetworks.insert(QUuid::createUuid(), nodeNetwork);
+    const QUuid networkId = QUuid::createUuid();
+    mNetworks.insert(networkId, nodeNetwork);
 
-    return nodeNetwork;
+    return networkId;
   }
 
   template <class DerivedNetwork>
@@ -47,8 +46,10 @@ public:
     return nodeNetwork;
   }
 
+  void addNetwork(const QUuid &networkId, AbstractNodeNetwork *nodeNetwork);
+
   template <class DerivedNetwork>
-  DerivedNetwork &networkAt(const QUuid networkId) {
+  DerivedNetwork &network(const QUuid networkId) {
     return static_cast<DerivedNetwork &>(*mNetworks[networkId]);
   }
 

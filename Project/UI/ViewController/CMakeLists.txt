@@ -1,11 +1,11 @@
-set( TARGET_NAME Widget )
+set( TARGET_NAME ViewController )
 
 set( HEADERS
-  AbstractWidget.h
+  AbstractViewController.h
 )
 
 set( SOURCES
-  AbstractWidget.cpp
+  AbstractViewController.cpp
 )
 
 add_library( ${TARGET_NAME} OBJECT ${SOURCES} ${HEADERS} )

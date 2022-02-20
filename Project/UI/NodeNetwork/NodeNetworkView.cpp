@@ -9,10 +9,12 @@ namespace UI {
 namespace NodeNetwork {
 
 const qreal NodeNetworkView::kBorder = 10;
-const qreal NodeNetworkView::kLayerOffset = 100;
+const qreal NodeNetworkView::kLayerOffset = 300;
 
 NodeNetworkView::NodeNetworkView(QGraphicsItem *parent)
-    : QGraphicsItem(parent), Shared::NodeNetwork::AbstractNodeNetwork() {}
+    : QGraphicsItem(parent), Shared::NodeNetwork::AbstractNodeNetwork() {
+  setZValue(1);
+}
 
 void NodeNetworkView::repositionLayers() {
   if (mLayers.empty()) {
@@ -24,7 +26,6 @@ void NodeNetworkView::repositionLayers() {
     auto *layer = static_cast<NodeNetworkLayerView *>(mLayers.at(layerIdx));
     layer->setPos(layerIdx * kLayerOffset + kBorder, kBorder);
   }
-  update();
 }
 
 void NodeNetworkView::addLayer(
@@ -56,13 +57,7 @@ Shared::NodeNetwork::AbstractNodeConnection *NodeNetworkView::addConnection(
   auto *destination = static_cast<NodeView *>(destinationNode);
 
   auto *nodeConnection = new NodeConnectionView(source, destination, this);
-  this->addConnection(nodeConnection);
   return nodeConnection;
-}
-
-void NodeNetworkView::addConnection(
-    Shared::NodeNetwork::AbstractNodeConnection *connection) {
-  AbstractNodeNetwork::addConnection(connection);
 }
 
 QRectF NodeNetworkView::boundingRect() const {
@@ -94,14 +89,10 @@ void NodeNetworkView::paint(QPainter *painter,
   Q_UNUSED(option);
   Q_UNUSED(widget);
 
-  // painter->setPen(Qt::black);
+  painter->setPen(Qt::black);
   painter->setBackgroundMode(Qt::BGMode::TransparentMode);
   painter->setBrush(Qt::darkGray);
   painter->drawRect(boundingRect());
-
-  auto *parentItem = this->parentItem();
-  if (parentItem)
-    parentItem->update();
 }
 
 } // namespace NodeNetwork

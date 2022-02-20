@@ -12,12 +12,16 @@ NodeNetwork::NodeNetwork(QObject *parent)
     : AbstractGraphicsItemController(parent),
       Shared::NodeNetwork::AbstractNodeNetwork() {}
 
-void NodeNetwork::addLayer(
-    Shared::NodeNetwork::AbstractNodeNetworkLayer *layer) {
-  AbstractNodeNetwork::addLayer(layer);
+Shared::NodeNetwork::AbstractNodeNetworkLayer *NodeNetwork::addLayer() {
+  auto *layer = new NodeNetworkLayer(this);
+  this->addLayer(layer);
+  return layer;
+}
 
-  view<NodeNetworkView>()->addLayer(
-      static_cast<NodeNetworkLayer *>(layer)->view<NodeNetworkLayerView>());
+void NodeNetwork::addLayer(NodeNetworkLayer *layer) {
+  view<NodeNetworkView>()->addLayer(layer->view<NodeNetworkLayerView>());
+
+  AbstractNodeNetwork::addLayer(layer);
 }
 
 void NodeNetwork::addLayers(
@@ -30,12 +34,6 @@ void NodeNetwork::addLayers(
   }
 }
 
-Shared::NodeNetwork::AbstractNodeNetworkLayer *NodeNetwork::addLayer() {
-  auto *layer = new NodeNetworkLayer(this);
-  this->addLayer(layer);
-  return layer;
-}
-
 Shared::NodeNetwork::AbstractNodeConnection *
 NodeNetwork::addConnection(NodeNetwork::AbstractNode *sourceNode,
                            NodeNetwork::AbstractNode *destinationNode) {
@@ -43,16 +41,10 @@ NodeNetwork::addConnection(NodeNetwork::AbstractNode *sourceNode,
   auto *destination = static_cast<Node *>(destinationNode);
 
   auto *nodeConnection = new NodeConnection(source, destination, this);
-  this->addConnection(nodeConnection);
   return nodeConnection;
 }
 
-void NodeNetwork::addConnection(
-    Shared::NodeNetwork::AbstractNodeConnection *connection) {
-  AbstractNodeNetwork::addConnection(connection);
-}
-
-QGraphicsItem *NodeNetwork::createViewBase(QGraphicsItem *parentView) {
+QGraphicsItem *NodeNetwork::createView(QGraphicsItem *parentView) {
   return new NodeNetworkView(parentView);
 }
 

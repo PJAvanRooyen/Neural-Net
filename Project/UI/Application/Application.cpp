@@ -1,25 +1,48 @@
 #include "Application.h"
 #include "ApplicationView.h"
 
-#include <QWidget>
+#include "UI/Application/CentralWidget.h"
+#include "UI/Application/CentralWidgetView.h"
+#include "UI/Application/RightDockWidget.h"
+#include "UI/Application/RightDockWidgetView.h"
 
 namespace UI {
 namespace Application {
 
-Application::Application(QObject *parent)
-    : AbstractWidget(parent), mCentralWidget(new CentralWidget(this)) {
-  auto view = static_cast<ApplicationView *>(this->view());
-  view->setCentralWidget(mCentralWidget->view());
-
-  const std::vector<unsigned long> layerSizes = {5, 5, 3, 3};
-  mCentralWidget->createMeshNetwork(layerSizes);
+void Application::on_runTestButton_released(
+    const Shared::NodeNetwork::TestConfiguration &testConfig) {
+  runTest(testConfig);
 }
 
-Application::~Application() {}
+Application::Application()
+    : QObject(), mView(new ApplicationView()),
+      mCentralWidget(new CentralWidget(this)),
+      mRightDockWidget(new RightDockWidget(this, mView)) {
+  mView->showFullScreen();
+  mView->setCentralWidget(mCentralWidget->view());
+  mView->addDockWidget(Qt::DockWidgetArea::RightDockWidgetArea,
+                       mRightDockWidget->view<RightDockWidgetView>());
+  mView->show();
 
-QWidget *Application::createView(QWidget *parentView) {
-  return new ApplicationView(parentView);
+  connect(mRightDockWidget, &RightDockWidget::runTestButton_released, this,
+          &Application::on_runTestButton_released);
 }
+
+Application::~Application() { mView->deleteLater(); }
+
+void Application::runTest(
+    const Shared::NodeNetwork::TestConfiguration &testConfig) {
+
+  const std::vector<unsigned long> layerSizes = {4, 30, 30, 30, 3};
+
+  const QUuid &networkId = mCentralWidget->createTestNetwork(
+      layerSizes, testConfig.weightsAndBiasSeed, testConfig.learningRate);
+
+  mCentralWidget->runTest(networkId, testConfig.learningIterations,
+                          testConfig.testingIterations, testConfig.dataSeed);
+}
+
+ApplicationView *Application::view() const { return mView; }
 
 } // namespace Application
 } // namespace UI

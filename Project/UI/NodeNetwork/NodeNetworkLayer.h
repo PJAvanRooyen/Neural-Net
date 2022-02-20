@@ -2,7 +2,8 @@
 #define NodeNetworkLayerController_H
 
 #include "Shared/NodeNetwork/AbstractNodeNetworkLayer.h"
-#include "UI/GraphicsItem/AbstractGraphicsItemController.h"
+#include "UI/NodeNetwork/Node.h"
+#include "UI/ViewController/AbstractViewController.h"
 
 namespace UI {
 namespace NodeNetwork {
@@ -12,15 +13,24 @@ class NodeNetworkLayer : public AbstractGraphicsItemController,
 public:
   NodeNetworkLayer(QObject *parent = Q_NULLPTR);
 
-  Shared::NodeNetwork::AbstractNode *addNode() override;
+  virtual Shared::NodeNetwork::AbstractNode *addNode() override;
 
-  void addNode(Shared::NodeNetwork::AbstractNode *node) override;
+  template <class DerivedNodeNetworkLayerView, class DerivedNodeView>
+  void addNode(Node *node) {
+    AbstractNodeNetworkLayer::addNode(node);
 
-  void
-  addNodes(std::vector<Shared::NodeNetwork::AbstractNode *> &nodes) override;
+    view<DerivedNodeNetworkLayerView>()->addNode(node->view<DerivedNodeView>());
+  }
+
+  template <class DerivedNodeNetworkLayerView, class DerivedNodeView>
+  void addNodes(std::vector<Shared::NodeNetwork::AbstractNode *> &nodes) {
+    for (auto *node : nodes) {
+      addNode<DerivedNodeNetworkLayerView, DerivedNodeView>(node);
+    }
+  }
 
 protected:
-  QGraphicsItem *createViewBase(QGraphicsItem *parentView) override;
+  QGraphicsItem *createView(QGraphicsItem *parentView) override;
 };
 
 } // namespace NodeNetwork

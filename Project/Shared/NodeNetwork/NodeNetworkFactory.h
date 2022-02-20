@@ -10,24 +10,15 @@
 namespace Shared {
 namespace NodeNetwork {
 
-class AbstractNodeNetwork;
-class AbstractNodeNetworkLayer;
-class AbstractNode;
-class AbstractNodeConnection;
-
 class NodeNetworkFactory {
 public:
   NodeNetworkFactory();
 
   ~NodeNetworkFactory();
 
-  template <class DerivedNetwork>
-  static DerivedNetwork *
-  createMeshNetwork(const std::vector<unsigned long> &layerSizes) {
-    auto *nodeNetwork = new DerivedNetwork();
-
-    for (unsigned long long layerIdx = 0; layerIdx < layerSizes.size();
-         ++layerIdx) {
+  static bool buildMeshNetwork(AbstractNodeNetwork *nodeNetwork,
+                               const std::vector<unsigned long> &layerSizes) {
+    for (unsigned long layerIdx = 0; layerIdx < layerSizes.size(); ++layerIdx) {
       const unsigned long nodeCount = layerSizes[layerIdx];
       AbstractNodeNetworkLayer *layer = nodeNetwork->addLayer();
 
@@ -40,7 +31,7 @@ public:
 
         // connect each current node to each node from the previous layer.
         for (AbstractNode *node : layer->nodes()) {
-          const auto &prevLayer = layers[layerIdx - 1];
+          AbstractNodeNetworkLayer *prevLayer = layers[layerIdx - 1];
 
           for (AbstractNode *prevLayerNode : prevLayer->nodes()) {
             nodeNetwork->addConnection(prevLayerNode, node);
@@ -49,7 +40,17 @@ public:
       }
     }
 
-    return std::move(nodeNetwork);
+    return true;
+  }
+
+  template <class DerivedNetwork>
+  static DerivedNetwork *
+  createMeshNetwork(const std::vector<unsigned long> &layerSizes) {
+    auto *nodeNetwork = new DerivedNetwork();
+
+    buildMeshNetwork(nodeNetwork, layerSizes);
+
+    return nodeNetwork;
   }
 };
 

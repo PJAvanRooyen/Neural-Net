@@ -12,7 +12,7 @@ NodeView::NodeView(QGraphicsItem *parent) : QGraphicsItem(parent) {
   setFlag(ItemIsMovable);
   setFlag(ItemSendsGeometryChanges);
   setCacheMode(DeviceCoordinateCache);
-  setZValue(-1);
+  setZValue(3);
 }
 
 QRectF NodeView::boundingRect() const {
@@ -67,12 +67,10 @@ QVariant NodeView::itemChange(GraphicsItemChange change,
 }
 
 void NodeView::mousePressEvent(QGraphicsSceneMouseEvent *event) {
-  update();
   QGraphicsItem::mousePressEvent(event);
 }
 
 void NodeView::mouseReleaseEvent(QGraphicsSceneMouseEvent *event) {
-  update();
   QGraphicsItem::mouseReleaseEvent(event);
 }
 } // namespace NodeNetwork

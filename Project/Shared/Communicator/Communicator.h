@@ -2,8 +2,9 @@
 #define Communicator_H
 
 #include <QCoreApplication>
+
 #include <QEvent>
-#include <QMetaEnum>
+#include <QObject>
 #include <QUuid>
 #include <optional>
 #include <set>
@@ -42,74 +43,69 @@ protected:
 
 struct EvNeuralNetCreate : public Event<EvNeuralNetCreate> {
   EvNeuralNetCreate(const std::vector<unsigned long> &layerSizes,
+                    const double learningRate,
+                    const std::optional<unsigned> seed,
                     const QUuid &neuralNetId)
-      : Event<EvNeuralNetCreate>(), mLayerSizes(layerSizes),
-        mNetId(neuralNetId) {}
+      : Event<EvNeuralNetCreate>(), layerSizes(layerSizes),
+        learningRate(learningRate), seed(seed), networkId(neuralNetId) {}
 
-  const std::vector<unsigned long> mLayerSizes;
-
-  const QUuid mNetId;
+  const std::vector<unsigned long> layerSizes;
+  const double learningRate;
+  const std::optional<unsigned> seed;
+  const QUuid networkId;
 };
 
 struct EvNeuralNetCreateResponse : public Event<EvNeuralNetCreateResponse> {
   EvNeuralNetCreateResponse(const std::optional<QUuid> &neuralNetId)
-      : Event<EvNeuralNetCreateResponse>(), mNetId(neuralNetId) {}
+      : Event<EvNeuralNetCreateResponse>(), networkId(neuralNetId) {}
 
-  const std::optional<const QUuid> mNetId;
+  const std::optional<const QUuid> networkId;
 };
 
 struct EvNeuralNetRun : public Event<EvNeuralNetRun> {
-  EvNeuralNetRun(const QUuid &neuralNetId)
-      : Event<EvNeuralNetRun>(), mNetId(neuralNetId) {}
+  EvNeuralNetRun(const QUuid &neuralNetId, const ulong learningIterations,
+                 const ulong testingIterations,
+                 const std::optional<ulong> dataSeed = std::nullopt)
+      : Event<EvNeuralNetRun>(), networkId(neuralNetId),
+        learningIterations(learningIterations),
+        testingIterations(testingIterations), dataSeed(dataSeed) {}
 
-  const QUuid mNetId;
+  const QUuid networkId;
+  const ulong learningIterations;
+  const ulong testingIterations;
+  const std::optional<ulong> dataSeed;
 };
 
 class EvNeuralNetRunInfo : public Event<EvNeuralNetRunInfo> {
 public:
   EvNeuralNetRunInfo(const QUuid &neuralNetId,
                      const Shared::NodeNetwork::NeuralNetworkData<double> &data)
-      : Event<EvNeuralNetRunInfo>(), mNetId(neuralNetId), mNetData(data) {}
+      : Event<EvNeuralNetRunInfo>(), networkId(neuralNetId), networkData(data) {
+  }
 
-  const QUuid mNetId;
+  const QUuid networkId;
 
-  const Shared::NodeNetwork::NeuralNetworkData<double> mNetData;
+  const Shared::NodeNetwork::NeuralNetworkData<double> networkData;
 };
 
-class Communicator {
-public:
-  ~Communicator() {}
+class Communicator : public QObject {
+  Q_OBJECT
 
-  static Communicator &instance() {
-    static Communicator instance;
-    return instance;
-  }
+public:
+  ~Communicator();
+
+  static Communicator &instance();
 
   void connect(QObject *const receiver,
-               const std::vector<IEvent::Type> &events) {
-    for (IEvent::Type eventType : events) {
-      auto &eventReceivers = mReceivers[eventType];
-      eventReceivers.insert(receiver);
-    }
-  }
+               const std::vector<IEvent::Type> &events);
 
-  void postEvent(const IEvent *const event) const {
-    const IEvent::Type eventType = event->type();
-    if (eventType < QEvent::Type::User) {
-      return;
-    }
-
-    const std::set<QObject *> &eventReceivers = mReceivers.at(eventType);
-    for (QObject *const receiver : eventReceivers) {
-      QCoreApplication::postEvent(receiver, event->copy());
-    }
-  }
+  void postEvent(const IEvent *const event) const;
   // TODO: broadcast connect; create objectTypes as we have eventTypes, when
   // sending broadcast events, they are sent to all objects of a type instead
   // of a unique object.
 
 private:
-  Communicator() : mReceivers() {}
+  Communicator();
 
   std::map<const IEvent::Type, std::set<QObject *>> mReceivers;
 };
