@@ -12,6 +12,10 @@ CentralWidget::CentralWidget(QObject *parent)
       mView(new CentralWidgetView(mScene)),
       mNetworkManager(UI::NodeNetwork::NeuralNetworkManager(this)) {}
 
+QList<QUuid> CentralWidget::availableNetworks() const {
+  return mNetworkManager.availableNetworks();
+}
+
 QUuid CentralWidget::createTestNetwork(
     const std::vector<unsigned long> &layerSizes,
     const std::optional<unsigned> seed, const double learningRate) {

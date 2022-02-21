@@ -5,10 +5,10 @@ namespace Core {
 namespace ModuleManager {
 
 ModuleManager::ModuleManager()
-    : mWidgetManager(new UI::WidgetManager::WidgetManager()) {
+    : mWidgetManager(UI::WidgetManager::WidgetManager()) {
   quint8 val = 1;
 
-  mWidgetManager->increment(val);
+  mWidgetManager.increment(val);
 
   QString inputString;
   Example::VariadicTemplate variadicTemplate =
@@ -18,7 +18,7 @@ ModuleManager::ModuleManager()
   qt_noop();
 }
 
-ModuleManager::~ModuleManager() { delete mWidgetManager; }
+ModuleManager::~ModuleManager() {}
 
 } // namespace ModuleManager
 } // namespace Core

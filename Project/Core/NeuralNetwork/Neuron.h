@@ -335,6 +335,10 @@ public:
   }
 
   DataType activate() {
+    if (mData.activation.has_value()) {
+      return mData.activation.value();
+    }
+
     Neuron<DataType> *sourceNeuron = static_cast<Neuron<DataType> *>(mSource);
     const DataType sourceActivation = sourceNeuron->activate();
     const DataType activation = mWeightFunction(sourceActivation, mData.weight);
@@ -365,6 +369,10 @@ public:
     // Note: each connection can only be entered/activated once per run, so no
     // need to un-set their activation values. Calling activate should always
     // recaclulate the activation value.
+    if (!mData.activation.has_value()) {
+      return;
+    }
+    mData.activation.reset();
 
     Neuron<DataType> *sourceNeuron = static_cast<Neuron<DataType> *>(mSource);
 

@@ -21,6 +21,8 @@ public:
                           const double learningRate,
                           const std::optional<unsigned> seed);
 
+  QList<QUuid> availableNetworks() const;
+
   void runTest(const QUuid &networkId, const ulong learningIterations,
                const ulong testingIterations,
                const std::optional<ulong> dataSeed = std::nullopt);

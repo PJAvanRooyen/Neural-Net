@@ -11,7 +11,7 @@ public:
 
   ~ModuleManager();
 
-  UI::WidgetManager::WidgetManager *mWidgetManager;
+  UI::WidgetManager::WidgetManager mWidgetManager;
 };
 
 } // namespace ModuleManager

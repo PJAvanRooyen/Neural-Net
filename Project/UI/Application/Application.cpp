@@ -33,10 +33,16 @@ Application::~Application() { mView->deleteLater(); }
 void Application::runTest(
     const Shared::NodeNetwork::TestConfiguration &testConfig) {
 
-  const std::vector<unsigned long> layerSizes = {4, 30, 30, 30, 3};
+  QUuid networkId;
+  const auto &availableNetworks = mCentralWidget->availableNetworks();
+  if (availableNetworks.isEmpty()) {
+    const std::vector<unsigned long> layerSizes = {4, 30, 30, 30, 3};
 
-  const QUuid &networkId = mCentralWidget->createTestNetwork(
-      layerSizes, testConfig.weightsAndBiasSeed, testConfig.learningRate);
+    networkId = mCentralWidget->createTestNetwork(
+        layerSizes, testConfig.weightsAndBiasSeed, testConfig.learningRate);
+  } else {
+    networkId = availableNetworks.first();
+  }
 
   mCentralWidget->runTest(networkId, testConfig.learningIterations,
                           testConfig.testingIterations, testConfig.dataSeed);

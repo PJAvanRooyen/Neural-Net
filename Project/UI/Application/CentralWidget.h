@@ -22,6 +22,8 @@ class CentralWidget : public QObject {
 public:
   CentralWidget(QObject *parent = nullptr);
 
+  QList<QUuid> availableNetworks() const;
+
   QUuid createTestNetwork(const std::vector<unsigned long> &layerSizes,
                           const std::optional<unsigned> seed = std::nullopt,
                           const double learningRate = 0.01);

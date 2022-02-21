@@ -39,6 +39,10 @@ QUuid NeuralNetworkManager::createMeshNetwork(
   return networkId;
 }
 
+QList<QUuid> NeuralNetworkManager::availableNetworks() const {
+  return mNetworks.keys();
+}
+
 void NeuralNetworkManager::runTest(const QUuid &networkId,
                                    const ulong learningIterations,
                                    const ulong testingIterations,
